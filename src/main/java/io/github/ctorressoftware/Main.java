@@ -1,9 +1,10 @@
 package io.github.ctorressoftware;
 
-//TIP To <b>Run</b> code, press <shortcut actionId="Run"/> or
-// click the <icon src="AllIcons.Actions.Execute"/> icon in the gutter.
+import picocli.CommandLine;
+
 public class Main {
     public static void main(String[] args) {
-        System.out.print("Hello and welcome!");
+        int exitCode = new CommandLine(new HelloWorld()).execute(args);
+        System.exit(exitCode);
     }
 }
