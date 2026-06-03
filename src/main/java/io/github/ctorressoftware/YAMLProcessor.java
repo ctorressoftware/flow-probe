@@ -11,7 +11,7 @@ public class YAMLProcessor {
         Yaml yaml = new Yaml();
         InputStream inputStream = this.getClass()
                 .getClassLoader()
-                .getResourceAsStream("test.yaml");
+                .getResourceAsStream(filePath);
         Map<String, Object> obj = (Map<String, Object>) yaml.load(inputStream);
         return obj;
     }
