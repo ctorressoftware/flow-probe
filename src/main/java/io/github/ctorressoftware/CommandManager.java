@@ -9,7 +9,7 @@ public class CommandManager implements Runnable {
 
     @CommandLine.Option(
             names = {"-f", "-file"},
-            required = true,
+            required = false,
             paramLabel = "FILE",
             description = "file url"
     )
