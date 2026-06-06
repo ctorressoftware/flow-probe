@@ -1,3 +1,6 @@
 firstName: "Michaela"
 lastName: "Zoe"
 age: 11
+test:
+  test1: prueba
+  test2: test
