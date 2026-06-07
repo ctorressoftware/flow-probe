@@ -1,15 +1,16 @@
 package io.github.ctorressoftware;
 
+import io.github.ctorressoftware.model.StepFormat;
 import picocli.CommandLine;
 
-import java.util.Map;
+import java.util.List;
 
 @CommandLine.Command(name = "FlowProbe", version = "FlowProbe 1.0", mixinStandardHelpOptions = true)
 public class CommandManager implements Runnable {
 
     @CommandLine.Option(
             names = {"-f", "-file"},
-            required = false,
+            required = true,
             paramLabel = "FILE",
             description = "file url"
     )
@@ -18,8 +19,6 @@ public class CommandManager implements Runnable {
     @Override
     public void run() {
         YAMLProcessor yamlProcessor = new YAMLProcessor();
-        Map<String, Object> doc = yamlProcessor.read(filePath);
-        System.out.println(doc.keySet());
-        System.out.println(doc.values());
+        List<StepFormat> steps = yamlProcessor.read(filePath);
     }
 }
