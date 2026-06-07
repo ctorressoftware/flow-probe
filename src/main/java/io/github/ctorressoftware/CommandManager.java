@@ -20,5 +20,8 @@ public class CommandManager implements Runnable {
     public void run() {
         YAMLProcessor yamlProcessor = new YAMLProcessor();
         List<StepFormat> steps = yamlProcessor.read(filePath);
+
+        var executionPipeline = new ExecutionPipeline();
+        executionPipeline.execute(steps);
     }
 }
