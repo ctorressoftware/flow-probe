@@ -1,3 +1,32 @@
-firstName: "John"
-lastName: "Doe"
-age: 20
+name: "flow-poke-api-get-pikachu"
+
+steps:
+  - name: "get-all-pokemon"
+    request:
+      url: "https://pokeapi.co/api/v2/pokemon"
+      method: "GET"
+      headers:
+        accept: "application/json"
+      body: null
+
+    expect: null
+
+    export:
+      pokemonName: "body.results[0].name"
+
+  - name: "get-pikachu"
+    request:
+      url: "https://pokeapi.co/api/v2/pokemon/${pokemonName}"
+      method: "GET"
+      headers:
+        accept: "application/json"
+      body:
+        test: 1
+        test2: 2
+
+    expect:
+      status: 200
+      body:
+        name: ${pokemonName}
+
+    export: null
