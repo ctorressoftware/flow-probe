@@ -1,4 +1,4 @@
-package io.github.ctorressoftware.exceptions;
+package io.github.ctorressoftware.domain.exception;
 
 public class NoDefinedStepsException extends RuntimeException {
     public NoDefinedStepsException() {
