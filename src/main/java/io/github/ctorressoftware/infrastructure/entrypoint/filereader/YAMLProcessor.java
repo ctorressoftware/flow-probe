@@ -1,7 +1,9 @@
-package io.github.ctorressoftware;
+package io.github.ctorressoftware.infrastructure;
 
-import io.github.ctorressoftware.model.RequestFormat;
-import io.github.ctorressoftware.model.StepFormat;
+import io.github.ctorressoftware.application.port.out.FlowFileReader;
+import io.github.ctorressoftware.domain.model.FilePath;
+import io.github.ctorressoftware.domain.model.RequestFormat;
+import io.github.ctorressoftware.domain.model.StepFormat;
 import org.yaml.snakeyaml.Yaml;
 
 import java.io.InputStream;
@@ -9,15 +11,15 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
-public class YAMLProcessor {
+public class YAMLProcessor implements FlowFileReader {
 
     @SuppressWarnings("unchecked")
-    public List<StepFormat> read(String filePath) {
+    public List<StepFormat> read(FilePath filePath) {
 
         Yaml yaml = new Yaml();
         InputStream inputStream = this.getClass()
                 .getClassLoader()
-                .getResourceAsStream(filePath);
+                .getResourceAsStream(filePath.getValue());
 
         Map<String, Object> yamlMap = (Map<String, Object>) yaml.load(inputStream);
 

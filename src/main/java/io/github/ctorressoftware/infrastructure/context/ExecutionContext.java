@@ -1,4 +1,4 @@
-package io.github.ctorressoftware.model;
+package io.github.ctorressoftware.domain.model;
 
 import java.util.HashMap;
 import java.util.Map;

@@ -15,19 +15,21 @@ public class Proxy {
         this.client = HttpClient.newHttpClient();
     }
 
-    public void call(RequestFormat requestFormat) {
+    public ServiceResponse call(RequestFormat requestFormat) {
         HttpRequest request = resolveRequest(requestFormat);
+        HttpResponse<String> response = null;
 
         try {
-            HttpResponse<String> response = client.send(request, HttpResponse.BodyHandlers.ofString());
-
-            System.out.println("Status Code: " + response.statusCode());
-            System.out.println("Response Body:\n" + response.body());
-
+            response = client.send(request, HttpResponse.BodyHandlers.ofString());
         } catch (IOException | InterruptedException e) {
             System.out.println("Error: " + e.getMessage());
         }
 
+        if (response == null) {
+            return null;
+        }
+
+        return new ServiceResponse(response.statusCode(), response.body());
     }
 
     private HttpRequest resolveRequest(RequestFormat request) {
