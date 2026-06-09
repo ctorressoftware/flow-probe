@@ -1,6 +1,9 @@
-package io.github.ctorressoftware;
+package io.github.ctorressoftware.infrastructure.entrypoint;
 
-import io.github.ctorressoftware.model.StepFormat;
+import io.github.ctorressoftware.ExecutionPipeline;
+import io.github.ctorressoftware.domain.model.FilePath;
+import io.github.ctorressoftware.infrastructure.entrypoint.filereader.YAMLProcessor;
+import io.github.ctorressoftware.domain.model.StepFormat;
 import picocli.CommandLine;
 
 import java.util.List;
@@ -19,9 +22,11 @@ public class CommandManager implements Runnable {
     @Override
     public void run() {
         YAMLProcessor yamlProcessor = new YAMLProcessor();
-        List<StepFormat> steps = yamlProcessor.read(filePath);
-        String flowName = steps.getFirst().flowName();
 
+        FilePath path = new FilePath(filePath);
+        List<StepFormat> steps = yamlProcessor.read(path);
+
+        String flowName = steps.getFirst().flowName();
         var executionPipeline = new ExecutionPipeline();
         executionPipeline.execute(flowName, steps);
     }
