@@ -1,4 +1,4 @@
-package io.github.ctorressoftware.domain.model;
+package io.github.ctorressoftware.domain.constant;
 
 public final class HttpMethod {
     public static final String GET = "GET";
