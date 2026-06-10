@@ -11,7 +11,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
-public class YAMLProcessor implements FlowFileReader {
+public class YAMLReader implements FlowFileReader {
 
     @SuppressWarnings("unchecked")
     public List<StepFormat> read(FilePath filePath) {
