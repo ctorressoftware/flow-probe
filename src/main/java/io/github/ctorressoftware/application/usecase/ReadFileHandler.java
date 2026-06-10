@@ -8,6 +8,7 @@ import io.github.ctorressoftware.domain.model.StepFormat;
 
 import java.util.List;
 
+// TODO: implement handler in command manager
 public class ReadFileHandler implements ReadFileUseCase {
 
     private final FlowFileReader flowFileReader;
