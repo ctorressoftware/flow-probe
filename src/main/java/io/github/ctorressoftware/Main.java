@@ -1,5 +1,6 @@
 package io.github.ctorressoftware;
 
+import io.github.ctorressoftware.infrastructure.entrypoint.CommandManager;
 import picocli.CommandLine;
 
 public class Main {
