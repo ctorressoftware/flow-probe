@@ -5,6 +5,7 @@ import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import io.github.ctorressoftware.domain.model.*;
 import io.github.ctorressoftware.domain.exception.NoDefinedStepsException;
+import io.github.ctorressoftware.infrastructure.Proxy;
 import io.github.ctorressoftware.infrastructure.context.ExecutionContext;
 
 import java.util.List;
