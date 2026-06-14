@@ -2,8 +2,8 @@ package io.github.ctorressoftware.infrastructure.entrypoint.filereader;
 
 import io.github.ctorressoftware.application.port.out.FlowFileReader;
 import io.github.ctorressoftware.domain.model.FilePath;
-import io.github.ctorressoftware.domain.model.RequestFormat;
-import io.github.ctorressoftware.domain.model.StepFormat;
+import io.github.ctorressoftware.domain.model.ServiceCall;
+import io.github.ctorressoftware.domain.model.FlowStep;
 import org.yaml.snakeyaml.Yaml;
 
 import java.io.InputStream;
@@ -14,12 +14,12 @@ import java.util.Map;
 public class YAMLReader implements FlowFileReader {
 
     @SuppressWarnings("unchecked")
-    public List<StepFormat> read(FilePath filePath) {
+    public List<FlowStep> read(FilePath filePath) {
 
         Yaml yaml = new Yaml();
         InputStream inputStream = this.getClass()
                 .getClassLoader()
-                .getResourceAsStream(filePath.getValue());
+                .getResourceAsStream(filePath.value());
 
         Map<String, Object> yamlMap = (Map<String, Object>) yaml.load(inputStream);
 
@@ -27,7 +27,7 @@ public class YAMLReader implements FlowFileReader {
 
         List<Map<String, Object>> steps = (List<Map<String, Object>>) yamlMap.get("steps");
 
-        List<StepFormat> formattedSteps = new ArrayList<>();
+        List<FlowStep> formattedSteps = new ArrayList<>();
 
         for (Map<String, Object> step : steps) {
             String stepName = step.get("name").toString();
@@ -41,21 +41,21 @@ public class YAMLReader implements FlowFileReader {
             Map<String, String> headers = (Map<String, String>) request.get("headers");
             Object body = request.get("body");
 
-            RequestFormat requestFormat = resolveRequest(url, method, headers, body);
-            StepFormat stepFormat = resolveStep(flowName, stepName, requestFormat, expect, export);
-            formattedSteps.add(stepFormat);
+            ServiceCall serviceCall = resolveRequest(url, method, headers, body);
+            FlowStep flowStep = resolveStep(flowName, stepName, serviceCall, expect, export);
+            formattedSteps.add(flowStep);
         }
 
         return formattedSteps;
     }
 
-    private RequestFormat resolveRequest(
+    private ServiceCall resolveRequest(
             String url,
             String method,
             Map<String, String> headers,
             Object body
     ) {
-        return new RequestFormat(
+        return new ServiceCall(
                 url,
                 method,
                 headers,
@@ -63,17 +63,17 @@ public class YAMLReader implements FlowFileReader {
         );
     }
 
-    private StepFormat resolveStep(
+    private FlowStep resolveStep(
             String flowName,
             String stepName,
-            RequestFormat requestFormat,
+            ServiceCall serviceCall,
             Map<String, Object> expect,
             Map<String, String> export
     ) {
-        return new StepFormat(
+        return FlowStep.create(
                 flowName,
                 stepName,
-                requestFormat,
+                serviceCall,
                 expect,
                 export
         );
