@@ -1,4 +1,4 @@
-package io.github.ctorressoftware;
+package io.github.ctorressoftware.application.port.out;
 
-public class ImpedimentTicketCreator {
+public interface ImpedimentTicketCreator {
 }
