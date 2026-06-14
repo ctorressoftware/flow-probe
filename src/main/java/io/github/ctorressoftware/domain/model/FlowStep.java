@@ -25,8 +25,9 @@ public class FlowStep {
         this.flowName = Objects.requireNonNull(flowName, "flowName cannot be null");
         this.stepName = Objects.requireNonNull(stepName, "stepName cannot be null");
         this.serviceCall = Objects.requireNonNull(serviceCall, "serviceCall cannot be null");
-        this.expect = Map.copyOf(Objects.requireNonNull(expect, "expect cannot be null"));
-        this.export = Map.copyOf(Objects.requireNonNull(export, "export cannot be null"));
+        // TODO: make better implementation later
+        this.expect = Objects.isNull(expect) ? null : Map.copyOf(expect);
+        this.export = Objects.isNull(export) ? null : Map.copyOf(export);
     }
 
     public static FlowStep create(
