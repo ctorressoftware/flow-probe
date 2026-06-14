@@ -1,4 +1,8 @@
-package io.github.ctorressoftware.model;
+package io.github.ctorressoftware.infrastructure;
+
+import io.github.ctorressoftware.domain.constant.HttpMethod;
+import io.github.ctorressoftware.domain.model.ServiceCall;
+import io.github.ctorressoftware.domain.model.ServiceResponse;
 
 import java.io.IOException;
 import java.net.URI;
@@ -15,8 +19,8 @@ public class Proxy {
         this.client = HttpClient.newHttpClient();
     }
 
-    public ServiceResponse call(RequestFormat requestFormat) {
-        HttpRequest request = resolveRequest(requestFormat);
+    public ServiceResponse call(ServiceCall serviceCall) {
+        HttpRequest request = resolveRequest(serviceCall);
         HttpResponse<String> response = null;
 
         try {
@@ -32,7 +36,7 @@ public class Proxy {
         return new ServiceResponse(response.statusCode(), response.body());
     }
 
-    private HttpRequest resolveRequest(RequestFormat request) {
+    private HttpRequest resolveRequest(ServiceCall request) {
 
         HttpRequest.BodyPublisher body = request.body() == null || request.method().equals(HttpMethod.GET) ?
                 HttpRequest.BodyPublishers.noBody() :
