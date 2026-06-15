@@ -30,7 +30,6 @@ public class CommandManager implements Runnable {
 
     @Override
     public void run() {
-        AppConfig config = new AppConfig();
         ReadFileUseCase readFileHandler = config.readFileUseCase();
         ReadFileResult readFileResult = readFileHandler.read(new ReadFileCommand(new FilePath(filePath)));
         List<FlowStep> steps = readFileResult.flowSteps();
