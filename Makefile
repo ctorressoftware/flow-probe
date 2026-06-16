@@ -1,4 +1,4 @@
-ARGS := -a 100 -b 400
+ARGS := -file 'test.yaml'
 
 .PHONY: exec
 
