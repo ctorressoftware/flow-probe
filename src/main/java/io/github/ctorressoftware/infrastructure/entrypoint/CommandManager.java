@@ -22,15 +22,14 @@ public class CommandManager implements Runnable {
     )
     String filePath;
 
-    private final AppConfig config;
+    private final ReadFileUseCase readFileHandler;
 
     public CommandManager(AppConfig config) {
-        this.config = config;
+        this.readFileHandler = config.readFileUseCase();
     }
 
     @Override
     public void run() {
-        ReadFileUseCase readFileHandler = config.readFileUseCase();
         ReadFileResult readFileResult = readFileHandler.read(new ReadFileCommand(new FilePath(filePath)));
         List<FlowStep> steps = readFileResult.flowSteps();
 
