@@ -1,6 +1,6 @@
 package io.github.ctorressoftware.domain.model;
 
-public record ServiceResponse(
+public record CallResult(
         int status,
         String responseBody
 ) {}

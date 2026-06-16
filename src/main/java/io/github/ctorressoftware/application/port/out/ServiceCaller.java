@@ -1,7 +1,8 @@
 package io.github.ctorressoftware.application.port.out;
 
 import io.github.ctorressoftware.domain.model.ServiceCall;
+import io.github.ctorressoftware.domain.model.CallResult;
 
 public interface ServiceCaller {
-    void call(ServiceCall serviceCall);
+    CallResult call(ServiceCall serviceCall);
 }

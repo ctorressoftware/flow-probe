@@ -2,7 +2,7 @@ package io.github.ctorressoftware.infrastructure;
 
 import io.github.ctorressoftware.domain.constant.HttpMethod;
 import io.github.ctorressoftware.domain.model.ServiceCall;
-import io.github.ctorressoftware.domain.model.ServiceResponse;
+import io.github.ctorressoftware.domain.model.CallResult;
 
 import java.io.IOException;
 import java.net.URI;
@@ -19,7 +19,7 @@ public class Proxy {
         this.client = HttpClient.newHttpClient();
     }
 
-    public ServiceResponse call(ServiceCall serviceCall) {
+    public CallResult call(ServiceCall serviceCall) {
         HttpRequest request = resolveRequest(serviceCall);
         HttpResponse<String> response = null;
 
@@ -33,7 +33,7 @@ public class Proxy {
             return null;
         }
 
-        return new ServiceResponse(response.statusCode(), response.body());
+        return new CallResult(response.statusCode(), response.body());
     }
 
     private HttpRequest resolveRequest(ServiceCall request) {
