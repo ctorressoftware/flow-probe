@@ -1,6 +1,6 @@
 package io.github.ctorressoftware;
 
-import io.github.ctorressoftware.application.port.in.readfile.ReadFileUseCase;
+import io.github.ctorressoftware.application.port.in.filereading.ReadFileUseCase;
 import io.github.ctorressoftware.application.port.out.FlowFileReader;
 import io.github.ctorressoftware.application.usecase.ReadFileHandler;
 import io.github.ctorressoftware.infrastructure.filereading.YAMLReader;
