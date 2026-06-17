@@ -5,7 +5,7 @@ import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import io.github.ctorressoftware.domain.model.*;
 import io.github.ctorressoftware.domain.exception.NoDefinedStepsException;
-import io.github.ctorressoftware.infrastructure.Proxy;
+import io.github.ctorressoftware.infrastructure.servicecalling.RestServiceCaller;
 import io.github.ctorressoftware.infrastructure.context.ExecutionContext;
 
 import java.util.List;
@@ -13,11 +13,11 @@ import java.util.Objects;
 
 public class ExecutionPipeline {
 
-    private final Proxy proxy;
+    private final RestServiceCaller restServiceCaller;
     private final ExecutionContext context;
 
     public ExecutionPipeline() {
-        this.proxy = new Proxy();
+        this.restServiceCaller = new RestServiceCaller();
         this.context = new ExecutionContext();
     }
 
@@ -37,7 +37,7 @@ public class ExecutionPipeline {
                 request = resolvePlaceholders(request);
             }
 
-            var response = proxy.call(new ServiceCall(
+            var response = restServiceCaller.call(new ServiceCall(
                     request.url(),
                     request.method(),
                     request.headers(),
