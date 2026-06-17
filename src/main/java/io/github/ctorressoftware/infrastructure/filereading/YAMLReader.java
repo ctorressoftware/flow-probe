@@ -1,4 +1,4 @@
-package io.github.ctorressoftware.infrastructure.entrypoint.filereader;
+package io.github.ctorressoftware.infrastructure.filereading;
 
 import io.github.ctorressoftware.application.port.out.FlowFileReader;
 import io.github.ctorressoftware.domain.model.FilePath;
