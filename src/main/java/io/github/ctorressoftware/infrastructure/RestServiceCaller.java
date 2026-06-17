@@ -12,11 +12,11 @@ import java.net.http.HttpRequest;
 import java.net.http.HttpResponse;
 import java.util.stream.Stream;
 
-public class Proxy implements ServiceCaller {
+public class RestServiceCaller implements ServiceCaller {
 
     private final HttpClient client;
 
-    public Proxy() {
+    public RestServiceCaller() {
         this.client = HttpClient.newHttpClient();
     }
 
