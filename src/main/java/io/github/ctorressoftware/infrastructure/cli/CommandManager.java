@@ -1,4 +1,4 @@
-package io.github.ctorressoftware.infrastructure.entrypoint;
+package io.github.ctorressoftware.infrastructure.cli;
 
 import io.github.ctorressoftware.AppConfig;
 import io.github.ctorressoftware.ExecutionPipeline;
