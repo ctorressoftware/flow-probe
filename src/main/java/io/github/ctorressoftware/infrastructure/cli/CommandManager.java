@@ -6,6 +6,7 @@ import io.github.ctorressoftware.application.port.in.filereading.ReadFileCommand
 import io.github.ctorressoftware.application.port.in.filereading.ReadFileResult;
 import io.github.ctorressoftware.application.port.in.filereading.ReadFileUseCase;
 import io.github.ctorressoftware.domain.model.FilePath;
+import io.github.ctorressoftware.domain.model.Flow;
 import io.github.ctorressoftware.domain.model.FlowStep;
 import picocli.CommandLine;
 
@@ -31,10 +32,11 @@ public class CommandManager implements Runnable {
     @Override
     public void run() {
         ReadFileResult readFileResult = readFileHandler.read(new ReadFileCommand(new FilePath(filePath)));
-        List<FlowStep> steps = readFileResult.flowSteps();
+        Flow flow = readFileResult.flow();
+        List<FlowStep> flowSteps = flow.getSteps();
 
-        String flowName = steps.getFirst().getFlowName();
+        String flowName = flow.getName();
         var executionPipeline = new ExecutionPipeline();
-        executionPipeline.execute(flowName, steps);
+        executionPipeline.execute(flowName, flowSteps);
     }
 }
