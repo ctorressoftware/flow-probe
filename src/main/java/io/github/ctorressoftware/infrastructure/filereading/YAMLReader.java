@@ -2,6 +2,7 @@ package io.github.ctorressoftware.infrastructure.filereading;
 
 import io.github.ctorressoftware.application.port.out.FlowFileReader;
 import io.github.ctorressoftware.domain.model.FilePath;
+import io.github.ctorressoftware.domain.model.Flow;
 import io.github.ctorressoftware.domain.model.ServiceCall;
 import io.github.ctorressoftware.domain.model.FlowStep;
 import org.yaml.snakeyaml.Yaml;
@@ -14,7 +15,7 @@ import java.util.Map;
 public class YAMLReader implements FlowFileReader {
 
     @SuppressWarnings("unchecked")
-    public List<FlowStep> read(FilePath filePath) {
+    public Flow read(FilePath filePath) {
 
         Yaml yaml = new Yaml();
         InputStream inputStream = this.getClass()
@@ -46,7 +47,7 @@ public class YAMLReader implements FlowFileReader {
             formattedSteps.add(flowStep);
         }
 
-        return formattedSteps;
+        return Flow.create(flowName, formattedSteps);
     }
 
     private ServiceCall resolveRequest(

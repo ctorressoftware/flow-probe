@@ -4,9 +4,7 @@ import io.github.ctorressoftware.application.port.in.filereading.ReadFileCommand
 import io.github.ctorressoftware.application.port.in.filereading.ReadFileResult;
 import io.github.ctorressoftware.application.port.in.filereading.ReadFileUseCase;
 import io.github.ctorressoftware.application.port.out.FlowFileReader;
-import io.github.ctorressoftware.domain.model.FlowStep;
-
-import java.util.List;
+import io.github.ctorressoftware.domain.model.Flow;
 
 public class ReadFileHandler implements ReadFileUseCase {
 
@@ -18,7 +16,7 @@ public class ReadFileHandler implements ReadFileUseCase {
 
     @Override
     public ReadFileResult read(ReadFileCommand command) {
-        List<FlowStep> list = flowFileReader.read(command.filePath());
-        return new ReadFileResult(list);
+        Flow flow = flowFileReader.read(command.filePath());
+        return new ReadFileResult(flow);
     }
 }
