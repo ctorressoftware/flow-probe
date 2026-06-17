@@ -1,5 +1,6 @@
 package io.github.ctorressoftware.infrastructure;
 
+import io.github.ctorressoftware.application.port.out.ServiceCaller;
 import io.github.ctorressoftware.domain.constant.HttpMethod;
 import io.github.ctorressoftware.domain.model.ServiceCall;
 import io.github.ctorressoftware.domain.model.CallResult;
@@ -11,7 +12,7 @@ import java.net.http.HttpRequest;
 import java.net.http.HttpResponse;
 import java.util.stream.Stream;
 
-public class Proxy {
+public class Proxy implements ServiceCaller {
 
     private final HttpClient client;
 
