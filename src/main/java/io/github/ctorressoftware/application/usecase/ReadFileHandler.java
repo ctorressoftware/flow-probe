@@ -1,8 +1,8 @@
 package io.github.ctorressoftware.application.usecase;
 
-import io.github.ctorressoftware.application.port.in.filereading.ReadFileCommand;
-import io.github.ctorressoftware.application.port.in.filereading.ReadFileResult;
-import io.github.ctorressoftware.application.port.in.filereading.ReadFileUseCase;
+import io.github.ctorressoftware.application.port.in.readfile.ReadFileCommand;
+import io.github.ctorressoftware.application.port.in.readfile.ReadFileResult;
+import io.github.ctorressoftware.application.port.in.readfile.ReadFileUseCase;
 import io.github.ctorressoftware.application.port.out.FlowFileReader;
 import io.github.ctorressoftware.domain.model.Flow;
 

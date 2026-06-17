@@ -1,4 +1,4 @@
-package io.github.ctorressoftware.application.port.in.servicecalling;
+package io.github.ctorressoftware.application.port.in.callservice;
 
 import io.github.ctorressoftware.domain.model.CallResult;
 

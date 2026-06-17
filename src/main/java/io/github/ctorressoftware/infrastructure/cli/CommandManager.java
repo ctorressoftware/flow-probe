@@ -2,9 +2,9 @@ package io.github.ctorressoftware.infrastructure.cli;
 
 import io.github.ctorressoftware.AppConfig;
 import io.github.ctorressoftware.ExecutionPipeline;
-import io.github.ctorressoftware.application.port.in.filereading.ReadFileCommand;
-import io.github.ctorressoftware.application.port.in.filereading.ReadFileResult;
-import io.github.ctorressoftware.application.port.in.filereading.ReadFileUseCase;
+import io.github.ctorressoftware.application.port.in.readfile.ReadFileCommand;
+import io.github.ctorressoftware.application.port.in.readfile.ReadFileResult;
+import io.github.ctorressoftware.application.port.in.readfile.ReadFileUseCase;
 import io.github.ctorressoftware.domain.model.FilePath;
 import io.github.ctorressoftware.domain.model.Flow;
 import io.github.ctorressoftware.domain.model.FlowStep;

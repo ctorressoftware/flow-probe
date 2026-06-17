@@ -1,9 +1,9 @@
 package io.github.ctorressoftware;
 
-import io.github.ctorressoftware.application.port.in.filereading.ReadFileUseCase;
+import io.github.ctorressoftware.application.port.in.readfile.ReadFileUseCase;
 import io.github.ctorressoftware.application.port.out.FlowFileReader;
 import io.github.ctorressoftware.application.usecase.ReadFileHandler;
-import io.github.ctorressoftware.infrastructure.filereading.YAMLReader;
+import io.github.ctorressoftware.infrastructure.readfile.YAMLReader;
 
 public final class AppConfig {
     private final FlowFileReader flowFileReader = new YAMLReader();

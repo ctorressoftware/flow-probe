@@ -1,4 +1,4 @@
-package io.github.ctorressoftware.infrastructure.servicecalling;
+package io.github.ctorressoftware.infrastructure.callservice;
 
 import io.github.ctorressoftware.application.port.out.ServiceCaller;
 import io.github.ctorressoftware.domain.constant.HttpMethod;

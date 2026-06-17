@@ -1,4 +1,4 @@
-package io.github.ctorressoftware.application.port.in.servicecalling;
+package io.github.ctorressoftware.application.port.in.callservice;
 
 public interface CallServiceUseCase {
     CallServiceResult call(CallServiceCommand command);

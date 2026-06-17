@@ -1,8 +1,8 @@
 package io.github.ctorressoftware.application.usecase;
 
-import io.github.ctorressoftware.application.port.in.servicecalling.CallServiceCommand;
-import io.github.ctorressoftware.application.port.in.servicecalling.CallServiceResult;
-import io.github.ctorressoftware.application.port.in.servicecalling.CallServiceUseCase;
+import io.github.ctorressoftware.application.port.in.callservice.CallServiceCommand;
+import io.github.ctorressoftware.application.port.in.callservice.CallServiceResult;
+import io.github.ctorressoftware.application.port.in.callservice.CallServiceUseCase;
 import io.github.ctorressoftware.application.port.out.ServiceCaller;
 import io.github.ctorressoftware.domain.model.CallResult;
 
