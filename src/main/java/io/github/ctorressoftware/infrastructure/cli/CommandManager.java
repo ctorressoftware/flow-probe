@@ -2,9 +2,13 @@ package io.github.ctorressoftware.infrastructure.cli;
 
 import io.github.ctorressoftware.AppConfig;
 import io.github.ctorressoftware.ExecutionPipeline;
+import io.github.ctorressoftware.application.port.in.flowexecution.ExecuteFlowCommand;
+import io.github.ctorressoftware.application.port.in.flowexecution.ExecuteFlowResult;
+import io.github.ctorressoftware.application.port.in.flowexecution.ExecuteFlowUseCase;
 import io.github.ctorressoftware.application.port.in.readfile.ReadFileCommand;
 import io.github.ctorressoftware.application.port.in.readfile.ReadFileResult;
 import io.github.ctorressoftware.application.port.in.readfile.ReadFileUseCase;
+import io.github.ctorressoftware.domain.model.ExecutionResume;
 import io.github.ctorressoftware.domain.model.FilePath;
 import io.github.ctorressoftware.domain.model.Flow;
 import io.github.ctorressoftware.domain.model.FlowStep;
@@ -23,20 +27,26 @@ public class CommandManager implements Runnable {
     )
     String filePath;
 
-    private final ReadFileUseCase readFileHandler;
+    private final ReadFileUseCase readFileUseCase;
+    private final ExecuteFlowUseCase executeFlowUseCase;
 
     public CommandManager(AppConfig config) {
-        this.readFileHandler = config.readFileUseCase();
+        this.readFileUseCase = config.readFileUseCase();
+        this.executeFlowUseCase = config.executeFlowUseCase();
     }
 
     @Override
     public void run() {
-        ReadFileResult readFileResult = readFileHandler.read(new ReadFileCommand(new FilePath(filePath)));
+        ReadFileResult readFileResult = readFileUseCase.read(new ReadFileCommand(new FilePath(filePath)));
         Flow flow = readFileResult.flow();
-        List<FlowStep> flowSteps = flow.getSteps();
+        ExecuteFlowResult executeFlowResult = executeFlowUseCase.execute(new ExecuteFlowCommand(flow));
 
-        String flowName = flow.getName();
-        var executionPipeline = new ExecutionPipeline();
-        executionPipeline.execute(flowName, flowSteps);
+        ExecutionResume resume = executeFlowResult.resume();
+        printFlowResume(resume);
+    }
+
+    private void printFlowResume(ExecutionResume resume) {
+        System.out.println("Flow: " + resume.getFlowName());
+        System.out.println("State: " + (resume.isSuccessfulExecution() ? "Successful" : "Failed"));
     }
 }
