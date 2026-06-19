@@ -43,5 +43,13 @@ public class CommandManager implements Runnable {
     private void printFlowResume(ExecutionResume resume) {
         System.out.println("Flow: " + resume.getFlowName());
         System.out.println("State: " + (resume.isSuccessfulExecution() ? "Successful" : "Failed"));
+        System.out.println("\nSteps:");
+
+        resume.getStepsResults().forEach(detail -> {
+            System.out.println("Step name -> " + detail.getStepName());
+            System.out.println("Was it successful? -> " + detail.isSuccessful());
+            System.out.println("Response (json) -> " + detail.getResponseString().substring(0, 100));
+            System.out.println("\n");
+        });
     }
 }
