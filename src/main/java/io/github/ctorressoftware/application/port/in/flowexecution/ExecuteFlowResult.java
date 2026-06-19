@@ -1,4 +1,6 @@
 package io.github.ctorressoftware.application.port.in.flowexecution;
 
-public record ExecuteFlowResult(boolean successful) {
+import io.github.ctorressoftware.domain.model.ExecutionResume;
+
+public record ExecuteFlowResult(ExecutionResume resume) {
 }
