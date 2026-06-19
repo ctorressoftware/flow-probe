@@ -1,4 +1,4 @@
-name: "flow-poke-api-get-pikachu"
+name: "poke-main-flow"
 
 steps:
   - name: "get-all-pokemon"
