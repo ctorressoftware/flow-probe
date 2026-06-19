@@ -4,9 +4,12 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import io.github.ctorressoftware.application.port.out.ServiceCaller;
+import io.github.ctorressoftware.domain.exception.NoDefinedFlowException;
 import io.github.ctorressoftware.domain.exception.NoDefinedStepsException;
 import io.github.ctorressoftware.domain.model.*;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Objects;
 
 public class FlowExecutor {
@@ -21,40 +24,38 @@ public class FlowExecutor {
     public ExecutionResume execute(Flow flow) {
 
         if (flow == null)
-            throw new RuntimeException("No flow to execute in the file"); // Define a custom exception
+            throw new NoDefinedFlowException();
 
         if (flow.getSteps() == null || flow.getSteps().isEmpty())
             throw new NoDefinedStepsException();
 
-        ExecutionResume executionResume = ExecutionResume.create(flow.getName());
+        List<ExecutionResumeDetail> resumeDetails = new ArrayList<>();
 
         flow.getSteps().forEach(step -> {
-
-            ExecutionResumeDetail stepDetails = ExecutionResumeDetail.create(step.getStepName());
-            ServiceCall request = step.getServiceCall();
+            ExecutionResumeDetail resumeDetail = new ExecutionResumeDetail();
+            resumeDetail.setStepName(step.getStepName());
+            ServiceCall call = step.getServiceCall();
 
             if (step.getExpect() != null) {
-                request = resolvePlaceholders(request);
+                call = resolvePlaceholders(call);
             }
 
-            var response = serviceCaller.call(new ServiceCall(
-                    request.url(),
-                    request.method(),
-                    request.headers(),
-                    request.body()
-            ));
+            CallResult response = serviceCaller
+                    .call(new ServiceCall(call.url(), call.method(), call.headers(), call.body()));
 
             if (response == null || response.status() != 200) {
-                stepDetails.setSuccessful(false);
-                stepDetails.setResponseString(null);
+                resumeDetail.setSuccessful(false);
+                resumeDetail.setResponseString(null);
             }
 
             String jsonResponse = Objects.requireNonNull(response).responseBody();
+            resumeDetail.setResponseString(jsonResponse);
+            resumeDetail.setSuccessful(true);
+
+            resumeDetails.add(resumeDetail);
 
             if (step.getExport() != null) {
-
                 ObjectMapper mapper = new ObjectMapper();
-
                 try {
                     JsonNode root = mapper.readTree(jsonResponse);
                     step.getExport().forEach((key, keyValue) -> {
@@ -63,17 +64,14 @@ public class FlowExecutor {
                         context.putVariable(key, value);
                     });
 
-                    stepDetails.setSuccessful(true);
-                    stepDetails.setResponseString(jsonResponse);
-                    executionResume.getStepsResults().add(stepDetails);
-
                 } catch (JsonProcessingException e) {
                     throw new RuntimeException(e);
                 }
             }
         });
 
-        return executionResume;
+        boolean successfulExecution = resumeDetails.stream().allMatch(ExecutionResumeDetail::isSuccessful);
+        return new ExecutionResume(flow.getName(), successfulExecution, resumeDetails);
     }
 
     private ServiceCall resolvePlaceholders(ServiceCall request) {
