@@ -1,7 +1,6 @@
 package io.github.ctorressoftware.infrastructure.cli;
 
 import io.github.ctorressoftware.AppConfig;
-import io.github.ctorressoftware.ExecutionPipeline;
 import io.github.ctorressoftware.application.port.in.flowexecution.ExecuteFlowCommand;
 import io.github.ctorressoftware.application.port.in.flowexecution.ExecuteFlowResult;
 import io.github.ctorressoftware.application.port.in.flowexecution.ExecuteFlowUseCase;
@@ -11,10 +10,7 @@ import io.github.ctorressoftware.application.port.in.readfile.ReadFileUseCase;
 import io.github.ctorressoftware.domain.model.ExecutionResume;
 import io.github.ctorressoftware.domain.model.FilePath;
 import io.github.ctorressoftware.domain.model.Flow;
-import io.github.ctorressoftware.domain.model.FlowStep;
 import picocli.CommandLine;
-
-import java.util.List;
 
 @CommandLine.Command(name = "FlowProbe", version = "FlowProbe 1.0", mixinStandardHelpOptions = true)
 public class CommandManager implements Runnable {
@@ -40,7 +36,6 @@ public class CommandManager implements Runnable {
         ReadFileResult readFileResult = readFileUseCase.read(new ReadFileCommand(new FilePath(filePath)));
         Flow flow = readFileResult.flow();
         ExecuteFlowResult executeFlowResult = executeFlowUseCase.execute(new ExecuteFlowCommand(flow));
-
         ExecutionResume resume = executeFlowResult.resume();
         printFlowResume(resume);
     }
