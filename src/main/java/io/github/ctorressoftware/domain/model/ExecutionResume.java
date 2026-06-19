@@ -1,6 +1,5 @@
 package io.github.ctorressoftware.domain.model;
 
-import java.util.ArrayList;
 import java.util.List;
 
 public class ExecutionResume {
@@ -8,7 +7,7 @@ public class ExecutionResume {
     private boolean successfulExecution;
     private List<ExecutionResumeDetail> stepsResults;
 
-    private ExecutionResume(
+    public ExecutionResume(
             String flowName,
             boolean successfulExecution,
             List<ExecutionResumeDetail> stepsResults
@@ -16,10 +15,6 @@ public class ExecutionResume {
         this.flowName = flowName;
         this.successfulExecution = successfulExecution;
         this.stepsResults = stepsResults;
-    }
-
-    public static ExecutionResume create(String flowName) {
-        return new ExecutionResume(flowName, false, new ArrayList<>());
     }
 
     public String getFlowName() {

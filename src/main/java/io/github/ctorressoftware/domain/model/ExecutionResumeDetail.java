@@ -1,23 +1,11 @@
 package io.github.ctorressoftware.domain.model;
 
 public class ExecutionResumeDetail {
-
     private String stepName;
     private boolean isSuccessful;
     private String responseString;
 
-    public ExecutionResumeDetail(
-            String stepName,
-            boolean isSuccessful,
-            String responseString) {
-        this.stepName = stepName;
-        this.isSuccessful = isSuccessful;
-        this.responseString = responseString;
-    }
-
-    public static ExecutionResumeDetail create(String stepName) {
-        return new ExecutionResumeDetail(stepName, false, null);
-    }
+    public ExecutionResumeDetail() {}
 
     public String getStepName() {
         return stepName;
