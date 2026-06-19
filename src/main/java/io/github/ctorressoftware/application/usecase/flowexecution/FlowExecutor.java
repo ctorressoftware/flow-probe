@@ -7,12 +7,8 @@ import io.github.ctorressoftware.application.port.out.ServiceCaller;
 import io.github.ctorressoftware.domain.exception.NoDefinedStepsException;
 import io.github.ctorressoftware.domain.model.*;
 
-import java.util.List;
 import java.util.Objects;
 
-/* TODO: migrate ExecutionPipeline logic to this file
- * Set ExecutionPipeline as an process orchestrator and delegate other logics to helper files
- */
 public class FlowExecutor {
     private final Context context;
     private final ServiceCaller serviceCaller;
@@ -82,12 +78,11 @@ public class FlowExecutor {
 
     private ServiceCall resolvePlaceholders(ServiceCall request) {
 
-        // TODO: adapt ServiceCall context methods
         return new ServiceCall(
-                context.resolvePlaceholders(request.url()),
+                PlaceholderResolver.resolve(context.variables(), request.url()),
                 request.method(),
                 request.headers(),
-                context.resolvePlaceholders(request.body().toString())
+                PlaceholderResolver.resolve(context.variables(), request.body().toString())
         );
     }
 }
