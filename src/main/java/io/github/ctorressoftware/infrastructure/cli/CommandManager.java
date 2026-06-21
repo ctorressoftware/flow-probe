@@ -48,7 +48,7 @@ public class CommandManager implements Runnable {
         resume.getStepsResults().forEach(detail -> {
             System.out.println("Step name -> " + detail.getStepName());
             System.out.println("Was it successful? -> " + detail.isSuccessful());
-            System.out.println("Response (json) -> " + detail.getResponseString().substring(0, 100));
+            System.out.println("Response -> " + detail.getResponseString().substring(0, 100));
             System.out.println("\n");
         });
     }
