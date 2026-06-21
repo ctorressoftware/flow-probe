@@ -12,6 +12,8 @@ import io.github.ctorressoftware.domain.model.FilePath;
 import io.github.ctorressoftware.domain.model.Flow;
 import picocli.CommandLine;
 
+import java.util.concurrent.atomic.AtomicInteger;
+
 @CommandLine.Command(name = "FlowProbe", version = "FlowProbe 1.0", mixinStandardHelpOptions = true)
 public class CommandManager implements Runnable {
 
@@ -21,7 +23,7 @@ public class CommandManager implements Runnable {
             paramLabel = "FILE",
             description = "file url"
     )
-    String filePath;
+    private String filePath;
 
     private final ReadFileUseCase readFileUseCase;
     private final ExecuteFlowUseCase executeFlowUseCase;
@@ -43,13 +45,14 @@ public class CommandManager implements Runnable {
     private void printFlowResume(ExecutionResume resume) {
         System.out.println("Flow: " + resume.getFlowName());
         System.out.println("State: " + (resume.isSuccessfulExecution() ? "Successful" : "Failed"));
-        System.out.println("\nSteps:");
+        System.out.println("\nSteps:\n");
 
+        AtomicInteger index = new AtomicInteger(0);
         resume.getStepsResults().forEach(detail -> {
-            System.out.println("Step name -> " + detail.getStepName());
+            System.out.println(index.incrementAndGet() + ") Step name -> " + detail.getStepName());
             System.out.println("Was it successful? -> " + detail.isSuccessful());
             System.out.println("Response -> " + detail.getResponseString().substring(0, 100));
-            System.out.println("\n");
+            System.out.print("\n");
         });
     }
 }
