@@ -1,13 +1,21 @@
 package io.github.ctorressoftware;
 
-import io.github.ctorressoftware.infrastructure.cli.CommandManager;
+import io.github.ctorressoftware.infrastructure.cli.FlowProbeCommand;
+import io.github.ctorressoftware.infrastructure.cli.RunCommand;
 import picocli.CommandLine;
 
 public class Main {
     public static void main(String[] args) {
-        final AppConfig config = new AppConfig();
-        final CommandManager commandManager = new CommandManager(config);
-        int exitCode = new CommandLine(commandManager).execute(args);
+        AppConfig config = new AppConfig();
+        FlowProbeCommand rootCommand = new FlowProbeCommand();
+        CommandLine commandLine = new CommandLine(rootCommand);
+
+        commandLine.addSubcommand("run", new RunCommand(
+                config.readFileUseCase(),
+                config.executeFlowUseCase()
+        ));
+
+        int exitCode = commandLine.execute(args);
         System.exit(exitCode);
     }
 }
