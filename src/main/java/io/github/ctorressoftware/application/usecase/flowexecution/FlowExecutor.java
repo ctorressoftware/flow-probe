@@ -36,9 +36,7 @@ public class FlowExecutor {
             resumeDetail.setStepName(step.getStepName());
             ServiceCall call = step.getServiceCall();
 
-            if (step.getExpect() != null) {
-                call = resolvePlaceholders(call);
-            }
+            call = step.getExpect() == null ? call : resolvePlaceholders(call);
 
             CallResult response = serviceCaller
                     .call(new ServiceCall(call.url(), call.method(), call.headers(), call.body()));
