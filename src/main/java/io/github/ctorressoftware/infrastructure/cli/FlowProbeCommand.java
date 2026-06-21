@@ -14,16 +14,30 @@ import picocli.CommandLine;
 
 import java.util.concurrent.atomic.AtomicInteger;
 
-@CommandLine.Command(name = "FlowProbe", version = "FlowProbe 1.0", mixinStandardHelpOptions = true)
-public class CommandManager implements Runnable {
+@CommandLine.Command(
+        name = "flowprobe",
+        mixinStandardHelpOptions = true,
+        description = "CLI tool to execute and verify HTTP flows",
+        version = "flowprobe 0.1.0"
+)
+public class FlowProbeCommand implements Runnable {
 
     @CommandLine.Option(
             names = {"-f", "-file"},
             required = true,
             paramLabel = "FILE",
-            description = "file url"
+            description = "Required YAML file path to read it"
     )
     private String filePath;
+
+    @CommandLine.Option(
+            names = {"-i", "--impediment", "--create-impediment"},
+            paramLabel = "IMPEDIMENT",
+            description = "Flag to know if create an impediment or not",
+            fallbackValue = "false",
+            interactive = true
+    )
+    private Boolean impedimentCreation;
 
     private final ReadFileUseCase readFileUseCase;
     private final ExecuteFlowUseCase executeFlowUseCase;
