@@ -14,7 +14,7 @@ steps:
     export:
       pokemonName: "results.0.name"
 
-  - name: "get-pikachu"
+  - name: "get-pokemon"
     request:
       url: "https://pokeapi.co/api/v2/pokemon/${pokemonName}"
       method: "GET"
@@ -26,5 +26,16 @@ steps:
 
     expect:
       name: ${pokemonName}
+
+    export: null
+
+  - name: "get-pikachu"
+    request:
+      url: "https://pokeapi.co/api/v2/pokemon/pikachu"
+      method: "GET"
+      headers:
+        accept: "application/json"
+
+    expect: null
 
     export: null
