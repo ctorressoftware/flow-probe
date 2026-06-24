@@ -1,6 +1,9 @@
 package io.github.ctorressoftware.infrastructure.ticket.azuredevops;
 
-public class AzureDevOpsWorkItemTicketCreator {
+import io.github.ctorressoftware.application.port.out.ImpedimentTicketCreator;
+import io.github.ctorressoftware.domain.model.ImpedimentTicket;
+
+public class AzureDevOpsWorkItemTicketCreator implements ImpedimentTicketCreator {
 
     private final AzureDevOpsWorkItemClient azureDevOpsWorkItemClient;
 
@@ -8,5 +11,10 @@ public class AzureDevOpsWorkItemTicketCreator {
         this.azureDevOpsWorkItemClient = azureDevOpsWorkItemClient;
     }
 
-    public void create() {}
+    public void create(ImpedimentTicket ticket) {
+
+        var request = AzureDevOpsCreateWorkItemRequest.from(ticket);
+
+        azureDevOpsWorkItemClient.createWorkItem(request);
+    };
 }
