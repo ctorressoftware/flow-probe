@@ -12,7 +12,8 @@ public class Main {
 
         commandLine.addSubcommand("run", new RunCommand(
                 config.readFileUseCase(),
-                config.executeFlowUseCase()
+                config.executeFlowUseCase(),
+                config.createImpedimentTicketUseCase()
         ));
 
         int exitCode = commandLine.execute(args);
