@@ -42,6 +42,8 @@ public class AzureDevOpsWorkItemClient {
             HttpRequest httpRequest = HttpRequest
                 .newBuilder(uri)
                 .POST(BodyPublishers.ofString(jsonBody))
+                .header("Content-Type", "application/json-patch+json")
+                .header("Authorization", "Basic " + base64Credentials)
                 .build();
             
             HttpResponse<String> response = client
