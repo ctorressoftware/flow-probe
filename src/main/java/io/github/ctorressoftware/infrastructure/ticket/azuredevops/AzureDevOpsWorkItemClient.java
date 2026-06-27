@@ -7,6 +7,8 @@ import java.net.http.HttpRequest;
 import java.net.http.HttpRequest.BodyPublishers;
 import java.net.http.HttpResponse;
 import java.net.http.HttpResponse.BodyHandlers;
+import java.nio.charset.StandardCharsets;
+import java.util.Base64;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -25,13 +27,17 @@ public class AzureDevOpsWorkItemClient {
         ObjectMapper mapper = new ObjectMapper();
 
         String endpoint = AzureSettings.AZURE_ORGANIZATION + "/" + AzureSettings.AZURE_PROJECT 
-            + "/_apis/wit/workitems/impediment?api-version=7.2-preview.3";
+            + "/_apis/wit/workitems/$Issue?api-version=7.2-preview.3";
 
         try {
         
             URI uri = URI.create(AzureSettings.BASE_URL + "/" + endpoint);
-            
-            String jsonBody = mapper.writeValueAsString(request);
+
+            String jsonBody = mapper.writeValueAsString(request.operations());
+
+            String base64Credentials = Base64
+                .getEncoder()
+                .encodeToString((":" + AzureSettings.AZURE_PAT).getBytes(StandardCharsets.UTF_8));
             
             HttpRequest httpRequest = HttpRequest
                 .newBuilder(uri)
@@ -42,7 +48,8 @@ public class AzureDevOpsWorkItemClient {
                 .send(httpRequest, BodyHandlers.ofString());
 
                 if (response.statusCode() != 200) {
-                    throw new RuntimeException("error");
+                    System.out.println();
+                    throw new RuntimeException(response.body());
                 }
 
                 return response.body();
