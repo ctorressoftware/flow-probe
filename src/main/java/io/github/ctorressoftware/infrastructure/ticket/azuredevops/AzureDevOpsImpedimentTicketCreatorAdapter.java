@@ -5,14 +5,14 @@ import io.github.ctorressoftware.domain.model.ImpedimentTicket;
 
 public class AzureDevOpsImpedimentTicketCreatorAdapter implements ImpedimentTicketCreator {
 
-    private AzureDevOpsWorkItemTicketCreator azureDevOpsTicketCreator;
+    private AzureDevOpsWorkItemTicketCreator azureDevOpsWorkItemTicketCreator;
 
-    public AzureDevOpsImpedimentTicketCreatorAdapter(AzureDevOpsWorkItemTicketCreator azureDevOpsTicketCreator) {
-        this.azureDevOpsTicketCreator = azureDevOpsTicketCreator;
+    public AzureDevOpsImpedimentTicketCreatorAdapter(AzureDevOpsWorkItemTicketCreator azureDevOpsWorkItemTicketCreator) {
+        this.azureDevOpsWorkItemTicketCreator = azureDevOpsWorkItemTicketCreator;
     }
 
     @Override
     public void create(ImpedimentTicket ticket) {
-        azureDevOpsTicketCreator.create(ticket);
+        azureDevOpsWorkItemTicketCreator.create(ticket);
     }
 }
