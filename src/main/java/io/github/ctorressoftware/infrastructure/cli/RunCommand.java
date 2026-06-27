@@ -1,5 +1,7 @@
 package io.github.ctorressoftware.infrastructure.cli;
 
+import io.github.ctorressoftware.application.port.in.createticket.CreateImpedimentTicketCommand;
+import io.github.ctorressoftware.application.port.in.createticket.CreateImpedimentTicketUseCase;
 import io.github.ctorressoftware.application.port.in.flowexecution.ExecuteFlowCommand;
 import io.github.ctorressoftware.application.port.in.flowexecution.ExecuteFlowResult;
 import io.github.ctorressoftware.application.port.in.flowexecution.ExecuteFlowUseCase;
@@ -9,6 +11,7 @@ import io.github.ctorressoftware.application.port.in.readfile.ReadFileUseCase;
 import io.github.ctorressoftware.domain.model.ExecutionResume;
 import io.github.ctorressoftware.domain.model.FilePath;
 import io.github.ctorressoftware.domain.model.Flow;
+import io.github.ctorressoftware.domain.model.ImpedimentTicket;
 import picocli.CommandLine;
 
 import java.util.concurrent.Callable;
@@ -26,6 +29,7 @@ public class RunCommand implements Callable<Integer> {
 
     @CommandLine.Option(
             names = {"-i", "--impediment", "--create-impediment"},
+            required = false,
             paramLabel = "IMPEDIMENT",
             description = "Flag to know if create an impediment or not",
             fallbackValue = "false",
@@ -35,10 +39,16 @@ public class RunCommand implements Callable<Integer> {
 
     private final ReadFileUseCase readFileUseCase;
     private final ExecuteFlowUseCase executeFlowUseCase;
+    private final CreateImpedimentTicketUseCase createImpedimentTicketUseCase;
 
-    public RunCommand(ReadFileUseCase readFileUseCase, ExecuteFlowUseCase executeFlowUseCase) {
+    public RunCommand(
+        ReadFileUseCase readFileUseCase, 
+        ExecuteFlowUseCase executeFlowUseCase,
+        CreateImpedimentTicketUseCase createImpedimentTicketUseCase
+    ) {
         this.readFileUseCase = readFileUseCase;
         this.executeFlowUseCase = executeFlowUseCase;
+        this.createImpedimentTicketUseCase = createImpedimentTicketUseCase;
     }
 
     @Override
@@ -48,6 +58,12 @@ public class RunCommand implements Callable<Integer> {
         ExecuteFlowResult executeFlowResult = executeFlowUseCase.execute(new ExecuteFlowCommand(flow));
         ExecutionResume resume = executeFlowResult.resume();
         printFlowResume(resume);
+
+        if (resume.isSuccessfulExecution()) {
+            ImpedimentTicket ticket = createTicketFromResume(resume);
+            createImpedimentTicketUseCase.createTicket(new CreateImpedimentTicketCommand(ticket));
+        }
+
         return 0;
     }
 
@@ -63,5 +79,13 @@ public class RunCommand implements Callable<Integer> {
             System.out.println("Response -> " + detail.getResponseString().substring(0, 100));
             System.out.print("\n");
         });
+    }
+
+    private ImpedimentTicket createTicketFromResume(ExecutionResume resume) {
+
+        String title = "Error en los servicios | " + resume.getFlowName();
+        String description = resume.getStepsResults().toString();
+
+        return new ImpedimentTicket(title, description);
     }
 }
