@@ -11,6 +11,7 @@ public class Main {
         CommandLine commandLine = new CommandLine(rootCommand);
 
         commandLine.addSubcommand("run", new RunCommand(
+                config.scanner(),
                 config.readFileUseCase(),
                 config.executeFlowUseCase(),
                 config.createImpedimentTicketUseCase()
