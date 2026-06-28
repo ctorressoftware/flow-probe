@@ -76,7 +76,7 @@ public class RunCommand implements Callable<Integer> {
             CreateImpedimentTicketResult ticketCreationResult = createImpedimentTicketUseCase
                     .createTicket(new CreateImpedimentTicketCommand(ticket));
             ImpedimentTicket impedimentTicket = ticketCreationResult.created();
-            System.out.println("Impediment ticket created: #" + impedimentTicket.getId());
+            System.out.println("Impediment ticket created. ID = " + impedimentTicket.getId());
         }
 
         return 0;
