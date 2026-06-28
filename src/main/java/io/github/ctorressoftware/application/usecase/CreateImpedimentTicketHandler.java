@@ -4,6 +4,7 @@ import io.github.ctorressoftware.application.port.in.createticket.CreateImpedime
 import io.github.ctorressoftware.application.port.in.createticket.CreateImpedimentTicketResult;
 import io.github.ctorressoftware.application.port.in.createticket.CreateImpedimentTicketUseCase;
 import io.github.ctorressoftware.application.port.out.ImpedimentTicketCreator;
+import io.github.ctorressoftware.domain.model.ImpedimentTicket;
 
 public class CreateImpedimentTicketHandler implements CreateImpedimentTicketUseCase {
 
@@ -15,9 +16,8 @@ public class CreateImpedimentTicketHandler implements CreateImpedimentTicketUseC
 
     @Override
     public CreateImpedimentTicketResult createTicket(CreateImpedimentTicketCommand command) {
-
-        impedimentTicketCreator.create(command.impedimentTicket());
-
-        return null;
+        ImpedimentTicket created = impedimentTicketCreator
+                .create(command.impedimentTicket());
+        return new CreateImpedimentTicketResult(created);
     }
 }
