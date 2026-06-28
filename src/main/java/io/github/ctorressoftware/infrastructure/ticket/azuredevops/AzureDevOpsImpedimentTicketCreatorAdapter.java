@@ -12,7 +12,12 @@ public class AzureDevOpsImpedimentTicketCreatorAdapter implements ImpedimentTick
     }
 
     @Override
-    public void create(ImpedimentTicket ticket) {
-        azureDevOpsWorkItemTicketCreator.create(ticket);
+    public ImpedimentTicket create(ImpedimentTicket ticket) {
+        var response = azureDevOpsWorkItemTicketCreator.create(ticket);
+        return ImpedimentTicket.restore(
+                (long) response.id(),
+                response.fields().title(),
+                response.fields().description()
+        );
     }
 }
