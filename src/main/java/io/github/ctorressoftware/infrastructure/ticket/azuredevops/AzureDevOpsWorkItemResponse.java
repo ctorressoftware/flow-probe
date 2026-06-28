@@ -10,7 +10,7 @@ public record AzureDevOpsWorkItemResponse(
         int rev,
         Fields fields,
         Map<String, String> multilineFieldsFormat,
-        Links links,
+        @JsonProperty("_links") Links links,
         String url
 ) {
 
