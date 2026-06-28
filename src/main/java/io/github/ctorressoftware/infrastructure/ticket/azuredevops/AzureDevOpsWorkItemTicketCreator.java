@@ -10,10 +10,8 @@ public class AzureDevOpsWorkItemTicketCreator {
         this.azureDevOpsWorkItemClient = azureDevOpsWorkItemClient;
     }
 
-    public void create(ImpedimentTicket ticket) {
-
+    public AzureDevOpsWorkItemResponse create(ImpedimentTicket ticket) {
         var request = AzureDevOpsCreateWorkItemRequest.from(ticket);
-
-        azureDevOpsWorkItemClient.createWorkItem(request);
-    };
+        return azureDevOpsWorkItemClient.createWorkItem(request);
+    }
 }
