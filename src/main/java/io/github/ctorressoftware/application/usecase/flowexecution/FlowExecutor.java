@@ -41,14 +41,9 @@ public class FlowExecutor {
             CallResult response = serviceCaller
                     .call(new ServiceCall(call.url(), call.method(), call.headers(), call.body()));
 
-            if (response == null || response.status() != 200) {
-                resumeDetail.setSuccessful(false);
-                resumeDetail.setResponseString(null);
-            }
-
-            String jsonResponse = Objects.requireNonNull(response).responseBody();
+            String jsonResponse = Objects.isNull(response) ? null : response.responseBody();
             resumeDetail.setResponseString(jsonResponse);
-            resumeDetail.setSuccessful(true);
+            resumeDetail.setSuccessful(response != null && response.status() == 200);
 
             resumeDetails.add(resumeDetail);
 
