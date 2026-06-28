@@ -12,6 +12,7 @@ import java.util.Base64;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.SerializationFeature;
 
 // TODO: This is a temporary logic to test Azure DevOps API. Refactor this later.
 public class AzureDevOpsWorkItemClient {
@@ -22,44 +23,46 @@ public class AzureDevOpsWorkItemClient {
         this.client = HttpClient.newHttpClient();
     }
 
-    public String createWorkItem(AzureDevOpsCreateWorkItemRequest request) {
+    public AzureDevOpsWorkItemResponse createWorkItem(AzureDevOpsCreateWorkItemRequest request) {
 
-        ObjectMapper mapper = new ObjectMapper();
+        ObjectMapper mapper = new ObjectMapper()
+                .disable(SerializationFeature.WRITE_DATES_AS_TIMESTAMPS);
 
-        String endpoint = AzureSettings.AZURE_ORGANIZATION + "/" + AzureSettings.AZURE_PROJECT 
-            + "/_apis/wit/workitems/$Issue?api-version=7.2-preview.3";
+        String endpoint = AzureSettings.AZURE_ORGANIZATION + "/" + AzureSettings.AZURE_PROJECT
+                + "/_apis/wit/workitems/$Issue?api-version=7.2-preview.3";
 
         try {
-        
+
             URI uri = URI.create(AzureSettings.BASE_URL + "/" + endpoint);
 
             String jsonBody = mapper.writeValueAsString(request.operations());
 
             String base64Credentials = Base64
-                .getEncoder()
-                .encodeToString((":" + AzureSettings.AZURE_PAT).getBytes(StandardCharsets.UTF_8));
-            
+                    .getEncoder()
+                    .encodeToString((":" + AzureSettings.AZURE_PAT).getBytes(StandardCharsets.UTF_8));
+
             HttpRequest httpRequest = HttpRequest
-                .newBuilder(uri)
-                .POST(BodyPublishers.ofString(jsonBody))
-                .header("Content-Type", "application/json-patch+json")
-                .header("Authorization", "Basic " + base64Credentials)
-                .build();
-            
+                    .newBuilder(uri)
+                    .POST(BodyPublishers.ofString(jsonBody))
+                    .header("Content-Type", "application/json-patch+json")
+                    .header("Authorization", "Basic " + base64Credentials)
+                    .build();
+
             HttpResponse<String> response = client
-                .send(httpRequest, BodyHandlers.ofString());
+                    .send(httpRequest, BodyHandlers.ofString());
 
-                if (response.statusCode() != 200) {
-                    System.out.println();
-                    throw new RuntimeException(response.body());
-                }
+            if (response.statusCode() < 200 || response.statusCode() >= 300) {
+                throw new RuntimeException(
+                        "Error when trying to create an impediment ticket in Azure. " +
+                                "Status: " + response.statusCode() + ". Body: " + response.body()
+                );
+            }
 
-                return response.body();
+            return mapper.readValue(response.body(), AzureDevOpsWorkItemResponse.class);
 
-        } catch(JsonProcessingException e) {
-            throw new RuntimeException("error");
         } catch (IOException | InterruptedException e) {
-            throw new RuntimeException("error");
+            Thread.currentThread().interrupt();
+            throw new RuntimeException("Error calling Azure DevOps API", e);
         }
     }
 }
