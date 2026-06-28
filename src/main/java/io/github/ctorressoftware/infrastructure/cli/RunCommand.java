@@ -1,6 +1,7 @@
 package io.github.ctorressoftware.infrastructure.cli;
 
 import io.github.ctorressoftware.application.port.in.createticket.CreateImpedimentTicketCommand;
+import io.github.ctorressoftware.application.port.in.createticket.CreateImpedimentTicketResult;
 import io.github.ctorressoftware.application.port.in.createticket.CreateImpedimentTicketUseCase;
 import io.github.ctorressoftware.application.port.in.flowexecution.ExecuteFlowCommand;
 import io.github.ctorressoftware.application.port.in.flowexecution.ExecuteFlowResult;
@@ -14,10 +15,14 @@ import io.github.ctorressoftware.domain.model.Flow;
 import io.github.ctorressoftware.domain.model.ImpedimentTicket;
 import picocli.CommandLine;
 
+import java.util.Objects;
+import java.util.Scanner;
 import java.util.concurrent.Callable;
 import java.util.concurrent.atomic.AtomicInteger;
 
 public class RunCommand implements Callable<Integer> {
+
+    private final Scanner scanner;
 
     @CommandLine.Option(
             names = {"-f", "--file"},
@@ -42,10 +47,12 @@ public class RunCommand implements Callable<Integer> {
     private final CreateImpedimentTicketUseCase createImpedimentTicketUseCase;
 
     public RunCommand(
-        ReadFileUseCase readFileUseCase, 
-        ExecuteFlowUseCase executeFlowUseCase,
-        CreateImpedimentTicketUseCase createImpedimentTicketUseCase
+            Scanner scanner,
+            ReadFileUseCase readFileUseCase,
+            ExecuteFlowUseCase executeFlowUseCase,
+            CreateImpedimentTicketUseCase createImpedimentTicketUseCase
     ) {
+        this.scanner = scanner;
         this.readFileUseCase = readFileUseCase;
         this.executeFlowUseCase = executeFlowUseCase;
         this.createImpedimentTicketUseCase = createImpedimentTicketUseCase;
@@ -57,11 +64,19 @@ public class RunCommand implements Callable<Integer> {
         Flow flow = readFileResult.flow();
         ExecuteFlowResult executeFlowResult = executeFlowUseCase.execute(new ExecuteFlowCommand(flow));
         ExecutionResume resume = executeFlowResult.resume();
-        printFlowResume(resume);
+        printFlowResume(resume); // TODO: adjust this to implement CurlGenerator for requests
 
-        if (resume.isSuccessfulExecution()) {
+        if (!resume.isSuccessfulExecution() && Objects.isNull(impedimentCreation)) {
+            System.out.print("Do you want to create an impediment? (Y/N): ");
+            impedimentCreation = scanner.next().equalsIgnoreCase("Y");
+        }
+
+        if (!resume.isSuccessfulExecution() && impedimentCreation) {
             ImpedimentTicket ticket = createTicketFromResume(resume);
-            createImpedimentTicketUseCase.createTicket(new CreateImpedimentTicketCommand(ticket));
+            CreateImpedimentTicketResult ticketCreationResult = createImpedimentTicketUseCase
+                    .createTicket(new CreateImpedimentTicketCommand(ticket));
+            ImpedimentTicket impedimentTicket = ticketCreationResult.created();
+            System.out.println("Impediment ticket created: #" + impedimentTicket.getId());
         }
 
         return 0;
@@ -76,7 +91,7 @@ public class RunCommand implements Callable<Integer> {
         resume.getStepsResults().forEach(detail -> {
             System.out.println(index.incrementAndGet() + ") Step name -> " + detail.getStepName());
             System.out.println("Was it successful? -> " + detail.isSuccessful());
-            System.out.println("Response -> " + detail.getResponseString().substring(0, 100));
+            System.out.println("Response -> " + detail.getResponseString());
             System.out.print("\n");
         });
     }
@@ -86,6 +101,6 @@ public class RunCommand implements Callable<Integer> {
         String title = "Error en los servicios | " + resume.getFlowName();
         String description = resume.getStepsResults().toString();
 
-        return new ImpedimentTicket(title, description);
+        return ImpedimentTicket.create(title, description);
     }
 }
