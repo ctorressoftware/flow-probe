@@ -10,9 +10,9 @@ import java.net.http.HttpResponse.BodyHandlers;
 import java.nio.charset.StandardCharsets;
 import java.util.Base64;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.SerializationFeature;
+import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 
 // TODO: This is a temporary logic to test Azure DevOps API. Refactor this later.
 public class AzureDevOpsWorkItemClient {
@@ -26,6 +26,7 @@ public class AzureDevOpsWorkItemClient {
     public AzureDevOpsWorkItemResponse createWorkItem(AzureDevOpsCreateWorkItemRequest request) {
 
         ObjectMapper mapper = new ObjectMapper()
+                .registerModule(new JavaTimeModule())
                 .disable(SerializationFeature.WRITE_DATES_AS_TIMESTAMPS);
 
         String endpoint = AzureSettings.AZURE_ORGANIZATION + "/" + AzureSettings.AZURE_PROJECT
