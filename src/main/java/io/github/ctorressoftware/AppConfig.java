@@ -17,7 +17,10 @@ import io.github.ctorressoftware.infrastructure.ticket.azuredevops.AzureDevOpsIm
 import io.github.ctorressoftware.infrastructure.ticket.azuredevops.AzureDevOpsWorkItemClient;
 import io.github.ctorressoftware.infrastructure.ticket.azuredevops.AzureDevOpsWorkItemTicketCreator;
 
+import java.util.Scanner;
+
 public final class AppConfig {
+    private final Scanner scanner = new Scanner(System.in);
     private final FlowFileReader flowFileReader = new YAMLReader();
     private final ReadFileUseCase readFileUseCase = new ReadFileHandler(flowFileReader);
     private final Context context = new Context();
@@ -28,6 +31,10 @@ public final class AppConfig {
     private final AzureDevOpsWorkItemTicketCreator azureDevOpsWorkItemTicketCreator = new AzureDevOpsWorkItemTicketCreator(azureDevOpsWorkItemClient);
     private final ImpedimentTicketCreator impedimentTicketCreator = new AzureDevOpsImpedimentTicketCreatorAdapter(azureDevOpsWorkItemTicketCreator);
     private final CreateImpedimentTicketUseCase createImpedimentTicketUseCase = new CreateImpedimentTicketHandler(impedimentTicketCreator);
+
+    public Scanner scanner() {
+        return scanner;
+    }
 
     public ReadFileUseCase readFileUseCase() {
         return readFileUseCase;
