@@ -1,0 +1,41 @@
+name: "pokeapi-failure-flow"
+
+steps:
+  - name: "get-all-pokemon"
+    request:
+      url: "https://pokeapi.co/api/v2/pokemon?offset=0&limit=1350"
+      method: "GET"
+      headers:
+        accept: "application/json"
+      body: null
+
+    expect: null
+
+    export:
+      pokemonName: "results.0.name"
+
+  - name: "get-pokemon"
+    request:
+      url: "https://pokeapi.co/api/v2/pokemon/${pokemonName}"
+      method: "GET"
+      headers:
+        accept: "application/json"
+      body:
+        test: 1
+        test2: 2
+
+    expect:
+      name: ${pokemonName}
+
+    export: null
+
+  - name: "get-pikachu"
+    request:
+      url: "https://pokeapi.co/api/v2/pokemon/failure"
+      method: "GET"
+      headers:
+        accept: "application/json"
+
+    expect: null
+
+    export: null

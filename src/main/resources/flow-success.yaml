@@ -1,4 +1,4 @@
-name: "poke-main-flow"
+name: "pokeapi-success-flow"
 
 steps:
   - name: "get-all-pokemon"
