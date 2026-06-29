@@ -5,6 +5,7 @@ import io.github.ctorressoftware.application.port.in.flowexecution.ExecuteFlowUs
 import io.github.ctorressoftware.application.port.in.readfile.ReadFileUseCase;
 import io.github.ctorressoftware.application.port.out.FlowFileReader;
 import io.github.ctorressoftware.application.port.out.ImpedimentTicketCreator;
+import io.github.ctorressoftware.application.port.out.RequestRenderer;
 import io.github.ctorressoftware.application.port.out.ServiceCaller;
 import io.github.ctorressoftware.application.usecase.CreateImpedimentTicketHandler;
 import io.github.ctorressoftware.application.usecase.ReadFileHandler;
@@ -13,6 +14,7 @@ import io.github.ctorressoftware.application.usecase.flowexecution.FlowExecutor;
 import io.github.ctorressoftware.domain.model.Context;
 import io.github.ctorressoftware.infrastructure.callservice.RestServiceCaller;
 import io.github.ctorressoftware.infrastructure.readfile.YAMLReader;
+import io.github.ctorressoftware.infrastructure.renderer.CurlRequestRenderer;
 import io.github.ctorressoftware.infrastructure.ticket.azuredevops.AzureDevOpsImpedimentTicketCreatorAdapter;
 import io.github.ctorressoftware.infrastructure.ticket.azuredevops.AzureDevOpsWorkItemClient;
 import io.github.ctorressoftware.infrastructure.ticket.azuredevops.AzureDevOpsWorkItemTicketCreator;
@@ -31,6 +33,7 @@ public final class AppConfig {
     private final AzureDevOpsWorkItemTicketCreator azureDevOpsWorkItemTicketCreator = new AzureDevOpsWorkItemTicketCreator(azureDevOpsWorkItemClient);
     private final ImpedimentTicketCreator impedimentTicketCreator = new AzureDevOpsImpedimentTicketCreatorAdapter(azureDevOpsWorkItemTicketCreator);
     private final CreateImpedimentTicketUseCase createImpedimentTicketUseCase = new CreateImpedimentTicketHandler(impedimentTicketCreator);
+    private final RequestRenderer requestRenderer = new CurlRequestRenderer();
 
     public Scanner scanner() {
         return scanner;
@@ -46,5 +49,9 @@ public final class AppConfig {
 
     public CreateImpedimentTicketUseCase createImpedimentTicketUseCase() {
         return createImpedimentTicketUseCase;
+    }
+
+    public RequestRenderer requestRenderer() {
+        return requestRenderer;
     }
 }
