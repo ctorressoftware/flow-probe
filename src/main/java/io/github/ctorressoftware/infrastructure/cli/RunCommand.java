@@ -9,6 +9,7 @@ import io.github.ctorressoftware.application.port.in.flowexecution.ExecuteFlowUs
 import io.github.ctorressoftware.application.port.in.readfile.ReadFileCommand;
 import io.github.ctorressoftware.application.port.in.readfile.ReadFileResult;
 import io.github.ctorressoftware.application.port.in.readfile.ReadFileUseCase;
+import io.github.ctorressoftware.application.port.out.RequestRenderer;
 import io.github.ctorressoftware.domain.model.*;
 import picocli.CommandLine;
 
@@ -20,6 +21,7 @@ import java.util.concurrent.atomic.AtomicInteger;
 public class RunCommand implements Callable<Integer> {
 
     private final Scanner scanner;
+    private final RequestRenderer requestRenderer;
 
     @CommandLine.Option(
             names = {"-f", "--file"},
@@ -53,11 +55,13 @@ public class RunCommand implements Callable<Integer> {
 
     public RunCommand(
             Scanner scanner,
+            RequestRenderer requestRenderer,
             ReadFileUseCase readFileUseCase,
             ExecuteFlowUseCase executeFlowUseCase,
             CreateImpedimentTicketUseCase createImpedimentTicketUseCase
     ) {
         this.scanner = scanner;
+        this.requestRenderer = requestRenderer;
         this.readFileUseCase = readFileUseCase;
         this.executeFlowUseCase = executeFlowUseCase;
         this.createImpedimentTicketUseCase = createImpedimentTicketUseCase;
@@ -69,7 +73,8 @@ public class RunCommand implements Callable<Integer> {
         Flow flow = readFileResult.flow();
         ExecuteFlowResult executeFlowResult = executeFlowUseCase.execute(new ExecuteFlowCommand(flow));
         ExecutionResume resume = executeFlowResult.resume();
-        printFlowResume(resume); // TODO: adjust this to implement CurlGenerator for requests
+        // printFlowResume(resume); // TODO: adjust this to implement CurlGenerator for requests
+        printReproducibleRequests(flow);
 
         if (!resume.isSuccessfulExecution() && Objects.isNull(impedimentCreation)) {
             System.out.print("Do you want to create an impediment? (Y/N): ");
@@ -85,6 +90,20 @@ public class RunCommand implements Callable<Integer> {
         }
 
         return 0;
+    }
+
+    private void printReproducibleRequests(Flow flow) {
+        flow.getSteps().forEach(s -> {
+            ServiceCall call = s.getServiceCall();
+            ReproducibleRequest request = new ReproducibleRequest(
+                    call.url(),
+                    call.method(),
+                    call.headers(),
+                    String.valueOf(call.body())
+            );
+            String reproducibleRequestString = requestRenderer.render(request);
+            System.out.println(reproducibleRequestString);
+        });
     }
 
     private void printFlowResume(ExecutionResume resume) {
