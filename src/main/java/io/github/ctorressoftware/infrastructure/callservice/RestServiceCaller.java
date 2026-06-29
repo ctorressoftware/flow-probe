@@ -27,7 +27,7 @@ public class RestServiceCaller implements ServiceCaller {
         try {
             response = client.send(request, HttpResponse.BodyHandlers.ofString());
         } catch (IOException | InterruptedException e) {
-            System.out.println("Error: " + e.getMessage());
+            System.out.println("Error: " + e.getMessage()); // TODO: handle this
         }
 
         if (response == null) {
