@@ -9,10 +9,7 @@ import io.github.ctorressoftware.application.port.in.flowexecution.ExecuteFlowUs
 import io.github.ctorressoftware.application.port.in.readfile.ReadFileCommand;
 import io.github.ctorressoftware.application.port.in.readfile.ReadFileResult;
 import io.github.ctorressoftware.application.port.in.readfile.ReadFileUseCase;
-import io.github.ctorressoftware.domain.model.ExecutionResume;
-import io.github.ctorressoftware.domain.model.FilePath;
-import io.github.ctorressoftware.domain.model.Flow;
-import io.github.ctorressoftware.domain.model.ImpedimentTicket;
+import io.github.ctorressoftware.domain.model.*;
 import picocli.CommandLine;
 
 import java.util.Objects;
@@ -41,6 +38,14 @@ public class RunCommand implements Callable<Integer> {
             interactive = true
     )
     private Boolean impedimentCreation;
+
+    @CommandLine.Option(
+            names = {"-r", "--request-format"},
+            paramLabel = "REQUEST_FORMAT",
+            description = "Flag to know the request format to render",
+            fallbackValue = "false"
+    )
+    private final RequestFormat requestFormat = RequestFormat.CURL;
 
     private final ReadFileUseCase readFileUseCase;
     private final ExecuteFlowUseCase executeFlowUseCase;
