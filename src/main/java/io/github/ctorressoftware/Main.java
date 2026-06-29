@@ -12,6 +12,7 @@ public class Main {
 
         commandLine.addSubcommand("run", new RunCommand(
                 config.scanner(),
+                config.requestRenderer(),
                 config.readFileUseCase(),
                 config.executeFlowUseCase(),
                 config.createImpedimentTicketUseCase()
