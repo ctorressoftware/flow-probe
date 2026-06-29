@@ -32,8 +32,8 @@ public class FlowExecutor {
         List<ExecutionResumeDetail> resumeDetails = new ArrayList<>();
 
         flow.getSteps().forEach(step -> {
-            ExecutionResumeDetail resumeDetail = new ExecutionResumeDetail();
-            resumeDetail.setStepName(step.getStepName());
+            ExecutionResumeDetail detail = new ExecutionResumeDetail();
+            detail.setStepName(step.getStepName());
             ServiceCall call = step.getServiceCall();
 
             call = step.getExpect() == null ? call : resolvePlaceholders(call);
@@ -42,10 +42,10 @@ public class FlowExecutor {
                     .call(new ServiceCall(call.url(), call.method(), call.headers(), call.body()));
 
             String jsonResponse = Objects.isNull(response) ? null : response.responseBody();
-            resumeDetail.setResponseString(jsonResponse);
-            resumeDetail.setSuccessful(response != null && response.status() == 200);
+            detail.setResponseString(jsonResponse);
+            detail.setSuccessful(response != null && response.status() == 200);
 
-            resumeDetails.add(resumeDetail);
+            resumeDetails.add(detail);
 
             if (step.getExport() != null) {
                 ObjectMapper mapper = new ObjectMapper();
