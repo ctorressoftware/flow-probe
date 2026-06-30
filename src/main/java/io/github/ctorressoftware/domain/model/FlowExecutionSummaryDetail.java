@@ -1,11 +1,11 @@
 package io.github.ctorressoftware.domain.model;
 
-public class ExecutionResumeDetail {
+public class FlowExecutionSummaryDetail {
     private String stepName;
     private boolean isSuccessful;
     private String responseString;
 
-    public ExecutionResumeDetail() {}
+    public FlowExecutionSummaryDetail() {}
 
     public String getStepName() {
         return stepName;

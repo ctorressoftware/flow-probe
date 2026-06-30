@@ -2,15 +2,15 @@ package io.github.ctorressoftware.domain.model;
 
 import java.util.List;
 
-public class ExecutionResume {
+public class FlowExecutionSummary {
     private String flowName;
     private boolean successfulExecution;
-    private List<ExecutionResumeDetail> stepsResults;
+    private List<FlowExecutionSummaryDetail> stepsResults;
 
-    public ExecutionResume(
+    public FlowExecutionSummary(
             String flowName,
             boolean successfulExecution,
-            List<ExecutionResumeDetail> stepsResults
+            List<FlowExecutionSummaryDetail> stepsResults
     ) {
         this.flowName = flowName;
         this.successfulExecution = successfulExecution;
@@ -33,11 +33,11 @@ public class ExecutionResume {
         this.successfulExecution = successfulExecution;
     }
 
-    public List<ExecutionResumeDetail> getStepsResults() {
+    public List<FlowExecutionSummaryDetail> getStepsResults() {
         return stepsResults;
     }
 
-    public void setStepsResults(List<ExecutionResumeDetail> stepsResults) {
+    public void setStepsResults(List<FlowExecutionSummaryDetail> stepsResults) {
         this.stepsResults = stepsResults;
     }
 }
