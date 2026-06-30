@@ -21,7 +21,7 @@ public class FlowExecutor {
         this.serviceCaller = serviceCaller;
     }
 
-    public ExecutionResume execute(Flow flow) {
+    public FlowExecutionSummary execute(Flow flow) {
 
         if (flow == null)
             throw new NoDefinedFlowException();
@@ -29,10 +29,10 @@ public class FlowExecutor {
         if (flow.getSteps() == null || flow.getSteps().isEmpty())
             throw new NoDefinedStepsException();
 
-        List<ExecutionResumeDetail> resumeDetails = new ArrayList<>();
+        List<FlowExecutionSummaryDetail> resumeDetails = new ArrayList<>();
 
         flow.getSteps().forEach(step -> {
-            ExecutionResumeDetail detail = new ExecutionResumeDetail();
+            FlowExecutionSummaryDetail detail = new FlowExecutionSummaryDetail();
             detail.setStepName(step.getStepName());
             ServiceCall call = step.getServiceCall();
 
@@ -63,8 +63,8 @@ public class FlowExecutor {
             }
         });
 
-        boolean successfulExecution = resumeDetails.stream().allMatch(ExecutionResumeDetail::isSuccessful);
-        return new ExecutionResume(flow.getName(), successfulExecution, resumeDetails);
+        boolean successfulExecution = resumeDetails.stream().allMatch(FlowExecutionSummaryDetail::isSuccessful);
+        return new FlowExecutionSummary(flow.getName(), successfulExecution, resumeDetails);
     }
 
     private ServiceCall resolvePlaceholders(ServiceCall request) {

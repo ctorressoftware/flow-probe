@@ -1,5 +1,5 @@
 package io.github.ctorressoftware.application.port.in.flowexecution;
 
-import io.github.ctorressoftware.domain.model.ExecutionResume;
+import io.github.ctorressoftware.domain.model.FlowExecutionSummary;
 
-public record ExecuteFlowResult(ExecutionResume resume) {}
+public record ExecuteFlowResult(FlowExecutionSummary resume) {}
