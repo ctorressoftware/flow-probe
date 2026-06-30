@@ -72,7 +72,7 @@ public class RunCommand implements Callable<Integer> {
         ReadFileResult readFileResult = readFileUseCase.read(new ReadFileCommand(new FilePath(filePath)));
         Flow flow = readFileResult.flow();
         ExecuteFlowResult executeFlowResult = executeFlowUseCase.execute(new ExecuteFlowCommand(flow));
-        ExecutionResume resume = executeFlowResult.resume();
+        FlowExecutionSummary resume = executeFlowResult.resume();
         // printFlowResume(resume); // TODO: adjust this to implement CurlGenerator for requests
         printReproducibleRequests(flow);
 
@@ -106,7 +106,7 @@ public class RunCommand implements Callable<Integer> {
         });
     }
 
-    private void printFlowResume(ExecutionResume resume) {
+    private void printFlowResume(FlowExecutionSummary resume) {
         System.out.println("Flow: " + resume.getFlowName());
         System.out.println("State: " + (resume.isSuccessfulExecution() ? "Successful" : "Failed"));
         System.out.println("\nSteps:\n");
@@ -120,7 +120,7 @@ public class RunCommand implements Callable<Integer> {
         });
     }
 
-    private ImpedimentTicket createTicketFromResume(ExecutionResume resume) {
+    private ImpedimentTicket createTicketFromResume(FlowExecutionSummary resume) {
 
         String title = "Error en los servicios | " + resume.getFlowName();
         String description = resume.getStepsResults().toString();
