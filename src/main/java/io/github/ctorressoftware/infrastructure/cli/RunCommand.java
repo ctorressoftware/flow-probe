@@ -16,10 +16,8 @@ import picocli.CommandLine;
 import java.util.Objects;
 import java.util.Scanner;
 import java.util.concurrent.Callable;
-import java.util.concurrent.atomic.AtomicInteger;
 
 public class RunCommand implements Callable<Integer> {
-
     private final Scanner scanner;
     private final RequestRenderer requestRenderer;
 
@@ -103,20 +101,6 @@ public class RunCommand implements Callable<Integer> {
             );
             String reproducibleRequestString = requestRenderer.render(request);
             System.out.println(reproducibleRequestString);
-        });
-    }
-
-    private void printFlowResume(FlowExecutionSummary resume) {
-        System.out.println("Flow: " + resume.getFlowName());
-        System.out.println("State: " + (resume.isSuccessfulExecution() ? "Successful" : "Failed"));
-        System.out.println("\nSteps:\n");
-
-        AtomicInteger index = new AtomicInteger(0);
-        resume.getStepsResults().forEach(detail -> {
-            System.out.println(index.incrementAndGet() + ") Step name -> " + detail.getStepName());
-            System.out.println("Was it successful? -> " + detail.isSuccessful());
-            System.out.println("Response -> " + detail.getResponseString());
-            System.out.print("\n");
         });
     }
 
