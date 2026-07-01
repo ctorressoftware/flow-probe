@@ -71,7 +71,6 @@ public class RunCommand implements Callable<Integer> {
         Flow flow = readFileResult.flow();
         ExecuteFlowResult executeFlowResult = executeFlowUseCase.execute(new ExecuteFlowCommand(flow));
         FlowExecutionSummary resume = executeFlowResult.resume();
-        // printFlowResume(resume); // TODO: adjust this to implement CurlGenerator for requests
         printReproducibleRequests(flow);
 
         if (!resume.isSuccessfulExecution() && Objects.isNull(impedimentCreation)) {
