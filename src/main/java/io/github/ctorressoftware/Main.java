@@ -1,5 +1,6 @@
 package io.github.ctorressoftware;
 
+import io.github.ctorressoftware.infrastructure.cli.AzureConfigureCommand;
 import io.github.ctorressoftware.infrastructure.cli.FlowProbeCommand;
 import io.github.ctorressoftware.infrastructure.cli.RunCommand;
 import picocli.CommandLine;
@@ -16,6 +17,10 @@ public class Main {
                 config.readFileUseCase(),
                 config.executeFlowUseCase(),
                 config.createImpedimentTicketUseCase()
+        ));
+
+        commandLine.addSubcommand("login", new AzureConfigureCommand(
+                // TODO
         ));
 
         int exitCode = commandLine.execute(args);
