@@ -1,11 +1,11 @@
 package io.github.ctorressoftware.domain.exception;
 
-public class ServiceCallException extends RuntimeException {
-    public ServiceCallException(String message) {
+public class HttpServiceCallException extends RuntimeException {
+    public HttpServiceCallException(String message) {
         super(message);
     }
 
-    public ServiceCallException(String message, Throwable cause) {
+    public HttpServiceCallException(String message, Throwable cause) {
         super(message, cause);
     }
 }

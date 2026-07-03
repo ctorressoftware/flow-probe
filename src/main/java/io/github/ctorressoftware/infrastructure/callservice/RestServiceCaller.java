@@ -2,7 +2,7 @@ package io.github.ctorressoftware.infrastructure.callservice;
 
 import io.github.ctorressoftware.application.port.out.ServiceCaller;
 import io.github.ctorressoftware.domain.constant.HttpMethod;
-import io.github.ctorressoftware.domain.exception.ServiceCallException;
+import io.github.ctorressoftware.domain.exception.HttpServiceCallException;
 import io.github.ctorressoftware.domain.model.ServiceCall;
 import io.github.ctorressoftware.domain.model.CallResult;
 
@@ -28,10 +28,10 @@ public class RestServiceCaller implements ServiceCaller {
         try {
             response = client.send(request, HttpResponse.BodyHandlers.ofString());
         } catch (IOException e) {
-            throw new ServiceCallException("Failed to call service: " + serviceCall.url(), e);
+            throw new HttpServiceCallException("Failed to call service: " + serviceCall.url(), e);
         } catch (InterruptedException e) {
             Thread.currentThread().interrupt();
-            throw new ServiceCallException("Service call was interrupted: " + serviceCall.url(), e);
+            throw new HttpServiceCallException("Service call was interrupted: " + serviceCall.url(), e);
         }
 
         if (response == null) {
