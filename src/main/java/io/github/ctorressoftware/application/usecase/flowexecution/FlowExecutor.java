@@ -8,9 +8,9 @@ import io.github.ctorressoftware.domain.exception.NoDefinedFlowException;
 import io.github.ctorressoftware.domain.exception.NoDefinedStepsException;
 import io.github.ctorressoftware.domain.model.*;
 
+import java.time.Duration;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Objects;
 
 public class FlowExecutor {
     private final Context context;
@@ -32,25 +32,29 @@ public class FlowExecutor {
         List<FlowExecutionSummaryDetail> resumeDetails = new ArrayList<>();
 
         flow.getSteps().forEach(step -> {
-            FlowExecutionSummaryDetail detail = new FlowExecutionSummaryDetail();
-            detail.setStepName(step.getStepName());
+            
             ServiceCall call = step.getServiceCall();
 
-            call = step.getExpect() == null ? call : resolvePlaceholders(call);
+            boolean callRequireValues = !step.getExpect().isEmpty();
 
-            CallResult response = serviceCaller
-                    .call(new ServiceCall(call.url(), call.method(), call.headers(), call.body()));
+            ServiceCall normalizeCall = resolvePlaceholders(call, callRequireValues);
 
-            String jsonResponse = Objects.isNull(response) ? null : response.responseBody();
-            detail.setResponseString(jsonResponse);
-            detail.setSuccessful(response != null && response.status() == 200);
+            CallResult response = serviceCaller.call(normalizeCall);
 
-            resumeDetails.add(detail);
+            boolean successfulExecution = response != null && response.statusCode() == 200;
+        
+            resumeDetails.add(new FlowExecutionSummaryDetail(
+                step.getStepName(),
+                successfulExecution,
+                call,
+                Duration.ZERO, // TODO: Refactor this after adding startedAt and finishedAt fields
+                response.responseBody()
+            ));
 
             if (step.getExport() != null) {
                 ObjectMapper mapper = new ObjectMapper();
                 try {
-                    JsonNode root = mapper.readTree(jsonResponse);
+                    JsonNode root = mapper.readTree(response.responseBody());
                     step.getExport().forEach((key, keyValue) -> {
                         String valuePath = "/" + keyValue.replace(".", "/");
                         String value = root.at(valuePath).asText();
@@ -63,17 +67,23 @@ public class FlowExecutor {
             }
         });
 
-        boolean successfulExecution = resumeDetails.stream().allMatch(FlowExecutionSummaryDetail::isSuccessful);
+        boolean successfulExecution = resumeDetails.stream().allMatch(FlowExecutionSummaryDetail::successful);
         return new FlowExecutionSummary(flow.getName(), successfulExecution, resumeDetails);
     }
 
-    private ServiceCall resolvePlaceholders(ServiceCall request) {
+    private ServiceCall resolvePlaceholders(ServiceCall call, boolean requireValues) {
+
+        if (!requireValues) return call;
 
         return new ServiceCall(
-                PlaceholderResolver.resolve(context.variables(), request.url()),
-                request.method(),
-                request.headers(),
-                PlaceholderResolver.resolve(context.variables(), request.body().toString())
+                PlaceholderResolver.resolve(context.variables(), call.url()),
+                call.method(),
+                call.headers(),
+                PlaceholderResolver.resolve(context.variables(), call.body().toString())
         );
+    }
+
+    private void exportVariables() {
+
     }
 }
