@@ -13,6 +13,7 @@ import java.util.Base64;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.SerializationFeature;
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
+import io.github.ctorressoftware.domain.constant.HttpStatusCode;
 
 // TODO: This is a temporary logic to test Azure DevOps API. Refactor this later.
 public class AzureDevOpsWorkItemClient {
@@ -52,7 +53,7 @@ public class AzureDevOpsWorkItemClient {
             HttpResponse<String> response = client
                     .send(httpRequest, BodyHandlers.ofString());
 
-            if (response.statusCode() < 200 || response.statusCode() >= 300) {
+            if (response.statusCode() < HttpStatusCode.OK || response.statusCode() >= HttpStatusCode.MULTIPLE_CHOICES) {
                 throw new RuntimeException(
                         "Error when trying to create an impediment ticket in Azure. " +
                                 "Status: " + response.statusCode() + ". Body: " + response.body()
