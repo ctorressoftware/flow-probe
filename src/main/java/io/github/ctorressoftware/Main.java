@@ -1,6 +1,6 @@
 package io.github.ctorressoftware;
 
-import io.github.ctorressoftware.infrastructure.cli.AzureConfigureCommand;
+import io.github.ctorressoftware.infrastructure.cli.LoginCommand;
 import io.github.ctorressoftware.infrastructure.cli.FlowProbeCommand;
 import io.github.ctorressoftware.infrastructure.cli.RunCommand;
 import picocli.CommandLine;
@@ -19,7 +19,7 @@ public class Main {
                 config.createImpedimentTicketUseCase()
         ));
 
-        commandLine.addSubcommand("login", new AzureConfigureCommand(
+        commandLine.addSubcommand("login", new LoginCommand(
                 // TODO
         ));
 
