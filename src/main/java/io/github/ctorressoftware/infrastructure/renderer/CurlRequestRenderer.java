@@ -13,10 +13,8 @@ public class CurlRequestRenderer implements RequestRenderer {
         StringBuilder curl = new StringBuilder("curl");
 
         curl.append(" -X ").append(request.method());
-
         appendHeaders(curl, request.headers());
         appendBody(curl, request.body());
-
         curl.append(" ").append(singleQuote(request.url()));
 
         return curl.toString();
@@ -28,23 +26,17 @@ public class CurlRequestRenderer implements RequestRenderer {
     }
 
     private void appendHeaders(StringBuilder curl, Map<String, String> headers) {
-        if (headers == null || headers.isEmpty()) {
-            return;
-        }
+        if (headers == null || headers.isEmpty()) return;
 
         headers.forEach((name, value) ->
-                curl.append(" -H ")
-                        .append(singleQuote(name + ": " + value))
+                curl.append(" -H ").append(singleQuote(name + ": " + value))
         );
     }
 
     private void appendBody(StringBuilder curl, String body) {
-        if (body == null || body.isBlank()) {
-            return;
-        }
+        if (body == null || body.isBlank()) return;
 
-        curl.append(" -d ")
-                .append(singleQuote(body));
+        curl.append(" -d ").append(singleQuote(body));
     }
 
     private String singleQuote(String value) {
