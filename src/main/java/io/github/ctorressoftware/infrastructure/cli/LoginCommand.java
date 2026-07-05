@@ -2,9 +2,9 @@ package io.github.ctorressoftware.infrastructure.cli;
 
 import java.util.concurrent.Callable;
 
-public class AzureConfigureCommand implements Callable<Integer> {
+public class LoginCommand implements Callable<Integer> {
 
-    public AzureConfigureCommand() {}
+    public LoginCommand() {}
 
     @Override
     public Integer call() {
