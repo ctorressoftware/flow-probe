@@ -19,9 +19,9 @@ public class Main {
                 config.createImpedimentTicketUseCase()
         ));
 
-        commandLine.addSubcommand("login", new LoginCommand(
+        /*commandLine.addSubcommand("login", new LoginCommand(
                 // TODO
-        ));
+        ));*/
 
         int exitCode = commandLine.execute(args);
         System.exit(exitCode);
