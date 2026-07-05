@@ -13,9 +13,11 @@ import io.github.ctorressoftware.application.port.out.RequestRenderer;
 import io.github.ctorressoftware.domain.model.*;
 import picocli.CommandLine;
 
+import java.util.List;
 import java.util.Objects;
 import java.util.Scanner;
 import java.util.concurrent.Callable;
+import java.util.stream.Collectors;
 
 public class RunCommand implements Callable<Integer> {
     private final Scanner scanner;
@@ -31,7 +33,6 @@ public class RunCommand implements Callable<Integer> {
 
     @CommandLine.Option(
             names = {"-i", "--impediment", "--create-impediment"},
-            required = false,
             paramLabel = "IMPEDIMENT",
             description = "Flag to know if create an impediment or not",
             fallbackValue = "false",
@@ -71,7 +72,7 @@ public class RunCommand implements Callable<Integer> {
         Flow flow = readFileResult.flow();
         ExecuteFlowResult executeFlowResult = executeFlowUseCase.execute(new ExecuteFlowCommand(flow));
         FlowExecutionSummary resume = executeFlowResult.resume();
-        printReproducibleRequests(flow);
+        renderReproducibleRequests(resume);
 
         if (!resume.isSuccessfulExecution() && Objects.isNull(impedimentCreation)) {
             System.out.print("Do you want to create an impediment? (Y/N): ");
@@ -89,24 +90,28 @@ public class RunCommand implements Callable<Integer> {
         return 0;
     }
 
-    private void printReproducibleRequests(Flow flow) {
-        flow.getSteps().forEach(s -> {
-            ServiceCall call = s.getServiceCall();
-            ReproducibleRequest request = new ReproducibleRequest(
-                    call.url(),
-                    call.method(),
-                    call.headers(),
-                    String.valueOf(call.body())
-            );
-            String reproducibleRequestString = requestRenderer.render(request);
-            System.out.println(reproducibleRequestString);
+    private void renderReproducibleRequests(FlowExecutionSummary resume) {
+        resume.getStepsResults().forEach(detail -> {
+            ServiceCall call = detail.executed();
+            ReproducibleRequest reproducibleRequest = ReproducibleRequest.fromServiceCall(call);
+            String request = requestRenderer.render(reproducibleRequest);
+            System.out.println(request);
         });
     }
 
     private ImpedimentTicket createTicketFromResume(FlowExecutionSummary resume) {
 
-        String title = "Error en los servicios | " + resume.getFlowName();
-        String description = resume.getStepsResults().toString();
+        String title = "Impediment ticket: " + resume.getFlowName();
+
+        List<FlowExecutionSummaryDetail> failures = resume.getStepsResults().stream()
+                .filter(x -> !x.successful())
+                .toList();
+
+        String description = failures.stream().map(detail -> {
+            ServiceCall call = detail.executed();
+            ReproducibleRequest reproducibleRequest = ReproducibleRequest.fromServiceCall(call);
+            return requestRenderer.render(reproducibleRequest);
+        }).collect(Collectors.joining());
 
         return ImpedimentTicket.create(title, description);
     }
