@@ -2,17 +2,17 @@ package io.github.ctorressoftware;
 
 import io.github.ctorressoftware.application.port.in.createticket.CreateImpedimentTicketUseCase;
 import io.github.ctorressoftware.application.port.in.flowexecution.ExecuteFlowUseCase;
+import io.github.ctorressoftware.application.port.in.provider.configure.ConfigureProviderUseCase;
 import io.github.ctorressoftware.application.port.in.readfile.ReadFileUseCase;
-import io.github.ctorressoftware.application.port.out.FlowFileReader;
-import io.github.ctorressoftware.application.port.out.ImpedimentTicketCreator;
-import io.github.ctorressoftware.application.port.out.RequestRenderer;
-import io.github.ctorressoftware.application.port.out.ServiceCaller;
+import io.github.ctorressoftware.application.port.out.*;
 import io.github.ctorressoftware.application.usecase.CreateImpedimentTicketHandler;
 import io.github.ctorressoftware.application.usecase.ReadFileHandler;
 import io.github.ctorressoftware.application.usecase.flowexecution.ExecuteFlowHandler;
 import io.github.ctorressoftware.application.usecase.flowexecution.FlowExecutor;
+import io.github.ctorressoftware.application.usecase.provider.configure.ConfigureProviderHandler;
 import io.github.ctorressoftware.domain.model.Context;
 import io.github.ctorressoftware.infrastructure.callservice.RestServiceCaller;
+import io.github.ctorressoftware.infrastructure.provider.azure.AzureProviderConfigurator;
 import io.github.ctorressoftware.infrastructure.readfile.YAMLReader;
 import io.github.ctorressoftware.infrastructure.renderer.CurlRequestRenderer;
 import io.github.ctorressoftware.infrastructure.ticket.azuredevops.AzureDevOpsImpedimentTicketCreatorAdapter;
@@ -34,6 +34,8 @@ public final class AppConfig {
     private final AzureDevOpsWorkItemTicketCreator azureDevOpsWorkItemTicketCreator = new AzureDevOpsWorkItemTicketCreator(azureDevOpsWorkItemClient);
     private final ImpedimentTicketCreator impedimentTicketCreator = new AzureDevOpsImpedimentTicketCreatorAdapter(azureDevOpsWorkItemTicketCreator);
     private final CreateImpedimentTicketUseCase createImpedimentTicketUseCase = new CreateImpedimentTicketHandler(impedimentTicketCreator);
+    private final ProviderConfigurator providerConfigurator = new AzureProviderConfigurator(scanner);
+    private final ConfigureProviderUseCase configureProviderUseCase = new ConfigureProviderHandler(providerConfigurator);
 
     public Scanner scanner() {
         return scanner;
@@ -53,5 +55,9 @@ public final class AppConfig {
 
     public RequestRenderer requestRenderer() {
         return requestRenderer;
+    }
+
+    public ConfigureProviderUseCase configureProviderUseCase() {
+        return configureProviderUseCase;
     }
 }
