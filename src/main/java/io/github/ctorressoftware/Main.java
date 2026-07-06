@@ -20,7 +20,7 @@ public class Main {
         ));
 
         commandLine.addSubcommand("configure", new ConfigureCommand(
-                // TODO
+                config.configureProviderUseCase()
         ));
 
         int exitCode = commandLine.execute(args);
