@@ -1,0 +1,10 @@
+<component name="ProjectRunConfigurationManager">
+  <configuration default="false" name="ConfigureCommand" type="Application" factoryName="Application">
+    <option name="MAIN_CLASS_NAME" value="io.github.ctorressoftware.Main" />
+    <module name="flow-probe.main" />
+    <option name="PROGRAM_PARAMETERS" value="configure azure" />
+    <method v="2">
+      <option name="Make" enabled="true" />
+    </method>
+  </configuration>
+</component>
