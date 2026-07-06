@@ -39,7 +39,7 @@ public class FlowExecutor {
 
             boolean callRequireValues = step.getExpect() != null && !step.getExpect().isEmpty();
 
-            ServiceCall normalizeCall = normalizeCall(call, callRequireValues);
+            ServiceCall normalizeCall = normalizeServiceCall(call, callRequireValues);
 
             CallResult response = serviceCaller.call(normalizeCall);
 
@@ -62,7 +62,7 @@ public class FlowExecutor {
         return new FlowExecutionSummary(flow.getName(), successfulExecution, resumeDetails);
     }
 
-    private ServiceCall normalizeCall(ServiceCall call, boolean requireValues) {
+    private ServiceCall normalizeServiceCall(ServiceCall call, boolean requireValues) {
 
         if (!requireValues) return call;
 
