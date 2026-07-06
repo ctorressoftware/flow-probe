@@ -5,9 +5,7 @@ import java.util.Map;
 public class PlaceholderResolver {
 
     public static String resolve(Map<String, Object> variables, String value) {
-        if (value == null) {
-            return null;
-        }
+        if (value == null) return null;
 
         String resolved = value;
 
