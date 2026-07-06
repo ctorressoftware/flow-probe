@@ -19,6 +19,7 @@ import java.util.Scanner;
 import java.util.concurrent.Callable;
 import java.util.stream.Collectors;
 
+@CommandLine.Command(name = "run")
 public class RunCommand implements Callable<Integer> {
     private final Scanner scanner;
     private final RequestRenderer requestRenderer;
