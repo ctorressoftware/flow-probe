@@ -49,25 +49,33 @@ public class FlowExecutor {
     }
 
     private List<FlowExecutionSummaryDetail> executeTasks(List<FlowStep> flowSteps) {
+        return flowSteps.stream()
+                .map(this::executeStep)
+                .toList();
+    }
 
-        return flowSteps.stream().map(step -> {
-            boolean hasExpectedValues = step.getExpect() != null && !step.getExpect().isEmpty();
-            ServiceCall normalizeCall = normalizeServiceCall(step.getServiceCall(), hasExpectedValues);
-            CallResult response = serviceCaller.call(normalizeCall);
+    private FlowExecutionSummaryDetail executeStep(FlowStep step) {
+        boolean hasExpectedValues = hasExpectedValues(step);
 
-            boolean successfulExecution =
-                    response != null && response.statusCode() == HttpStatusCode.OK;
+        ServiceCall normalizedCall = normalizeServiceCall(step.getServiceCall(), hasExpectedValues);
 
-            exportVariables(response.responseBody(), step.getExport());
+        CallResult response = serviceCaller.call(normalizedCall);
 
-            return new FlowExecutionSummaryDetail(
-                    step.getStepName(),
-                    successfulExecution,
-                    normalizeCall,
-                    Duration.ZERO, // TODO: Refactor this after adding startedAt and finishedAt fields
-                    response.responseBody()
-            );
-        }).toList();
+        boolean successfulExecution = response.statusCode() == HttpStatusCode.OK;
+
+        exportVariables(response.responseBody(), step.getExport());
+
+        return new FlowExecutionSummaryDetail(
+                step.getStepName(),
+                successfulExecution,
+                normalizedCall,
+                Duration.ZERO,
+                response.responseBody()
+        );
+    }
+
+    private boolean hasExpectedValues(FlowStep step) {
+        return step.getExpect() != null && !step.getExpect().isEmpty();
     }
 
     private void exportVariables(String response, Map<String, String> variablesToExport) {
