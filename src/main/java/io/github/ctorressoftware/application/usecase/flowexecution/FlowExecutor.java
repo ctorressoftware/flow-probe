@@ -10,7 +10,6 @@ import io.github.ctorressoftware.domain.exception.NoDefinedStepsException;
 import io.github.ctorressoftware.domain.model.*;
 
 import java.time.Duration;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
@@ -25,46 +24,21 @@ public class FlowExecutor {
 
     public FlowExecutionSummary execute(Flow flow) {
 
-        if (flow == null)
-            throw new NoDefinedFlowException();
+        if (flow == null) throw new NoDefinedFlowException();
 
         if (flow.getSteps() == null || flow.getSteps().isEmpty())
             throw new NoDefinedStepsException();
 
-        List<FlowExecutionSummaryDetail> resumeDetails = new ArrayList<>();
-
-        flow.getSteps().forEach(step -> {
-
-            ServiceCall call = step.getServiceCall();
-
-            boolean callRequireValues = step.getExpect() != null && !step.getExpect().isEmpty();
-
-            ServiceCall normalizeCall = normalizeServiceCall(call, callRequireValues);
-
-            CallResult response = serviceCaller.call(normalizeCall);
-
-            boolean successfulExecution =
-                    response != null && response.statusCode() == HttpStatusCode.OK;
-
-            resumeDetails.add(new FlowExecutionSummaryDetail(
-                    step.getStepName(),
-                    successfulExecution,
-                    normalizeCall,
-                    Duration.ZERO, // TODO: Refactor this after adding startedAt and finishedAt fields
-                    response.responseBody()
-            ));
-
-            exportVariables(response.responseBody(), step.getExport());
-        });
+        List<FlowExecutionSummaryDetail> resumeDetails = executeTasks(flow.getSteps());
 
         boolean successfulExecution = resumeDetails.stream()
                 .allMatch(FlowExecutionSummaryDetail::successful);
         return new FlowExecutionSummary(flow.getName(), successfulExecution, resumeDetails);
     }
 
-    private ServiceCall normalizeServiceCall(ServiceCall call, boolean requireValues) {
+    private ServiceCall normalizeServiceCall(ServiceCall call, boolean hasExpectedValues) {
 
-        if (!requireValues) return call;
+        if (!hasExpectedValues) return call;
 
         return new ServiceCall(
                 PlaceholderResolver.resolve(context.variables(), call.url()),
@@ -72,6 +46,28 @@ public class FlowExecutor {
                 call.headers(),
                 PlaceholderResolver.resolve(context.variables(), call.body().toString())
         );
+    }
+
+    private List<FlowExecutionSummaryDetail> executeTasks(List<FlowStep> flowSteps) {
+
+        return flowSteps.stream().map(step -> {
+            boolean hasExpectedValues = step.getExpect() != null && !step.getExpect().isEmpty();
+            ServiceCall normalizeCall = normalizeServiceCall(step.getServiceCall(), hasExpectedValues);
+            CallResult response = serviceCaller.call(normalizeCall);
+
+            boolean successfulExecution =
+                    response != null && response.statusCode() == HttpStatusCode.OK;
+
+            exportVariables(response.responseBody(), step.getExport());
+
+            return new FlowExecutionSummaryDetail(
+                    step.getStepName(),
+                    successfulExecution,
+                    normalizeCall,
+                    Duration.ZERO, // TODO: Refactor this after adding startedAt and finishedAt fields
+                    response.responseBody()
+            );
+        }).toList();
     }
 
     private void exportVariables(String response, Map<String, String> variablesToExport) {
