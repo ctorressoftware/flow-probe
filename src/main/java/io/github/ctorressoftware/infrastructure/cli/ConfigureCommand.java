@@ -1,15 +1,18 @@
 package io.github.ctorressoftware.infrastructure.cli;
 
-import java.util.concurrent.Callable;
+import picocli.CommandLine;
 
-public class LoginCommand implements Callable<Integer> {
+@CommandLine.Command(name = "configure")
+public class ConfigureCommand implements Runnable {
 
-    public LoginCommand() {}
+    @CommandLine.Parameters(index = "0")
+    private String provider;
+
+    public ConfigureCommand() {}
 
     @Override
-    public Integer call() {
-        // TODO: to make azure-properties configuration
-        return 0;
+    public void run() {
+        System.out.println(provider); // TODO: make the logic
     }
 }
 
