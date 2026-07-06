@@ -1,6 +1,6 @@
 package io.github.ctorressoftware;
 
-import io.github.ctorressoftware.infrastructure.cli.LoginCommand;
+import io.github.ctorressoftware.infrastructure.cli.ConfigureCommand;
 import io.github.ctorressoftware.infrastructure.cli.FlowProbeCommand;
 import io.github.ctorressoftware.infrastructure.cli.RunCommand;
 import picocli.CommandLine;
@@ -19,9 +19,9 @@ public class Main {
                 config.createImpedimentTicketUseCase()
         ));
 
-        /*commandLine.addSubcommand("login", new LoginCommand(
+        commandLine.addSubcommand("configure", new ConfigureCommand(
                 // TODO
-        ));*/
+        ));
 
         int exitCode = commandLine.execute(args);
         System.exit(exitCode);
