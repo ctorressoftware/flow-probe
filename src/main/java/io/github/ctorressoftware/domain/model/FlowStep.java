@@ -10,7 +10,7 @@ public class FlowStep {
     private final String flowName;
     private final String stepName;
     private final ServiceCall serviceCall;
-    private final Map<String, Object> expect;
+    private final Map<String, Object> requires;
     private final Map<String, String> export;
     private Instant startedAt;
     private Instant finishedAt;
@@ -19,14 +19,14 @@ public class FlowStep {
             String flowName,
             String stepName,
             ServiceCall serviceCall,
-            Map<String, Object> expect,
+            Map<String, Object> requires,
             Map<String, String> export
     ) {
         this.flowName = Objects.requireNonNull(flowName, "flowName cannot be null");
         this.stepName = Objects.requireNonNull(stepName, "stepName cannot be null");
         this.serviceCall = Objects.requireNonNull(serviceCall, "serviceCall cannot be null");
         // TODO: make better implementation later
-        this.expect = Objects.isNull(expect) ? null : Map.copyOf(expect);
+        this.requires = Objects.isNull(requires) ? null : Map.copyOf(requires);
         this.export = Objects.isNull(export) ? null : Map.copyOf(export);
     }
 
@@ -34,10 +34,10 @@ public class FlowStep {
             String flowName,
             String stepName,
             ServiceCall serviceCall,
-            Map<String, Object> expect,
+            Map<String, Object> requires,
             Map<String, String> export) {
 
-        return new FlowStep(flowName, stepName, serviceCall, expect, export);
+        return new FlowStep(flowName, stepName, serviceCall, requires, export);
     }
 
     public void start() {
@@ -64,8 +64,8 @@ public class FlowStep {
         return serviceCall;
     }
 
-    public Map<String, Object> getExpect() {
-        return expect;
+    public Map<String, Object> getRequires() {
+        return requires;
     }
 
     public Map<String, String> getExport() {

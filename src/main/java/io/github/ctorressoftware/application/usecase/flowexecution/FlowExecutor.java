@@ -55,7 +55,7 @@ public class FlowExecutor {
     }
 
     private FlowExecutionSummaryDetail executeStep(FlowStep step) {
-        boolean hasExpectedValues = hasExpectedValues(step);
+        boolean hasExpectedValues = hasRequiredValues(step);
 
         ServiceCall normalizedCall = normalizeServiceCall(step.getServiceCall(), hasExpectedValues);
 
@@ -74,8 +74,8 @@ public class FlowExecutor {
         );
     }
 
-    private boolean hasExpectedValues(FlowStep step) {
-        return step.getExpect() != null && !step.getExpect().isEmpty();
+    private boolean hasRequiredValues(FlowStep step) {
+        return step.getRequires() != null && !step.getRequires().isEmpty();
     }
 
     private void exportVariables(String response, Map<String, String> variablesToExport) {

@@ -34,7 +34,7 @@ public class YAMLReader implements FlowFileReader {
             String stepName = step.get("name").toString();
 
             Map<String, Object> request = (Map<String, Object>) step.get("request");
-            Map<String, Object> expect = (Map<String, Object>) step.get("expect");
+            Map<String, Object> requires = (Map<String, Object>) step.get("requires");
             Map<String, String> export = (Map<String, String>) step.get("export");
 
             String url = request.get("url").toString();
@@ -43,7 +43,7 @@ public class YAMLReader implements FlowFileReader {
             Object body = request.get("body");
 
             ServiceCall serviceCall = resolveRequest(url, method, headers, body);
-            FlowStep flowStep = resolveStep(flowName, stepName, serviceCall, expect, export);
+            FlowStep flowStep = resolveStep(flowName, stepName, serviceCall, requires, export);
             formattedSteps.add(flowStep);
         }
 

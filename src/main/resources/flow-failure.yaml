@@ -9,7 +9,7 @@ steps:
         accept: "application/json"
       body: null
 
-    expect: null
+    requires: null
 
     export:
       pokemonName: "results.0.name"
@@ -24,7 +24,7 @@ steps:
         test: 1
         test2: 2
 
-    expect:
+    requires:
       name: ${pokemonName}
 
     export: null
@@ -36,6 +36,6 @@ steps:
       headers:
         accept: "application/json"
 
-    expect: null
+    requires: null
 
     export: null
