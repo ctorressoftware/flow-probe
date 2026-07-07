@@ -4,18 +4,28 @@ import io.github.ctorressoftware.application.port.in.provider.configure.Configur
 import io.github.ctorressoftware.application.port.in.provider.configure.ConfigureProviderResult;
 import io.github.ctorressoftware.application.port.in.provider.configure.ConfigureProviderUseCase;
 import io.github.ctorressoftware.application.port.out.ProviderConfigurator;
+import io.github.ctorressoftware.application.port.out.ProviderPrompt;
+import io.github.ctorressoftware.infrastructure.provider.azure.ProviderConfiguratorFactory;
+import io.github.ctorressoftware.infrastructure.provider.azure.ProviderPromptFactory;
 
 public class ConfigureProviderHandler implements ConfigureProviderUseCase {
 
-    private final ProviderConfigurator providerConfigurator;
+    private final ProviderConfiguratorFactory configuratorFactory;
+    private final ProviderPromptFactory promptFactory;
 
-    public ConfigureProviderHandler(ProviderConfigurator providerConfigurator) {
-        this.providerConfigurator = providerConfigurator;
+    public ConfigureProviderHandler(
+            ProviderConfiguratorFactory configuratorFactory,
+            ProviderPromptFactory promptFactory) {
+        this.configuratorFactory = configuratorFactory;
+        this.promptFactory = promptFactory;
     }
 
     @Override
     public ConfigureProviderResult configure(ConfigureProviderCommand command) {
-        providerConfigurator.configure();
+        ProviderPrompt providerPrompt = promptFactory.getPromptByProvider(command.provider());
+        ProviderConfigurator configurator = configuratorFactory.getConfiguratorProvider(command.provider());
+        configurator.configure();
+
         return new ConfigureProviderResult(true);
     }
 }
