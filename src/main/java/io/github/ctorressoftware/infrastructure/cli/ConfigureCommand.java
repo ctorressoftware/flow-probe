@@ -22,7 +22,7 @@ public class ConfigureCommand implements Runnable {
     public void run() {
         Provider providerValue = Provider.valueOf(provider.toUpperCase());
         ConfigureProviderResult result = configureProviderUseCase
-                .configure(new ConfigureProviderCommand(providerValue));
+                .configure(new ConfigureProviderCommand(providerValue.name()));
         System.out.println(result.configured());
     }
 }
