@@ -1,3 +1,3 @@
 package io.github.ctorressoftware.application.port.in.provider.configure;
 
-public record ConfigureProviderCommand(Provider provider) {}
+public record ConfigureProviderCommand(String provider) {}
