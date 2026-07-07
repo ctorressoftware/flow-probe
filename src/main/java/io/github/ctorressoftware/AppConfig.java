@@ -13,12 +13,16 @@ import io.github.ctorressoftware.application.usecase.provider.configure.Configur
 import io.github.ctorressoftware.domain.model.Context;
 import io.github.ctorressoftware.infrastructure.callservice.RestServiceCaller;
 import io.github.ctorressoftware.infrastructure.provider.azure.AzureProviderConfigurator;
+import io.github.ctorressoftware.infrastructure.provider.azure.AzureProviderPrompt;
+import io.github.ctorressoftware.infrastructure.provider.azure.ProviderConfiguratorFactory;
+import io.github.ctorressoftware.infrastructure.provider.azure.ProviderPromptFactory;
 import io.github.ctorressoftware.infrastructure.readfile.YAMLReader;
 import io.github.ctorressoftware.infrastructure.renderer.CurlRequestRenderer;
 import io.github.ctorressoftware.infrastructure.ticket.azuredevops.AzureDevOpsImpedimentTicketCreatorAdapter;
 import io.github.ctorressoftware.infrastructure.ticket.azuredevops.AzureDevOpsWorkItemClient;
 import io.github.ctorressoftware.infrastructure.ticket.azuredevops.AzureDevOpsWorkItemTicketCreator;
 
+import java.util.Map;
 import java.util.Scanner;
 
 public final class AppConfig {
@@ -34,8 +38,11 @@ public final class AppConfig {
     private final AzureDevOpsWorkItemTicketCreator azureDevOpsWorkItemTicketCreator = new AzureDevOpsWorkItemTicketCreator(azureDevOpsWorkItemClient);
     private final ImpedimentTicketCreator impedimentTicketCreator = new AzureDevOpsImpedimentTicketCreatorAdapter(azureDevOpsWorkItemTicketCreator);
     private final CreateImpedimentTicketUseCase createImpedimentTicketUseCase = new CreateImpedimentTicketHandler(impedimentTicketCreator);
-    private final ProviderConfigurator providerConfigurator = new AzureProviderConfigurator(scanner);
-    private final ConfigureProviderUseCase configureProviderUseCase = new ConfigureProviderHandler(providerConfigurator);
+    private final Map<String, ProviderConfigurator> providerConfigurators = Map.of("AZURE", new AzureProviderConfigurator(scanner));
+    private final ProviderConfiguratorFactory providerConfiguratorFactory = new ProviderConfiguratorFactory(providerConfigurators);
+    private final Map<String, ProviderPrompt> providerPrompts = Map.of("AZURE", new AzureProviderPrompt(scanner));
+    private final ProviderPromptFactory providerPromptFactory = new ProviderPromptFactory(providerPrompts);
+    private final ConfigureProviderUseCase configureProviderUseCase = new ConfigureProviderHandler(providerConfiguratorFactory, providerPromptFactory);
 
     public Scanner scanner() {
         return scanner;
