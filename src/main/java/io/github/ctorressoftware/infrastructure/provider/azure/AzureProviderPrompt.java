@@ -27,7 +27,7 @@ public class AzureProviderPrompt implements ProviderPrompt {
         );
     }
 
-    private String askFor(String something) {
+    private String askFor(String something) { // TODO: move ask methods to a different file like ProviderDataAsker
         System.out.print(something);
         return scanner.nextLine();
     }
