@@ -8,6 +8,8 @@ import io.github.ctorressoftware.application.port.out.ProviderPrompt;
 import io.github.ctorressoftware.infrastructure.provider.azure.ProviderConfiguratorFactory;
 import io.github.ctorressoftware.infrastructure.provider.azure.ProviderPromptFactory;
 
+import java.util.Map;
+
 public class ConfigureProviderHandler implements ConfigureProviderUseCase {
 
     private final ProviderConfiguratorFactory configuratorFactory;
@@ -22,9 +24,12 @@ public class ConfigureProviderHandler implements ConfigureProviderUseCase {
 
     @Override
     public ConfigureProviderResult configure(ConfigureProviderCommand command) {
+
         ProviderPrompt providerPrompt = promptFactory.getPromptByProvider(command.provider());
         ProviderConfigurator configurator = configuratorFactory.getConfiguratorProvider(command.provider());
-        configurator.configure();
+
+        final Map<String, String> credentials = providerPrompt.prompt();
+        configurator.configure(credentials);
 
         return new ConfigureProviderResult(true);
     }
