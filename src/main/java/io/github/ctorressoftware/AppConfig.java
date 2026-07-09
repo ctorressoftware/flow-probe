@@ -38,7 +38,7 @@ public final class AppConfig {
     private final AzureDevOpsWorkItemTicketCreator azureDevOpsWorkItemTicketCreator = new AzureDevOpsWorkItemTicketCreator(azureDevOpsWorkItemClient);
     private final ImpedimentTicketCreator impedimentTicketCreator = new AzureDevOpsImpedimentTicketCreatorAdapter(azureDevOpsWorkItemTicketCreator);
     private final CreateImpedimentTicketUseCase createImpedimentTicketUseCase = new CreateImpedimentTicketHandler(impedimentTicketCreator);
-    private final Map<String, ProviderConfigurator> providerConfigurators = Map.of("AZURE", new AzureProviderConfigurator(scanner));
+    private final Map<String, ProviderConfigurator> providerConfigurators = Map.of("AZURE", new AzureProviderConfigurator());
     private final ProviderConfiguratorFactory providerConfiguratorFactory = new ProviderConfiguratorFactory(providerConfigurators);
     private final Map<String, ProviderPrompt> providerPrompts = Map.of("AZURE", new AzureProviderPrompt(scanner));
     private final ProviderPromptFactory providerPromptFactory = new ProviderPromptFactory(providerPrompts);
