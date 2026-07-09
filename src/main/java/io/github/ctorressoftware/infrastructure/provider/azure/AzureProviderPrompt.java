@@ -15,10 +15,31 @@ public class AzureProviderPrompt implements ProviderPrompt {
 
     @Override
     public Map<String, String> prompt() {
+
+        String organization = askFor("Write your Azure DevOps Organization: ");
+        String project = askFor("Write your Azure DevOps project: ");
+        String pat = askForSecret("Write your Azure DevOps Personal Access Token (PAT): ");
+
         return Map.of(
-                "Organization", "cetorres",
-                "Project", "cetorres",
-                "PAT", "wjdhuwhdu378ry3rfbcncjwdnu3"
+                "organization", organization,
+                "project", project,
+                "pat", pat
         );
+    }
+
+    private String askFor(String something) {
+        System.out.print(something);
+        return scanner.nextLine();
+    }
+
+    private String askForSecret(String promptMessage) {
+        java.io.Console console = System.console();
+        if (console != null) {
+            char[] passwordChars = console.readPassword(promptMessage);
+            return new String(passwordChars);
+        } else {
+            System.out.print(promptMessage);
+            return scanner.nextLine();
+        }
     }
 }
