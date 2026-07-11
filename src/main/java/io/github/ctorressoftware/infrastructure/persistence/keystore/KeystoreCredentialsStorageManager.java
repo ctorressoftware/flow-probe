@@ -3,9 +3,9 @@ package io.github.ctorressoftware.infrastructure.persistence.keystore;
 import com.github.javakeyring.BackendNotSupportedException;
 import com.github.javakeyring.Keyring;
 import com.github.javakeyring.PasswordAccessException;
-import io.github.ctorressoftware.application.port.out.ProviderCredentialsStorageManager;
+import io.github.ctorressoftware.application.port.out.CredentialsStorageManager;
 
-public class KeystoreProviderCredentialsStorageManager implements ProviderCredentialsStorageManager {
+public class KeystoreCredentialsStorageManager implements CredentialsStorageManager {
 
     @Override
     public void store(String domain, String account, String secret) {
