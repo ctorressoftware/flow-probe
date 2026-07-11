@@ -6,8 +6,6 @@ import java.util.Map;
 
 public interface ProviderConfigurator {
     void configure(Map<String, String> credentials);
-
     void remove();
-
     ProviderStatus status();
 }
