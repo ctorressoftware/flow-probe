@@ -32,6 +32,10 @@ public class AzureProviderPrompt implements ProviderPrompt {
         return scanner.nextLine();
     }
 
+    /*
+     * TODO: Avoid converting the secret from char[] to String, since String remains in memory
+     * until garbage collection. Refactor the related interfaces to use char[] where possible.
+     */
     private String askForSecret(String promptMessage) {
         java.io.Console console = System.console();
         if (console != null) {
