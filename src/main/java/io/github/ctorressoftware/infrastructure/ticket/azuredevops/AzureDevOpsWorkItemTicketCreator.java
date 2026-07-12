@@ -32,10 +32,11 @@ public class AzureDevOpsWorkItemTicketCreator {
 
         String azureOrganization = azureCredentials.get("organization");
         String azureProject = azureCredentials.get("project");
+        String azureWorkItemType = azureCredentials.get("workItemType");
         String azurePat = azureCredentials.get("pat");
 
         return new AzureDevOpsConfiguration(
-                "Issue",
+                azureWorkItemType,
                 azureOrganization,
                 azureProject,
                 azurePat
