@@ -14,7 +14,7 @@ public class AzureProviderPrompt implements ProviderPrompt {
     }
 
     @Override
-    public Map<String, String> prompt() {
+    public Map<String, String> prompt() { // TODO: change Map<String, String> to AzureProviderConfiguration record
 
         String organization = askFor("Write your Azure DevOps Organization: ");
         String project = askFor("Write your Azure DevOps project: ");
