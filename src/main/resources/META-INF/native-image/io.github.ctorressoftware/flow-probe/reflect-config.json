@@ -1,6 +1,33 @@
 [
 {
+  "name":"[B"
+},
+{
+  "name":"[Lcom.fasterxml.jackson.databind.deser.BeanDeserializerModifier;"
+},
+{
+  "name":"[Lcom.fasterxml.jackson.databind.deser.Deserializers;"
+},
+{
+  "name":"[Lcom.fasterxml.jackson.databind.deser.KeyDeserializers;"
+},
+{
+  "name":"[Lcom.fasterxml.jackson.databind.deser.ValueInstantiators;"
+},
+{
+  "name":"[Lcom.fasterxml.jackson.databind.ser.BeanSerializerModifier;"
+},
+{
+  "name":"[Lcom.fasterxml.jackson.databind.ser.Serializers;"
+},
+{
   "name":"[Ljava.lang.Object;"
+},
+{
+  "name":"[Ljava.lang.String;"
+},
+{
+  "name":"[Lsun.security.pkcs.SignerInfo;"
 },
 {
   "name":"apple.security.AppleProvider",
@@ -43,6 +70,10 @@
   "methods":[{"name":"<init>","parameterTypes":[] }]
 },
 {
+  "name":"com.sun.crypto.provider.HmacCore$HmacSHA384",
+  "methods":[{"name":"<init>","parameterTypes":[] }]
+},
+{
   "name":"com.sun.crypto.provider.TlsMasterSecretGenerator",
   "methods":[{"name":"<init>","parameterTypes":[] }]
 },
@@ -65,12 +96,72 @@
   "queryAllDeclaredMethods":true
 },
 {
+  "name":"io.github.ctorressoftware.infrastructure.ticket.azuredevops.AzureDevOpsPatchOperation",
+  "allDeclaredFields":true,
+  "queryAllDeclaredMethods":true,
+  "queryAllDeclaredConstructors":true,
+  "methods":[{"name":"op","parameterTypes":[] }, {"name":"path","parameterTypes":[] }, {"name":"value","parameterTypes":[] }]
+},
+{
+  "name":"io.github.ctorressoftware.infrastructure.ticket.azuredevops.AzureDevOpsWorkItemResponse",
+  "allDeclaredFields":true,
+  "queryAllDeclaredMethods":true,
+  "queryAllDeclaredConstructors":true,
+  "methods":[{"name":"<init>","parameterTypes":["int","int","io.github.ctorressoftware.infrastructure.ticket.azuredevops.AzureDevOpsWorkItemResponse$Fields","java.util.Map","io.github.ctorressoftware.infrastructure.ticket.azuredevops.AzureDevOpsWorkItemResponse$Links","java.lang.String"] }]
+},
+{
+  "name":"io.github.ctorressoftware.infrastructure.ticket.azuredevops.AzureDevOpsWorkItemResponse$Avatar",
+  "allDeclaredFields":true,
+  "queryAllDeclaredMethods":true,
+  "queryAllDeclaredConstructors":true,
+  "methods":[{"name":"<init>","parameterTypes":["java.lang.String"] }]
+},
+{
+  "name":"io.github.ctorressoftware.infrastructure.ticket.azuredevops.AzureDevOpsWorkItemResponse$Fields",
+  "allDeclaredFields":true,
+  "queryAllDeclaredMethods":true,
+  "queryAllDeclaredConstructors":true,
+  "methods":[{"name":"<init>","parameterTypes":["java.lang.String","java.lang.String","java.lang.String","java.lang.String","java.lang.String","java.lang.String","java.time.Instant","io.github.ctorressoftware.infrastructure.ticket.azuredevops.AzureDevOpsWorkItemResponse$Identity","java.time.Instant","io.github.ctorressoftware.infrastructure.ticket.azuredevops.AzureDevOpsWorkItemResponse$Identity","int","java.lang.String","java.lang.String","boolean","java.time.Instant","int","java.lang.String","boolean","java.lang.String"] }]
+},
+{
+  "name":"io.github.ctorressoftware.infrastructure.ticket.azuredevops.AzureDevOpsWorkItemResponse$Identity",
+  "allDeclaredFields":true,
+  "queryAllDeclaredMethods":true,
+  "queryAllDeclaredConstructors":true,
+  "methods":[{"name":"<init>","parameterTypes":["java.lang.String","java.lang.String","io.github.ctorressoftware.infrastructure.ticket.azuredevops.AzureDevOpsWorkItemResponse$IdentityLinks","java.lang.String","java.lang.String","java.lang.String","java.lang.String"] }]
+},
+{
+  "name":"io.github.ctorressoftware.infrastructure.ticket.azuredevops.AzureDevOpsWorkItemResponse$IdentityLinks",
+  "allDeclaredFields":true,
+  "queryAllDeclaredMethods":true,
+  "queryAllDeclaredConstructors":true,
+  "methods":[{"name":"<init>","parameterTypes":["io.github.ctorressoftware.infrastructure.ticket.azuredevops.AzureDevOpsWorkItemResponse$Avatar"] }]
+},
+{
+  "name":"io.github.ctorressoftware.infrastructure.ticket.azuredevops.AzureDevOpsWorkItemResponse$Link",
+  "allDeclaredFields":true,
+  "queryAllDeclaredMethods":true,
+  "queryAllDeclaredConstructors":true,
+  "methods":[{"name":"<init>","parameterTypes":["java.lang.String"] }]
+},
+{
+  "name":"io.github.ctorressoftware.infrastructure.ticket.azuredevops.AzureDevOpsWorkItemResponse$Links",
+  "allDeclaredFields":true,
+  "queryAllDeclaredMethods":true,
+  "queryAllDeclaredConstructors":true,
+  "methods":[{"name":"<init>","parameterTypes":["io.github.ctorressoftware.infrastructure.ticket.azuredevops.AzureDevOpsWorkItemResponse$Link","io.github.ctorressoftware.infrastructure.ticket.azuredevops.AzureDevOpsWorkItemResponse$Link","io.github.ctorressoftware.infrastructure.ticket.azuredevops.AzureDevOpsWorkItemResponse$Link","io.github.ctorressoftware.infrastructure.ticket.azuredevops.AzureDevOpsWorkItemResponse$Link","io.github.ctorressoftware.infrastructure.ticket.azuredevops.AzureDevOpsWorkItemResponse$Link","io.github.ctorressoftware.infrastructure.ticket.azuredevops.AzureDevOpsWorkItemResponse$Link","io.github.ctorressoftware.infrastructure.ticket.azuredevops.AzureDevOpsWorkItemResponse$Link"] }]
+},
+{
   "name":"java.io.Serializable",
   "queryAllDeclaredMethods":true
 },
 {
   "name":"java.lang.Class",
-  "methods":[{"name":"isRecord","parameterTypes":[] }]
+  "methods":[{"name":"getRecordComponents","parameterTypes":[] }, {"name":"isRecord","parameterTypes":[] }]
+},
+{
+  "name":"java.lang.Iterable",
+  "queryAllDeclaredMethods":true
 },
 {
   "name":"java.lang.Object",
@@ -78,8 +169,24 @@
   "queryAllDeclaredMethods":true
 },
 {
+  "name":"java.lang.Record",
+  "allDeclaredFields":true,
+  "queryAllDeclaredMethods":true
+},
+{
+  "name":"java.lang.String"
+},
+{
   "name":"java.lang.System",
   "methods":[{"name":"console","parameterTypes":[] }]
+},
+{
+  "name":"java.lang.Thread",
+  "fields":[{"name":"threadLocalRandomProbe"}]
+},
+{
+  "name":"java.lang.reflect.RecordComponent",
+  "methods":[{"name":"getName","parameterTypes":[] }, {"name":"getType","parameterTypes":[] }]
 },
 {
   "name":"java.nio.file.Path"
@@ -96,6 +203,18 @@
 },
 {
   "name":"java.security.SecureRandomParameters"
+},
+{
+  "name":"java.security.interfaces.ECPrivateKey"
+},
+{
+  "name":"java.security.interfaces.ECPublicKey"
+},
+{
+  "name":"java.security.interfaces.RSAPrivateKey"
+},
+{
+  "name":"java.security.interfaces.RSAPublicKey"
 },
 {
   "name":"java.sql.Connection"
@@ -172,7 +291,29 @@
   "methods":[{"name":"parse","parameterTypes":["java.lang.CharSequence"] }]
 },
 {
+  "name":"java.util.AbstractCollection",
+  "allDeclaredFields":true,
+  "queryAllDeclaredMethods":true
+},
+{
   "name":"java.util.AbstractMap",
+  "allDeclaredFields":true,
+  "queryAllDeclaredMethods":true
+},
+{
+  "name":"java.util.Collection",
+  "queryAllDeclaredMethods":true
+},
+{
+  "name":"java.util.Date"
+},
+{
+  "name":"java.util.ImmutableCollections$AbstractImmutableCollection",
+  "allDeclaredFields":true,
+  "queryAllDeclaredMethods":true
+},
+{
+  "name":"java.util.ImmutableCollections$AbstractImmutableList",
   "allDeclaredFields":true,
   "queryAllDeclaredMethods":true
 },
@@ -182,14 +323,32 @@
   "queryAllDeclaredMethods":true
 },
 {
+  "name":"java.util.ImmutableCollections$List12",
+  "allDeclaredFields":true,
+  "queryAllDeclaredMethods":true,
+  "queryAllDeclaredConstructors":true
+},
+{
   "name":"java.util.ImmutableCollections$MapN",
   "allDeclaredFields":true,
   "queryAllDeclaredMethods":true,
   "queryAllDeclaredConstructors":true
 },
 {
+  "name":"java.util.List",
+  "queryAllDeclaredMethods":true
+},
+{
   "name":"java.util.Map",
   "queryAllDeclaredMethods":true
+},
+{
+  "name":"java.util.RandomAccess",
+  "queryAllDeclaredMethods":true
+},
+{
+  "name":"java.util.concurrent.ForkJoinTask",
+  "fields":[{"name":"aux"}, {"name":"status"}]
 },
 {
   "name":"java.util.concurrent.atomic.AtomicBoolean",
@@ -200,9 +359,16 @@
   "fields":[{"name":"value"}]
 },
 {
+  "name":"java.util.concurrent.atomic.Striped64",
+  "fields":[{"name":"base"}, {"name":"cellsBusy"}]
+},
+{
   "name":"javax.security.auth.x500.X500Principal",
   "fields":[{"name":"thisX500Name"}],
   "methods":[{"name":"<init>","parameterTypes":["sun.security.x509.X500Name"] }]
+},
+{
+  "name":"jdk.internal.misc.Unsafe"
 },
 {
   "name":"picocli.CommandLine$AutoHelpMixin",
@@ -223,6 +389,14 @@
 },
 {
   "name":"sun.security.provider.DSA$SHA256withDSA",
+  "methods":[{"name":"<init>","parameterTypes":[] }]
+},
+{
+  "name":"sun.security.provider.JavaKeyStore$DualFormatJKS",
+  "methods":[{"name":"<init>","parameterTypes":[] }]
+},
+{
+  "name":"sun.security.provider.JavaKeyStore$JKS",
   "methods":[{"name":"<init>","parameterTypes":[] }]
 },
 {
@@ -254,6 +428,10 @@
   "methods":[{"name":"<init>","parameterTypes":[] }]
 },
 {
+  "name":"sun.security.provider.certpath.PKIXCertPathValidator",
+  "methods":[{"name":"<init>","parameterTypes":[] }]
+},
+{
   "name":"sun.security.rsa.PSSParameters",
   "methods":[{"name":"<init>","parameterTypes":[] }]
 },
@@ -270,6 +448,10 @@
   "methods":[{"name":"<init>","parameterTypes":[] }]
 },
 {
+  "name":"sun.security.rsa.RSASignature$SHA384withRSA",
+  "methods":[{"name":"<init>","parameterTypes":[] }]
+},
+{
   "name":"sun.security.ssl.KeyManagerFactoryImpl$SunX509",
   "methods":[{"name":"<init>","parameterTypes":[] }]
 },
@@ -280,6 +462,9 @@
 {
   "name":"sun.security.ssl.TrustManagerFactoryImpl$PKIXFactory",
   "methods":[{"name":"<init>","parameterTypes":[] }]
+},
+{
+  "name":"sun.security.util.ObjectIdentifier"
 },
 {
   "name":"sun.security.x509.AuthorityInfoAccessExtension",
@@ -298,6 +483,9 @@
   "methods":[{"name":"<init>","parameterTypes":["java.lang.Boolean","java.lang.Object"] }]
 },
 {
+  "name":"sun.security.x509.CertificateExtensions"
+},
+{
   "name":"sun.security.x509.CertificatePoliciesExtension",
   "methods":[{"name":"<init>","parameterTypes":["java.lang.Boolean","java.lang.Object"] }]
 },
@@ -314,7 +502,15 @@
   "methods":[{"name":"<init>","parameterTypes":["java.lang.Boolean","java.lang.Object"] }]
 },
 {
+  "name":"sun.security.x509.OCSPNoCheckExtension",
+  "methods":[{"name":"<init>","parameterTypes":["java.lang.Boolean","java.lang.Object"] }]
+},
+{
   "name":"sun.security.x509.PrivateKeyUsageExtension",
+  "methods":[{"name":"<init>","parameterTypes":["java.lang.Boolean","java.lang.Object"] }]
+},
+{
+  "name":"sun.security.x509.SubjectAlternativeNameExtension",
   "methods":[{"name":"<init>","parameterTypes":["java.lang.Boolean","java.lang.Object"] }]
 },
 {
