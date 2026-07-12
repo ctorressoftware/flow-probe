@@ -1,10 +1,10 @@
 <component name="ProjectRunConfigurationManager">
   <configuration default="false" name="RunCommand" type="Application" factoryName="Application">
-    <option name="ALTERNATIVE_JRE_PATH" value="ms-21" />
+    <option name="ALTERNATIVE_JRE_PATH" value="$USER_HOME$/Library/Java/JavaVirtualMachines/ms-21.0.10/Contents/Home" />
     <option name="ALTERNATIVE_JRE_PATH_ENABLED" value="true" />
     <option name="MAIN_CLASS_NAME" value="io.github.ctorressoftware.Main" />
     <module name="flow-probe.main" />
-    <option name="PROGRAM_PARAMETERS" value="run --file flow-failure.yaml" />
+    <option name="PROGRAM_PARAMETERS" value="run --file $PROJECT_DIR$/src/main/resources/flow-failure.yaml" />
     <method v="2">
       <option name="Make" enabled="true" />
     </method>
