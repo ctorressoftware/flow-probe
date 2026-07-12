@@ -27,6 +27,11 @@ tasks.test {
     useJUnitPlatform()
 }
 
+tasks.named<JavaExec>("run") {
+    standardInput = System.`in`
+    doNotTrackState("FlowProbe CLI must execute on every invocation")
+}
+
 tasks.withType<JavaCompile>().configureEach {
     options.compilerArgs.add("-Aproject=io.github.ctorressoftware/flow-probe")
 }
@@ -43,8 +48,9 @@ tasks.register<JavaExec>("runWithNativeAgent") {
 
     mainClass.set("io.github.ctorressoftware.Main")
     classpath = sourceSets["main"].runtimeClasspath
-
     standardInput = System.`in`
+
+    doNotTrackState("Native image tracing must execute on every invocation")
 
     jvmArgs(
         "-agentlib:native-image-agent=config-merge-dir=src/main/resources/META-INF/native-image/io.github.ctorressoftware/flow-probe"
