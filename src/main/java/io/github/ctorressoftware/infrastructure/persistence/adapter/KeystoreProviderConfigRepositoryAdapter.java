@@ -5,6 +5,7 @@ import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import io.github.ctorressoftware.application.port.out.CredentialsStorageManager;
 import io.github.ctorressoftware.application.port.out.ProviderConfigRepository;
+import io.github.ctorressoftware.infrastructure.ticket.azuredevops.AzureDevOpsConfiguration;
 
 import java.util.Map;
 
@@ -21,7 +22,11 @@ public class KeystoreProviderConfigRepositoryAdapter implements ProviderConfigRe
         ObjectMapper mapper = new ObjectMapper();
         try {
             String jsonCredentials = mapper.writeValueAsString(credentials);
-            credentialsStorageManager.store("flowprobe", "azure", jsonCredentials); // return Credentials.CONFIGURED;
+            credentialsStorageManager.store(
+                    AzureDevOpsConfiguration.AZURE_DOMAIN,
+                    AzureDevOpsConfiguration.AZURE_ACCOUNT,
+                    jsonCredentials
+            ); // TODO: return Credentials.CONFIGURED or a boolean to validate;
         } catch (JsonProcessingException e) {
             throw new RuntimeException(e);
         }
@@ -46,14 +51,17 @@ public class KeystoreProviderConfigRepositoryAdapter implements ProviderConfigRe
     @Override
     public void remove() {
         credentialsStorageManager.delete(
-                "flowprobe",
-                "azure"
+                AzureDevOpsConfiguration.AZURE_DOMAIN,
+                AzureDevOpsConfiguration.AZURE_ACCOUNT
         );
     }
 
     @Override
     public boolean exists() {
-        String jsonSecret = credentialsStorageManager.find("flowprobe", "azure");
+        String jsonSecret = credentialsStorageManager.find(
+                AzureDevOpsConfiguration.AZURE_DOMAIN, 
+                AzureDevOpsConfiguration.AZURE_ACCOUNT
+        );
         return !jsonSecret.isBlank();
     }
 }
