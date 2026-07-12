@@ -18,11 +18,13 @@ public class AzureProviderPrompt implements ProviderPrompt {
 
         String organization = askFor("Write your Azure DevOps Organization: ");
         String project = askFor("Write your Azure DevOps project: ");
+        String workItemType = askFor("Write your Azure DevOps Work Item Type: ");
         String pat = askForSecret("Write your Azure DevOps Personal Access Token (PAT): ");
 
         return Map.of(
                 "organization", organization,
                 "project", project,
+                "workItemType", workItemType,
                 "pat", pat
         );
     }
