@@ -1,6 +1,7 @@
 plugins {
     id("java")
     id("application")
+    id("org.graalvm.buildtools.native") version "0.10.6"
 }
 
 group = "io.github.ctorressoftware"
@@ -12,6 +13,7 @@ repositories {
 
 dependencies {
     implementation("info.picocli:picocli:4.7.7")
+    annotationProcessor("info.picocli:picocli-codegen:4.7.7")
     implementation("org.yaml:snakeyaml:1.8")
     implementation("com.github.javakeyring:java-keyring:1.0.4")
     implementation("com.fasterxml.jackson.core:jackson-databind:2.22.0")
@@ -25,6 +27,43 @@ tasks.test {
     useJUnitPlatform()
 }
 
+tasks.withType<JavaCompile>().configureEach {
+    options.compilerArgs.add("-Aproject=io.github.ctorressoftware/flow-probe")
+}
+
+tasks.jar {
+    manifest {
+        attributes["Main-Class"] = "io.github.ctorressoftware.Main"
+    }
+}
+
+tasks.register<JavaExec>("runWithNativeAgent") {
+    group = "native"
+    description = "Runs FlowProbe with GraalVM native-image agent"
+
+    mainClass.set("io.github.ctorressoftware.Main")
+    classpath = sourceSets["main"].runtimeClasspath
+
+    standardInput = System.`in`
+
+    jvmArgs(
+        "-agentlib:native-image-agent=config-merge-dir=src/main/resources/META-INF/native-image/io.github.ctorressoftware/flow-probe"
+    )
+
+    args = providers.gradleProperty("appArgs")
+        .map { it.split(" ") }
+        .getOrElse(listOf("--help"))
+}
+
 application {
     mainClass.set("io.github.ctorressoftware.Main")
+}
+
+graalvmNative {
+    binaries {
+        named("main") {
+            imageName.set("flowprobe")
+            mainClass.set("io.github.ctorressoftware.Main")
+        }
+    }
 }
