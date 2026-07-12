@@ -17,8 +17,6 @@ import io.github.ctorressoftware.infrastructure.persistence.adapter.KeystoreProv
 import io.github.ctorressoftware.infrastructure.persistence.keystore.KeystoreCredentialsStorageManager;
 import io.github.ctorressoftware.infrastructure.provider.azure.AzureProviderConfigurator;
 import io.github.ctorressoftware.infrastructure.provider.azure.AzureProviderPrompt;
-import io.github.ctorressoftware.infrastructure.provider.azure.ProviderConfiguratorFactory;
-import io.github.ctorressoftware.infrastructure.provider.azure.ProviderPromptFactory;
 import io.github.ctorressoftware.infrastructure.readfile.YAMLReader;
 import io.github.ctorressoftware.infrastructure.renderer.CurlRequestRenderer;
 import io.github.ctorressoftware.infrastructure.ticket.azuredevops.AzureDevOpsImpedimentTicketCreatorAdapter;
@@ -40,13 +38,9 @@ public final class AppConfig {
     private final AzureDevOpsWorkItemClient azureDevOpsWorkItemClient = new AzureDevOpsWorkItemClient();
     private final CredentialsStorageManager credentialsStorageManager = new KeystoreCredentialsStorageManager();
     private final ProviderConfigRepository providerConfigRepository = new KeystoreProviderConfigRepositoryAdapter(credentialsStorageManager);
-    private final Map<String, ProviderConfigurator> providerConfigurators = Map.of("AZURE", new AzureProviderConfigurator(providerConfigRepository));
     private final AzureDevOpsWorkItemTicketCreator azureDevOpsWorkItemTicketCreator = new AzureDevOpsWorkItemTicketCreator(azureDevOpsWorkItemClient, providerConfigRepository);
     private final ImpedimentTicketCreator impedimentTicketCreator = new AzureDevOpsImpedimentTicketCreatorAdapter(azureDevOpsWorkItemTicketCreator);
     private final CreateImpedimentTicketUseCase createImpedimentTicketUseCase = new CreateImpedimentTicketHandler(impedimentTicketCreator);
-    private final ProviderConfiguratorFactory providerConfiguratorFactory = new ProviderConfiguratorFactory(providerConfigurators);
-    private final Map<String, ProviderPrompt> providerPrompts = Map.of("AZURE", new AzureProviderPrompt(scanner));
-    private final ProviderPromptFactory providerPromptFactory = new ProviderPromptFactory(providerPrompts);
     private final ProviderPrompt azurePrompt = new AzureProviderPrompt(scanner);
     private final ProviderConfigurator azureConfigurator = new AzureProviderConfigurator(providerConfigRepository);
     private final ConfigureProviderUseCase configureProviderUseCase = new ConfigureProviderHandler(
