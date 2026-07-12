@@ -37,12 +37,12 @@ public final class AppConfig {
     private final FlowExecutor flowExecutor = new FlowExecutor(context, serviceCaller);
     private final ExecuteFlowUseCase executeFlowUseCase = new ExecuteFlowHandler(flowExecutor);
     private final AzureDevOpsWorkItemClient azureDevOpsWorkItemClient = new AzureDevOpsWorkItemClient();
-    private final AzureDevOpsWorkItemTicketCreator azureDevOpsWorkItemTicketCreator = new AzureDevOpsWorkItemTicketCreator(azureDevOpsWorkItemClient);
-    private final ImpedimentTicketCreator impedimentTicketCreator = new AzureDevOpsImpedimentTicketCreatorAdapter(azureDevOpsWorkItemTicketCreator);
-    private final CreateImpedimentTicketUseCase createImpedimentTicketUseCase = new CreateImpedimentTicketHandler(impedimentTicketCreator);
     private final CredentialsStorageManager credentialsStorageManager = new KeystoreCredentialsStorageManager();
     private final ProviderConfigRepository providerConfigRepository = new KeystoreProviderConfigRepositoryAdapter(credentialsStorageManager);
     private final Map<String, ProviderConfigurator> providerConfigurators = Map.of("AZURE", new AzureProviderConfigurator(providerConfigRepository));
+    private final AzureDevOpsWorkItemTicketCreator azureDevOpsWorkItemTicketCreator = new AzureDevOpsWorkItemTicketCreator(azureDevOpsWorkItemClient, providerConfigRepository);
+    private final ImpedimentTicketCreator impedimentTicketCreator = new AzureDevOpsImpedimentTicketCreatorAdapter(azureDevOpsWorkItemTicketCreator);
+    private final CreateImpedimentTicketUseCase createImpedimentTicketUseCase = new CreateImpedimentTicketHandler(impedimentTicketCreator);
     private final ProviderConfiguratorFactory providerConfiguratorFactory = new ProviderConfiguratorFactory(providerConfigurators);
     private final Map<String, ProviderPrompt> providerPrompts = Map.of("AZURE", new AzureProviderPrompt(scanner));
     private final ProviderPromptFactory providerPromptFactory = new ProviderPromptFactory(providerPrompts);
