@@ -26,10 +26,10 @@ public class ConfigureProviderHandler implements ConfigureProviderUseCase {
     public ConfigureProviderResult configure(ConfigureProviderCommand command) {
 
         ProviderPrompt providerPrompt = promptFactory.getPromptByProvider(command.provider());
-        ProviderConfigurator configurator = configuratorFactory.getConfiguratorProvider(command.provider());
+        ProviderConfigurator providerConfigurator = configuratorFactory.getConfiguratorProvider(command.provider());
 
         final Map<String, String> credentials = providerPrompt.prompt();
-        configurator.configure(credentials);
+        providerConfigurator.configure(credentials);
 
         return new ConfigureProviderResult(true);
     }
