@@ -3,6 +3,7 @@ package io.github.ctorressoftware;
 import io.github.ctorressoftware.application.port.in.createticket.CreateImpedimentTicketUseCase;
 import io.github.ctorressoftware.application.port.in.flowexecution.ExecuteFlowUseCase;
 import io.github.ctorressoftware.application.port.in.provider.configure.ConfigureProviderUseCase;
+import io.github.ctorressoftware.application.port.in.provider.configure.Provider;
 import io.github.ctorressoftware.application.port.in.readfile.ReadFileUseCase;
 import io.github.ctorressoftware.application.port.out.*;
 import io.github.ctorressoftware.application.usecase.CreateImpedimentTicketHandler;
@@ -46,7 +47,12 @@ public final class AppConfig {
     private final ProviderConfiguratorFactory providerConfiguratorFactory = new ProviderConfiguratorFactory(providerConfigurators);
     private final Map<String, ProviderPrompt> providerPrompts = Map.of("AZURE", new AzureProviderPrompt(scanner));
     private final ProviderPromptFactory providerPromptFactory = new ProviderPromptFactory(providerPrompts);
-    private final ConfigureProviderUseCase configureProviderUseCase = new ConfigureProviderHandler(providerConfiguratorFactory, providerPromptFactory);
+    private final ProviderPrompt azurePrompt = new AzureProviderPrompt(scanner);
+    private final ProviderConfigurator azureConfigurator = new AzureProviderConfigurator(providerConfigRepository);
+    private final ConfigureProviderUseCase configureProviderUseCase = new ConfigureProviderHandler(
+            Map.of(Provider.AZURE, azureConfigurator),
+            Map.of(Provider.AZURE, azurePrompt)
+    );
 
     public Scanner scanner() {
         return scanner;
