@@ -14,7 +14,7 @@ repositories {
 dependencies {
     implementation("info.picocli:picocli:4.7.7")
     annotationProcessor("info.picocli:picocli-codegen:4.7.7")
-    implementation("org.yaml:snakeyaml:1.8")
+    implementation("org.yaml:snakeyaml:2.6")
     implementation("com.github.javakeyring:java-keyring:1.0.4")
     implementation("com.fasterxml.jackson.core:jackson-databind:2.22.0")
     implementation("com.fasterxml.jackson.datatype:jackson-datatype-jsr310:2.22.0")
