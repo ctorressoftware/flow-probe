@@ -16,6 +16,7 @@ import java.util.Map;
 public class FlowExecutor {
     private final Context context;
     private final ServiceCaller serviceCaller;
+    private final ObjectMapper objectMapper = new ObjectMapper();
 
     public FlowExecutor(Context context, ServiceCaller serviceCaller) {
         this.context = context;
@@ -38,14 +39,15 @@ public class FlowExecutor {
 
     private ServiceCall normalizeServiceCall(ServiceCall call, boolean hasExpectedValues) {
 
-        if (!hasExpectedValues) return call;
+        String body = serializeBody(call.body());
+        String url = call.url();
 
-        return new ServiceCall(
-                PlaceholderResolver.resolve(context.variables(), call.url()),
-                call.method(),
-                call.headers(),
-                PlaceholderResolver.resolve(context.variables(), call.body().toString())
-        );
+        if (hasExpectedValues) {
+            url = PlaceholderResolver.resolve(context.variables(), url);
+            body = PlaceholderResolver.resolve(context.variables(), body);
+        }
+
+        return new ServiceCall(url, call.method(), call.headers(), body);
     }
 
     private List<FlowExecutionSummaryDetail> executeTasks(List<FlowStep> flowSteps) {
@@ -81,9 +83,8 @@ public class FlowExecutor {
     private void exportVariables(String response, Map<String, String> variablesToExport) {
         // TODO: add custom exception
         if (variablesToExport != null && !variablesToExport.isEmpty()) {
-            ObjectMapper mapper = new ObjectMapper();
             try {
-                JsonNode root = mapper.readTree(response);
+                JsonNode root = objectMapper.readTree(response);
                 variablesToExport.forEach((key, keyValue) -> {
                     String valuePath = "/" + keyValue.replace(".", "/");
                     String value = root.at(valuePath).asText();
@@ -92,6 +93,16 @@ public class FlowExecutor {
             } catch (JsonProcessingException e) {
                 throw new RuntimeException(e);
             }
+        }
+    }
+
+    private String serializeBody(Object body) {
+        if (body == null) return null;
+        if (body instanceof String stringBody) return stringBody;
+        try {
+            return objectMapper.writeValueAsString(body);
+        } catch (JsonProcessingException e) {
+            throw new RuntimeException("Could not serialize request body to JSON", e);
         }
     }
 }
