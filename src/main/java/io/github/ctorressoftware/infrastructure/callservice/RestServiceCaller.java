@@ -5,6 +5,8 @@ import io.github.ctorressoftware.domain.constant.HttpMethod;
 import io.github.ctorressoftware.domain.exception.HttpServiceCallException;
 import io.github.ctorressoftware.domain.model.ServiceCall;
 import io.github.ctorressoftware.domain.model.CallResult;
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
 
 import java.io.IOException;
 import java.net.URI;
@@ -16,9 +18,11 @@ import java.util.stream.Stream;
 public class RestServiceCaller implements ServiceCaller {
 
     private final HttpClient client;
+    private final ObjectMapper objectMapper;
 
     public RestServiceCaller() {
         this.client = HttpClient.newHttpClient();
+        this.objectMapper = new ObjectMapper();
     }
 
     public CallResult call(ServiceCall serviceCall) {
@@ -45,7 +49,7 @@ public class RestServiceCaller implements ServiceCaller {
 
         HttpRequest.BodyPublisher body = request.body() == null || request.method().equals(HttpMethod.GET) ?
                 HttpRequest.BodyPublishers.noBody() :
-                HttpRequest.BodyPublishers.ofString(request.body().toString());
+                HttpRequest.BodyPublishers.ofString(serializeBody(request.body()));
 
         String[] headers = request.headers()
                 .entrySet()
@@ -60,4 +64,14 @@ public class RestServiceCaller implements ServiceCaller {
                 .build();
     }
 
+    private String serializeBody(Object body) {
+        if (body instanceof String stringBody) {
+            return stringBody;
+        }
+        try {
+            return objectMapper.writeValueAsString(body);
+        } catch (JsonProcessingException e) {
+            throw new HttpServiceCallException("Could not serialize request body to JSON", e);
+        }
+    }
 }
