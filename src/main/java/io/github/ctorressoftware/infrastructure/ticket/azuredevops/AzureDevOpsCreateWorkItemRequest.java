@@ -16,6 +16,10 @@ public record AzureDevOpsCreateWorkItemRequest(List<AzureDevOpsPatchOperation> o
                         AzureDevOpsPatchOperation.add(
                                 "/fields/System.Description",
                                 ticket.getDescription()
+                        ),
+                        AzureDevOpsPatchOperation.add(
+                                "/multilineFieldsFormat/System.Description",
+                                "Markdown"
                         )
                 )
         );
