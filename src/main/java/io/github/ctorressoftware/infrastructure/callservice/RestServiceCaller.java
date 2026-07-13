@@ -13,6 +13,7 @@ import java.net.URI;
 import java.net.http.HttpClient;
 import java.net.http.HttpRequest;
 import java.net.http.HttpResponse;
+import java.util.Map;
 import java.util.stream.Stream;
 
 public class RestServiceCaller implements ServiceCaller {
@@ -51,15 +52,18 @@ public class RestServiceCaller implements ServiceCaller {
                 HttpRequest.BodyPublishers.noBody() :
                 HttpRequest.BodyPublishers.ofString(serializeBody(request.body()));
 
-        String[] headers = request.headers()
-                .entrySet()
-                .stream()
-                .flatMap(entry -> Stream.of(entry.getKey(), String.valueOf(entry.getValue())))
+        Map<String, String> headers =
+                request.headers() == null ? Map.of() : request.headers();
+
+        String[] headersArray = headers.entrySet().stream()
+                .flatMap(entry ->
+                        Stream.of(entry.getKey(), String.valueOf(entry.getValue()))
+                )
                 .toArray(String[]::new);
 
         return HttpRequest.newBuilder()
                 .uri(URI.create(request.url()))
-                .headers(headers)
+                .headers(headersArray)
                 .method(request.method(), body)
                 .build();
     }
