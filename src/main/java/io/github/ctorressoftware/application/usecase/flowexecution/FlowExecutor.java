@@ -63,7 +63,7 @@ public class FlowExecutor {
 
         CallResult response = serviceCaller.call(normalizedCall);
 
-        boolean successfulExecution = response.statusCode() == HttpStatusCode.OK;
+        boolean successfulExecution = HttpStatusCode.isSuccess(response.statusCode());
 
         exportVariables(response.responseBody(), step.getExport());
 
