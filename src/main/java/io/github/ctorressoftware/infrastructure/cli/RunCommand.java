@@ -112,7 +112,7 @@ public class RunCommand implements Callable<Integer> {
             ServiceCall call = detail.executed();
             ReproducibleRequest reproducibleRequest = ReproducibleRequest.fromServiceCall(call);
             return requestRenderer.render(reproducibleRequest);
-        }).collect(Collectors.joining());
+        }).collect(Collectors.joining("\n\n"));
 
         return ImpedimentTicket.create(title, description);
     }

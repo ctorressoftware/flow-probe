@@ -36,6 +36,13 @@ steps:
       headers:
         accept: "application/json"
 
+  - name: "get-raichu"
+    request:
+      url: "https://pokeapi.co/api/v2/pokemon/raychu"
+      method: "GET"
+      headers:
+        accept: "application/json"
+
     requires: null
 
     export: null
