@@ -14,6 +14,19 @@ steps:
     export:
       pokemonName: "results.0.name"
 
+  - name: "get-duplicated-variable-exception"
+    request:
+      url: "https://pokeapi.co/api/v2/pokemon?offset=0&limit=1350"
+      method: "GET"
+      headers:
+        accept: "application/json"
+      body: null
+
+    requires: null
+
+    export:
+      pokemonName: "results.0.name"
+
   - name: "get-pokemon"
     request:
       url: "https://pokeapi.co/api/v2/pokemon/${pokemonName}"
