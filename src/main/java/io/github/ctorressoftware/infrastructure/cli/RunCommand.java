@@ -69,6 +69,16 @@ public class RunCommand implements Callable<Integer> {
 
     @Override
     public Integer call() {
+        try {
+            return run();
+        } catch (Exception e) {
+            String reason = e.getMessage() != null ? e.getMessage() : e.getClass().getSimpleName();
+            System.err.println("FlowProbe failed to run: " + reason);
+            return 1;
+        }
+    }
+
+    private Integer run() {
         ReadFileResult readFileResult = readFileUseCase.read(new ReadFileCommand(new FilePath(filePath)));
         Flow flow = readFileResult.flow();
         ExecuteFlowResult executeFlowResult = executeFlowUseCase.execute(new ExecuteFlowCommand(flow));
