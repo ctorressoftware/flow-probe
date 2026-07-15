@@ -18,4 +18,9 @@ public class YAMLReaderTest {
         assertEquals("pokeapi-success-flow", flow.getName());
         assertEquals(3, flow.getSteps().size());
     }
+
+        @Test
+    void parsesPartialFlow() {
+        // TODO: create partially correct YAML file
+    }
 }
