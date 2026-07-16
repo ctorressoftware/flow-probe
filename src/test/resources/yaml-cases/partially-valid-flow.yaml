@@ -1,0 +1,22 @@
+name: "pokeapi-partially-success-flow"
+
+steps:
+  - name: "get-all-pokemon"
+    requires: null
+    export: null
+    request:
+      url: "https://pokeapi.co/api/v2/pokemon?offset=0&limit=1350"
+      method: "GET"
+      headers:
+        accept: "application/json"
+      body: null
+
+  - name: "get-pokemon"
+    requires: null
+    export: null
+    request:
+      url: "https://pokeapi.co/api/v2/pokemon/wrong-pokemon-name"
+      method: "GET"
+      headers:
+        accept: "application/json"
+      body: null

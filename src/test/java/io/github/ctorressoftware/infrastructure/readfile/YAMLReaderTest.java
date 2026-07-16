@@ -12,15 +12,18 @@ public class YAMLReaderTest {
     @Test
     void parsesFullyValidFlow() {
         YAMLReader reader = new YAMLReader();
-
         Flow flow = reader.read(new FilePath(BASE_PATH + "fully-valid-flow.yaml"));
 
         assertEquals("pokeapi-success-flow", flow.getName());
         assertEquals(3, flow.getSteps().size());
     }
 
-        @Test
+    @Test
     void parsesPartiallyValidFlow() {
-        // TODO: create partially valid YAML file
+        YAMLReader reader = new YAMLReader();
+        Flow flow = reader.read(new FilePath(BASE_PATH + "partially-valid-flow.yaml"));
+
+        assertEquals("pokeapi-partially-success-flow", flow.getName());
+        assertEquals(2, flow.getSteps().size());
     }
 }
