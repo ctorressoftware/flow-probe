@@ -20,7 +20,7 @@ public class YAMLReaderTest {
     }
 
         @Test
-    void parsesPartialFlow() {
-        // TODO: create partially correct YAML file
+    void parsesPartiallyValidFlow() {
+        // TODO: create partially valid YAML file
     }
 }
