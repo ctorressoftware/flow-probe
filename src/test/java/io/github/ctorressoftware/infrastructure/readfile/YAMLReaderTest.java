@@ -10,10 +10,10 @@ public class YAMLReaderTest {
     private static final String BASE_PATH = "src/test/resources/yaml-cases/";
 
     @Test
-    void parsesValidFullFlow() {
+    void parsesFullyValidFlow() {
         YAMLReader reader = new YAMLReader();
 
-        Flow flow = reader.read(new FilePath(BASE_PATH + "valid-full.yaml"));
+        Flow flow = reader.read(new FilePath(BASE_PATH + "fully-valid-flow.yaml"));
 
         assertEquals("pokeapi-success-flow", flow.getName());
         assertEquals(3, flow.getSteps().size());
