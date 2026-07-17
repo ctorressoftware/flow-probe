@@ -26,4 +26,13 @@ public class YAMLReaderTest {
         assertEquals("pokeapi-partially-success-flow", flow.getName());
         assertEquals(2, flow.getSteps().size());
     }
+
+    @Test
+    void parsesFailureFlow() {
+        YAMLReader reader = new YAMLReader();
+        Flow flow = reader.read(new FilePath(BASE_PATH + "failure-flow.yaml"));
+
+        assertEquals("pokeapi-failure-flow", flow.getName());
+        assertEquals(1, flow.getSteps().size());
+    }
 }

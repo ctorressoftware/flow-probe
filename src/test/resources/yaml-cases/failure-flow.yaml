@@ -1,0 +1,12 @@
+name: "pokeapi-failure-flow"
+
+steps:
+  - name: "get-pokemon"
+    requires: null
+    export: null
+    request:
+      url: "https://pokeapi.co/api/v2/pokemon/wrong-pokemon-name"
+      method: "GET"
+      headers:
+        accept: "application/json"
+      body: null
