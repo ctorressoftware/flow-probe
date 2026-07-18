@@ -8,30 +8,25 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 
 public class YAMLReaderTest {
     private static final String BASE_PATH = "src/test/resources/yaml-cases/";
+    private final YAMLReader reader = new YAMLReader();
 
     @Test
     void parsesFullyValidFlow() {
-        YAMLReader reader = new YAMLReader();
         Flow flow = reader.read(new FilePath(BASE_PATH + "fully-valid-flow.yaml"));
-
         assertEquals("pokeapi-success-flow", flow.getName());
         assertEquals(3, flow.getSteps().size());
     }
 
     @Test
     void parsesPartiallyValidFlow() {
-        YAMLReader reader = new YAMLReader();
         Flow flow = reader.read(new FilePath(BASE_PATH + "partially-valid-flow.yaml"));
-
         assertEquals("pokeapi-partially-success-flow", flow.getName());
         assertEquals(2, flow.getSteps().size());
     }
 
     @Test
     void parsesFailureFlow() {
-        YAMLReader reader = new YAMLReader();
         Flow flow = reader.read(new FilePath(BASE_PATH + "failure-flow.yaml"));
-
         assertEquals("pokeapi-failure-flow", flow.getName());
         assertEquals(1, flow.getSteps().size());
     }
