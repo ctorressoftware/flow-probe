@@ -32,34 +32,39 @@ public class YAMLReader implements FlowFileReader {
             List<Map<String, Object>> steps =
                     (List<Map<String, Object>>) yamlMap.get("steps");
 
-            List<FlowStep> formattedSteps = new ArrayList<>();
-
-            for (Map<String, Object> step : steps) {
-
-                String stepName = step.get("name").toString();
-
-                Map<String, Object> request = (Map<String, Object>) step.get("request");
-                Map<String, Object> requires = (Map<String, Object>) step.get("requires");
-                Map<String, String> export = (Map<String, String>) step.get("export");
-
-                String url = request.get("url").toString();
-                String method = request.get("method").toString();
-
-                Map<String, String> headers =
-                        (Map<String, String>) request.get("headers");
-
-                Object body = request.get("body");
-
-                ServiceCall serviceCall = resolveRequest(url, method, headers, body);
-                FlowStep flowStep = resolveStep(flowName, stepName, serviceCall, requires, export);
-
-                formattedSteps.add(flowStep);
-            }
+            List<FlowStep> formattedSteps = parseSteps(flowName, steps);
 
             return Flow.create(flowName, formattedSteps);
         } catch (IOException e) {
             throw new RuntimeException("Could not read YAML file: " + filePath.value(), e); // TODO: create custom one
         }
+    }
+
+    @SuppressWarnings("unchecked")
+    List<FlowStep> parseSteps(String flowName, List<Map<String, Object>> rawSteps) {
+        List<FlowStep> formattedSteps = new ArrayList<>();
+        for (Map<String, Object> step : rawSteps) {
+
+            String stepName = step.get("name").toString();
+
+            Map<String, Object> request = (Map<String, Object>) step.get("request");
+            Map<String, Object> requires = (Map<String, Object>) step.get("requires");
+            Map<String, String> export = (Map<String, String>) step.get("export");
+
+            String url = request.get("url").toString();
+            String method = request.get("method").toString();
+
+            Map<String, String> headers =
+                    (Map<String, String>) request.get("headers");
+
+            Object body = request.get("body");
+
+            ServiceCall serviceCall = resolveRequest(url, method, headers, body);
+            FlowStep flowStep = resolveStep(flowName, stepName, serviceCall, requires, export);
+
+            formattedSteps.add(flowStep);
+        }
+        return formattedSteps;
     }
 
     private ServiceCall resolveRequest(
