@@ -1,4 +1,4 @@
-package io.github.ctorressoftware.infrastructure.readfile;
+package io.github.ctorressoftware.infrastructure.readfile.yaml;
 
 import io.github.ctorressoftware.application.port.out.FlowFileReader;
 import io.github.ctorressoftware.domain.exception.EmptyFileException;
@@ -21,18 +21,13 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
-public class YAMLReader implements FlowFileReader {
+public class YamlReader implements FlowFileReader {
 
     private final Yaml yaml;
 
-    public YAMLReader() {
+    public YamlReader() {
         LoaderOptions loaderOptions = new LoaderOptions();
-
-        Constructor constructor = new Constructor(
-                FlowYaml.class,
-                loaderOptions
-        );
-
+        Constructor constructor = new Constructor(YamlFlow.class, loaderOptions);
         this.yaml = new Yaml(constructor);
     }
 
@@ -60,7 +55,7 @@ public class YAMLReader implements FlowFileReader {
     }
 
     private Map<String, Object> parseFile(FilePath filePath) {
-        
+
         try (InputStream inputStream = Files.newInputStream(Path.of(filePath.value()))) {
             return yaml.load(inputStream);
         } catch (IOException e) {

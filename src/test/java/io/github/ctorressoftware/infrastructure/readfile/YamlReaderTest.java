@@ -3,14 +3,15 @@ package io.github.ctorressoftware.infrastructure.readfile;
 import io.github.ctorressoftware.domain.exception.NoFlowNameException;
 import io.github.ctorressoftware.domain.model.FilePath;
 import io.github.ctorressoftware.domain.model.Flow;
+import io.github.ctorressoftware.infrastructure.readfile.yaml.YamlReader;
 import org.junit.jupiter.api.Test;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
-public class YAMLReaderTest {
+public class YamlReaderTest {
     private static final String BASE_PATH = "src/test/resources/yaml-cases/";
-    private final YAMLReader reader = new YAMLReader();
+    private final YamlReader reader = new YamlReader();
 
     @Test
     void parsesFullyValidFlow() {
@@ -32,5 +33,10 @@ public class YAMLReaderTest {
                 "Could not read YAML flow name from: " + filePath.value(),
                 exception.getMessage()
         );
+    }
+
+    @Test
+    void rejectFlowWithoutSteps() {
+
     }
 }

@@ -17,7 +17,7 @@ import io.github.ctorressoftware.infrastructure.persistence.adapter.KeystoreProv
 import io.github.ctorressoftware.infrastructure.persistence.keystore.KeystoreCredentialsStorageManager;
 import io.github.ctorressoftware.infrastructure.provider.azure.AzureProviderConfigurator;
 import io.github.ctorressoftware.infrastructure.provider.azure.AzureProviderPrompt;
-import io.github.ctorressoftware.infrastructure.readfile.YAMLReader;
+import io.github.ctorressoftware.infrastructure.readfile.yaml.YamlReader;
 import io.github.ctorressoftware.infrastructure.renderer.CurlRequestRenderer;
 import io.github.ctorressoftware.infrastructure.ticket.azuredevops.AzureDevOpsImpedimentTicketCreatorAdapter;
 import io.github.ctorressoftware.infrastructure.ticket.azuredevops.AzureDevOpsWorkItemClient;
@@ -29,7 +29,7 @@ import java.util.Scanner;
 public final class AppConfig {
     private final RequestRenderer requestRenderer = new CurlRequestRenderer();
     private final Scanner scanner = new Scanner(System.in);
-    private final FlowFileReader flowFileReader = new YAMLReader();
+    private final FlowFileReader flowFileReader = new YamlReader();
     private final ReadFileUseCase readFileUseCase = new ReadFileHandler(flowFileReader);
     private final Context context = new Context();
     private final ServiceCaller serviceCaller = new RestServiceCaller();
