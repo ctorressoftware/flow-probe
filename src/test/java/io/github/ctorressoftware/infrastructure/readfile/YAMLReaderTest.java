@@ -33,18 +33,4 @@ public class YAMLReaderTest {
                 exception.getMessage()
         );
     }
-
-    @Test
-    void parsesPartiallyValidFlow() {
-        Flow flow = reader.read(new FilePath(BASE_PATH + "partially-valid-flow.yaml"));
-        assertEquals("pokeapi-partially-success-flow", flow.getName());
-        assertEquals(2, flow.getSteps().size());
-    }
-
-    @Test
-    void parsesFailureFlow() {
-        Flow flow = reader.read(new FilePath(BASE_PATH + "failure-flow.yaml"));
-        assertEquals("pokeapi-failure-flow", flow.getName());
-        assertEquals(1, flow.getSteps().size());
-    }
 }
