@@ -1,7 +1,10 @@
 package io.github.ctorressoftware.infrastructure.readfile;
 
 import io.github.ctorressoftware.application.port.out.FlowFileReader;
+import io.github.ctorressoftware.domain.exception.EmptyFileException;
+import io.github.ctorressoftware.domain.exception.NoDefinedStepsException;
 import io.github.ctorressoftware.domain.exception.NoFlowNameException;
+import io.github.ctorressoftware.domain.exception.UnreadableFileException;
 import io.github.ctorressoftware.domain.model.FilePath;
 import io.github.ctorressoftware.domain.model.Flow;
 import io.github.ctorressoftware.domain.model.FlowStep;
@@ -22,33 +25,39 @@ public class YAMLReader implements FlowFileReader {
     @SuppressWarnings("unchecked")
     public Flow read(FilePath filePath) {
 
+        Map<String, Object> yamlMap = parseFile(filePath);
+
+        if (yamlMap.isEmpty()) throw new EmptyFileException(filePath.value());
+
+        String flowName = yamlMap.getOrDefault("name", null).toString();
+
+        if (flowName.isBlank()) throw new NoFlowNameException(filePath.value());
+
+        Object rawSteps = yamlMap.getOrDefault("steps", null);
+
+        if (rawSteps == null || rawSteps.equals("")) throw new NoDefinedStepsException(filePath.value());
+
+        List<Map<String, Object>> steps = (List<Map<String, Object>>) rawSteps; // TODO: improve with SnakeYAML and DTOs
+
+        List<FlowStep> formattedSteps = formatSteps(flowName, steps);
+
+        return Flow.create(flowName, formattedSteps);
+    }
+
+    private Map<String, Object> parseFile(FilePath filePath) {
+
         Yaml yaml = new Yaml();
-
         try (InputStream inputStream = Files.newInputStream(Path.of(filePath.value()))) {
-
-            Map<String, Object> yamlMap = yaml.load(inputStream);
-
-            if (!yamlMap.containsKey("name") || yamlMap.get("name") == null) {
-                throw new NoFlowNameException(filePath.value());
-            }
-
-            String flowName = yamlMap.get("name").toString();
-
-            List<Map<String, Object>> steps =
-                    (List<Map<String, Object>>) yamlMap.get("steps");
-
-            List<FlowStep> formattedSteps = parseSteps(flowName, steps);
-
-            return Flow.create(flowName, formattedSteps);
+            return yaml.load(inputStream);
         } catch (IOException e) {
-            throw new RuntimeException("Could not read YAML file: " + filePath.value(), e); // TODO: create custom one
+            throw new UnreadableFileException("Could not read YAML file: " + filePath.value(), e);
         }
     }
 
     @SuppressWarnings("unchecked")
-    List<FlowStep> parseSteps(String flowName, List<Map<String, Object>> rawSteps) {
+    private List<FlowStep> formatSteps(String flowName, List<Map<String, Object>> steps) {
         List<FlowStep> formattedSteps = new ArrayList<>();
-        for (Map<String, Object> step : rawSteps) {
+        for (Map<String, Object> step : steps) {
 
             String stepName = step.get("name").toString();
 
