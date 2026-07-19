@@ -27,9 +27,6 @@ public class FlowExecutor {
 
         if (flow == null) throw new NoDefinedFlowException();
 
-        if (flow.getSteps() == null || flow.getSteps().isEmpty())
-            throw new NoDefinedStepsException();
-
         List<FlowExecutionSummaryDetail> resumeDetails = executeTasks(flow.getSteps());
 
         boolean successfulExecution = resumeDetails.stream()
