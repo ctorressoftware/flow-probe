@@ -9,7 +9,9 @@ import io.github.ctorressoftware.domain.model.FilePath;
 import io.github.ctorressoftware.domain.model.Flow;
 import io.github.ctorressoftware.domain.model.FlowStep;
 import io.github.ctorressoftware.domain.model.ServiceCall;
+import org.yaml.snakeyaml.LoaderOptions;
 import org.yaml.snakeyaml.Yaml;
+import org.yaml.snakeyaml.constructor.Constructor;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -20,6 +22,19 @@ import java.util.List;
 import java.util.Map;
 
 public class YAMLReader implements FlowFileReader {
+
+    private final Yaml yaml;
+
+    public YAMLReader() {
+        LoaderOptions loaderOptions = new LoaderOptions();
+
+        Constructor constructor = new Constructor(
+                FlowYaml.class,
+                loaderOptions
+        );
+
+        this.yaml = new Yaml(constructor);
+    }
 
     @Override
     @SuppressWarnings("unchecked")
@@ -45,8 +60,7 @@ public class YAMLReader implements FlowFileReader {
     }
 
     private Map<String, Object> parseFile(FilePath filePath) {
-
-        Yaml yaml = new Yaml();
+        
         try (InputStream inputStream = Files.newInputStream(Path.of(filePath.value()))) {
             return yaml.load(inputStream);
         } catch (IOException e) {
