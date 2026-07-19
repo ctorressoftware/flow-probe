@@ -1,6 +1,7 @@
 package io.github.ctorressoftware.infrastructure.readfile;
 
 import io.github.ctorressoftware.application.port.out.FlowFileReader;
+import io.github.ctorressoftware.domain.exception.NoFlowNameException;
 import io.github.ctorressoftware.domain.model.FilePath;
 import io.github.ctorressoftware.domain.model.Flow;
 import io.github.ctorressoftware.domain.model.FlowStep;
@@ -25,7 +26,11 @@ public class YAMLReader implements FlowFileReader {
 
         try (InputStream inputStream = Files.newInputStream(Path.of(filePath.value()))) {
 
-            Map<String, Object> yamlMap = (Map<String, Object>) yaml.load(inputStream);
+            Map<String, Object> yamlMap = yaml.load(inputStream);
+
+            if (!yamlMap.containsKey("name") || yamlMap.get("name") == null) {
+                throw new NoFlowNameException(filePath.value());
+            }
 
             String flowName = yamlMap.get("name").toString();
 

@@ -5,6 +5,7 @@ import io.github.ctorressoftware.domain.model.Flow;
 import org.junit.jupiter.api.Test;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 
 public class YAMLReaderTest {
     private static final String BASE_PATH = "src/test/resources/yaml-cases/";
@@ -15,6 +16,15 @@ public class YAMLReaderTest {
         Flow flow = reader.read(new FilePath(BASE_PATH + "fully-valid-flow.yaml"));
         assertEquals("pokeapi-success-flow", flow.getName());
         assertEquals(3, flow.getSteps().size());
+    }
+
+    @Test
+    void parsesFlowWithBlankFlowName() {
+        assertThrows(
+                RuntimeException.class,
+                () -> reader.read(new FilePath(BASE_PATH + "no-name-flow.yaml")),
+                "No name was defined in the YAML flow file"
+        );
     }
 
     @Test
