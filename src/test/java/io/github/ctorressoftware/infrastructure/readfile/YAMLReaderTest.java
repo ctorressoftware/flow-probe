@@ -1,5 +1,6 @@
 package io.github.ctorressoftware.infrastructure.readfile;
 
+import io.github.ctorressoftware.domain.exception.NoFlowNameException;
 import io.github.ctorressoftware.domain.model.FilePath;
 import io.github.ctorressoftware.domain.model.Flow;
 import org.junit.jupiter.api.Test;
@@ -19,11 +20,17 @@ public class YAMLReaderTest {
     }
 
     @Test
-    void parsesFlowWithBlankFlowName() {
-        assertThrows(
-                RuntimeException.class,
-                () -> reader.read(new FilePath(BASE_PATH + "no-name-flow.yaml")),
-                "No name was defined in the YAML flow file"
+    void rejectsFlowWithoutName() {
+        FilePath filePath = new FilePath(BASE_PATH + "no-name-flow.yaml");
+
+        NoFlowNameException exception = assertThrows(
+                NoFlowNameException.class,
+                () -> reader.read(filePath)
+        );
+
+        assertEquals(
+                "Could not read YAML flow name from: " + filePath.value(),
+                exception.getMessage()
         );
     }
 
