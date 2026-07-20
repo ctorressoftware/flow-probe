@@ -36,6 +36,21 @@ public class YamlReaderTest {
     }
 
     @Test
+    void rejectsDifferentFileExtension() {
+        FilePath filePath = new FilePath(BASE_PATH + "different-file-extension.txt");
+
+        UnreadableFileException exception = assertThrows(
+                UnreadableFileException.class,
+                () -> reader.read(filePath)
+        );
+
+        assertEquals(
+                "Could not read YAML file: " + filePath.value(),
+                exception.getMessage()
+        );
+    }
+
+    @Test
     void rejectsCorruptFlowFile() {
         FilePath filePath = new FilePath(BASE_PATH + "corrupted-flow.yaml");
 
@@ -150,7 +165,7 @@ public class YamlReaderTest {
         );
 
         assertEquals(
-                "Could not read YAML file: Could not read YAML file: " + filePath.value(),
+                "Could not read YAML file: " + filePath.value(),
                 exception.getMessage()
         );
     }

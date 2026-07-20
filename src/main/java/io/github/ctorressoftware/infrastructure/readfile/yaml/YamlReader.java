@@ -11,6 +11,7 @@ import org.yaml.snakeyaml.Yaml;
 import org.yaml.snakeyaml.constructor.Constructor;
 import org.yaml.snakeyaml.error.YAMLException;
 
+import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.nio.file.Files;
@@ -54,7 +55,7 @@ public class YamlReader implements FlowFileReader {
         try (InputStream inputStream = Files.newInputStream(Path.of(filePath.value()))) {
             return yaml.load(inputStream);
         } catch (IOException e) {
-            throw new UnreadableFileException("Could not read YAML file: " + filePath.value(), e);
+            throw new UnreadableFileException(filePath.value(), e);
         } catch (YAMLException exception) { // TODO: check if capture other SnakeYAML exceptions
             throw new InvalidYamlFileException("Could not parse YAML file: " + filePath.value(), exception);
         }
