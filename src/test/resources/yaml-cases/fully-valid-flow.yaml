@@ -2,40 +2,33 @@ name: "pokeapi-success-flow"
 
 steps:
   - name: "get-all-pokemon"
+    requires: null
     request:
       url: "https://pokeapi.co/api/v2/pokemon?offset=0&limit=1350"
       method: "GET"
       headers:
         accept: "application/json"
       body: null
-
-    requires: null
-
     exports:
       pokemonName: "results.0.name"
 
   - name: "get-pokemon"
+    exports: null
     request:
       url: "https://pokeapi.co/api/v2/pokemon/${pokemonName}"
       method: "GET"
       headers:
         accept: "application/json"
-      body:
-        test: 1
-        test2: 2
+      body: null
 
     requires:
       name: ${pokemonName}
 
-    exports: null
-
   - name: "get-pikachu"
+    requires: null
+    exports: null
     request:
       url: "https://pokeapi.co/api/v2/pokemon/pikachu"
       method: "GET"
       headers:
         accept: "application/json"
-
-    requires: null
-
-    exports: null
