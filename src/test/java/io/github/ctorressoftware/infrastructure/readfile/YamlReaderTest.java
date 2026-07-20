@@ -96,4 +96,19 @@ public class YamlReaderTest {
                 exception.getMessage()
         );
     }
+
+    @Test
+    void rejectsFlowWithoutStepRequestMethod() {
+        FilePath filePath = new FilePath(BASE_PATH + "flow-without-step-request-method.yaml");
+
+        InvalidFlowStepException exception = assertThrows(
+                InvalidFlowStepException.class,
+                () -> reader.read(filePath)
+        );
+
+        assertEquals(
+                "Request method is required for step: invalid-request-method",
+                exception.getMessage()
+        );
+    }
 }
