@@ -10,7 +10,7 @@ public class FlowStep {
     private final String flowName;
     private final String stepName;
     private final ServiceCall serviceCall;
-    private final Map<String, Object> requires;
+    private final Map<String, String> requires;
     private final Map<String, String> export;
     private Instant startedAt;
     private Instant finishedAt;
@@ -19,7 +19,7 @@ public class FlowStep {
             String flowName,
             String stepName,
             ServiceCall serviceCall,
-            Map<String, Object> requires,
+            Map<String, String> requires,
             Map<String, String> export
     ) {
         this.flowName = Objects.requireNonNull(flowName, "flowName cannot be null");
@@ -34,7 +34,7 @@ public class FlowStep {
             String flowName,
             String stepName,
             ServiceCall serviceCall,
-            Map<String, Object> requires,
+            Map<String, String> requires,
             Map<String, String> export) {
 
         return new FlowStep(flowName, stepName, serviceCall, requires, export);
@@ -64,7 +64,7 @@ public class FlowStep {
         return serviceCall;
     }
 
-    public Map<String, Object> getRequires() {
+    public Map<String, String> getRequires() {
         return requires;
     }
 
