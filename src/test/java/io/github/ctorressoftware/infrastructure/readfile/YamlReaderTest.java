@@ -36,6 +36,21 @@ public class YamlReaderTest {
     }
 
     @Test
+    void rejectsCorruptFlowFile() {
+        FilePath filePath = new FilePath(BASE_PATH + "corrupted-flow.yaml");
+
+        InvalidYamlFileException exception = assertThrows(
+                InvalidYamlFileException.class,
+                () -> reader.read(filePath)
+        );
+
+        assertEquals(
+                "Could not parse YAML file: " + filePath.value(),
+                exception.getMessage()
+        );
+    }
+
+    @Test
     void rejectsFlowWithoutName() {
         FilePath filePath = new FilePath(BASE_PATH + "no-name-flow.yaml");
 
