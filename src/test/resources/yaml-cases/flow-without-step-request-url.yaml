@@ -1,0 +1,15 @@
+name: "flow-without-step-request-url"
+
+# step request url is empty. If you remove the url property, application will reject the file, too.
+
+steps:
+  - name: "invalid-request-url"
+    requires: null
+    request:
+      url:
+      method: "GET"
+      headers:
+        accept: "application/json"
+      body: null
+    exports:
+      pokemonName: "results.0.name"

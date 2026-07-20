@@ -81,4 +81,19 @@ public class YamlReaderTest {
                 exception.getMessage()
         );
     }
+
+    @Test
+    void rejectsFlowWithoutStepRequestUrl() {
+        FilePath filePath = new FilePath(BASE_PATH + "flow-without-step-request-url.yaml");
+
+        InvalidFlowStepException exception = assertThrows(
+                InvalidFlowStepException.class,
+                () -> reader.read(filePath)
+        );
+
+        assertEquals(
+                "Request url is required for step: invalid-request-url",
+                exception.getMessage()
+        );
+    }
 }
