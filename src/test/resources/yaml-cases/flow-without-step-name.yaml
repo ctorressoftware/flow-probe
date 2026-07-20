@@ -1,0 +1,15 @@
+name: "flow-without-step-name"
+
+# step name is blank. If you remove the step name property, application will reject the file, too.
+
+steps:
+  - name: ""
+    requires: null
+    request:
+      url: "https://pokeapi.co/api/v2/pokemon?offset=0&limit=1350"
+      method: "GET"
+      headers:
+        accept: "application/json"
+      body: null
+    exports:
+      pokemonName: "results.0.name"

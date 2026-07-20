@@ -53,6 +53,21 @@ public class YamlReaderTest {
     }
 
     @Test
+    void rejectsFlowWithoutStepName() {
+        FilePath filePath = new FilePath(BASE_PATH + "flow-without-step-name.yaml");
+
+        InvalidFlowStepException exception = assertThrows(
+                InvalidFlowStepException.class,
+                () -> reader.read(filePath)
+        );
+
+        assertEquals(
+                "Flow step name cannot be blank",
+                exception.getMessage()
+        );
+    }
+
+    @Test
     void rejectsFlowWithoutStepRequest() {
         FilePath filePath = new FilePath(BASE_PATH + "flow-without-step-request.yaml");
 
