@@ -1,0 +1,17 @@
+---
+# Looks like YAML, but this file structure is broken and it isn't YAML
+config:
+  server:
+    host: localhost
+      port:: 8080
+    database
+    user: admin
+    password:
+      - secret
+    enabled: yes:
+  features:
+    - cache
+    - metrics
+      logging
+      level = INFO
+    [broken

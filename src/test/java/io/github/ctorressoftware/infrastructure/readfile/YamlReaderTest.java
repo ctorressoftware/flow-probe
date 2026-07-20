@@ -1,9 +1,6 @@
 package io.github.ctorressoftware.infrastructure.readfile;
 
-import io.github.ctorressoftware.domain.exception.EmptyFileException;
-import io.github.ctorressoftware.domain.exception.InvalidFlowStepException;
-import io.github.ctorressoftware.domain.exception.NoDefinedStepsException;
-import io.github.ctorressoftware.domain.exception.NoFlowNameException;
+import io.github.ctorressoftware.domain.exception.*;
 import io.github.ctorressoftware.domain.model.FilePath;
 import io.github.ctorressoftware.domain.model.Flow;
 import io.github.ctorressoftware.infrastructure.readfile.yaml.YamlReader;
@@ -124,6 +121,21 @@ public class YamlReaderTest {
 
         assertEquals(
                 "Request method is required for step: invalid-request-method",
+                exception.getMessage()
+        );
+    }
+
+    @Test
+    void rejectsWrongYamlFlowStructure() {
+        FilePath filePath = new FilePath(BASE_PATH + "wrong-yaml-flow-structure");
+
+        UnreadableFileException exception = assertThrows(
+                UnreadableFileException.class,
+                () -> reader.read(filePath)
+        );
+
+        assertEquals(
+                "Could not read YAML file: Could not read YAML file: " + filePath.value(),
                 exception.getMessage()
         );
     }
