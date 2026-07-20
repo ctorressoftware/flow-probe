@@ -3,7 +3,7 @@ name:
 steps:
   - name: "get-pokemon"
     requires: null
-    export: null
+    exports: null
     request:
       url: "https://pokeapi.co/api/v2/pokemon/wrong-pokemon-name"
       method: "GET"
