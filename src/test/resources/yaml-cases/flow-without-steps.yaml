@@ -1,3 +1,4 @@
 name: "flow-without-steps"
 
+# steps is empty. If you remove property name, test will reject it, too.
 steps:
