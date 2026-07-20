@@ -1,5 +1,6 @@
 package io.github.ctorressoftware.infrastructure.readfile;
 
+import io.github.ctorressoftware.domain.exception.InvalidFlowStepException;
 import io.github.ctorressoftware.domain.exception.NoDefinedStepsException;
 import io.github.ctorressoftware.domain.exception.NoFlowNameException;
 import io.github.ctorressoftware.domain.model.FilePath;
@@ -47,6 +48,21 @@ public class YamlReaderTest {
 
         assertEquals(
                 "No defined steps in the specified file: " + filePath.value(),
+                exception.getMessage()
+        );
+    }
+
+    @Test
+    void rejectsFlowWithoutStepRequest() {
+        FilePath filePath = new FilePath(BASE_PATH + "flow-without-step-request.yaml");
+
+        InvalidFlowStepException exception = assertThrows(
+                InvalidFlowStepException.class,
+                () -> reader.read(filePath)
+        );
+
+        assertEquals(
+                "Request is required for step: invalid-step",
                 exception.getMessage()
         );
     }

@@ -1,0 +1,33 @@
+name: "flow-without-step-request"
+
+# step request is empty. If you remove the request property, application will reject it, too.
+
+steps:
+  - name: "get-all-pokemon"
+    requires: null
+    request:
+      url: "https://pokeapi.co/api/v2/pokemon?offset=0&limit=1350"
+      method: "GET"
+      headers:
+        accept: "application/json"
+      body: null
+    exports:
+      pokemonName: "results.0.name"
+
+  - name: "get-pokemon"
+    request:
+      url: "https://pokeapi.co/api/v2/pokemon/${pokemonName}"
+      method: "GET"
+      headers:
+        accept: "application/json"
+      body:
+        test: 1
+        test2: 2
+
+    requires:
+      name: ${pokemonName}
+
+    exports: null
+
+  - name: "invalid-step"
+    request:
