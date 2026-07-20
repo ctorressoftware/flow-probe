@@ -1,5 +1,6 @@
 package io.github.ctorressoftware.infrastructure.readfile;
 
+import io.github.ctorressoftware.domain.exception.EmptyFileException;
 import io.github.ctorressoftware.domain.exception.InvalidFlowStepException;
 import io.github.ctorressoftware.domain.exception.NoDefinedStepsException;
 import io.github.ctorressoftware.domain.exception.NoFlowNameException;
@@ -20,6 +21,21 @@ public class YamlReaderTest {
         Flow flow = reader.read(new FilePath(BASE_PATH + "fully-valid-flow.yaml"));
         assertEquals("pokeapi-success-flow", flow.getName());
         assertEquals(3, flow.getSteps().size());
+    }
+
+    @Test
+    void rejectsEmptyFlowFile() {
+        FilePath filePath = new FilePath(BASE_PATH + "empty-flow.yaml");
+
+        EmptyFileException exception = assertThrows(
+                EmptyFileException.class,
+                () -> reader.read(filePath)
+        );
+
+        assertEquals(
+                "Specified YAML file is empty: " + filePath.value(),
+                exception.getMessage()
+        );
     }
 
     @Test
