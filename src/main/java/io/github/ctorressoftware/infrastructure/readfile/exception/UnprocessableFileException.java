@@ -1,4 +1,4 @@
-package io.github.ctorressoftware.domain.exception;
+package io.github.ctorressoftware.infrastructure.readfile.exception;
 
 public class UnprocessableFileException extends RuntimeException {
     public UnprocessableFileException(String filepath) {

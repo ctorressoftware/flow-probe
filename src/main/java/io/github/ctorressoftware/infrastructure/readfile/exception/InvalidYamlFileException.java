@@ -1,4 +1,4 @@
-package io.github.ctorressoftware.domain.exception;
+package io.github.ctorressoftware.infrastructure.readfile.exception;
 
 public class InvalidYamlFileException extends RuntimeException {
     public InvalidYamlFileException(String message, Throwable throwable) {

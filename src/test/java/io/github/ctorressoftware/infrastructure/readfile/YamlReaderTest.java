@@ -1,8 +1,8 @@
 package io.github.ctorressoftware.infrastructure.readfile;
 
-import io.github.ctorressoftware.domain.exception.*;
 import io.github.ctorressoftware.domain.model.FilePath;
 import io.github.ctorressoftware.domain.model.Flow;
+import io.github.ctorressoftware.infrastructure.readfile.exception.*;
 import io.github.ctorressoftware.infrastructure.readfile.yaml.YamlReader;
 import org.junit.jupiter.api.Test;
 

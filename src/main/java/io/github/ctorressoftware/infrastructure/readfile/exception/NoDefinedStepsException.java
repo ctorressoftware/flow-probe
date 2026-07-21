@@ -1,4 +1,4 @@
-package io.github.ctorressoftware.domain.exception;
+package io.github.ctorressoftware.infrastructure.readfile.exception;
 
 public class NoDefinedStepsException extends RuntimeException {
     public NoDefinedStepsException(String filePath) {

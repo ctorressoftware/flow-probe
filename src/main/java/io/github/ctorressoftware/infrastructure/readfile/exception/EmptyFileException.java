@@ -1,4 +1,4 @@
-package io.github.ctorressoftware.domain.exception;
+package io.github.ctorressoftware.infrastructure.readfile.exception;
 
 public class EmptyFileException extends RuntimeException {
     public EmptyFileException(String filePath) {
