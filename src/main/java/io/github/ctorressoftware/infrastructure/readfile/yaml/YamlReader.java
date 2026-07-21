@@ -11,7 +11,6 @@ import org.yaml.snakeyaml.Yaml;
 import org.yaml.snakeyaml.constructor.Constructor;
 import org.yaml.snakeyaml.error.YAMLException;
 
-import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.nio.file.Files;
@@ -39,11 +38,11 @@ public class YamlReader implements FlowFileReader {
         String flowName = Optional
                 .ofNullable(yamlFlow.getName())
                 .filter(name -> !name.isBlank())
-                .orElseThrow(() -> new NoFlowNameException(filePath.value())); // TODO: analyze if create generic flow exception
+                .orElseThrow(() -> new NoFlowNameException(filePath.value()));
 
         List<YamlStep> steps = Optional.ofNullable(yamlFlow.getSteps())
                 .filter(value -> !value.isEmpty())
-                .orElseThrow(() -> new NoDefinedStepsException(filePath.value())); // TODO: analyze if create generic flow exception
+                .orElseThrow(() -> new NoDefinedStepsException(filePath.value()));
 
         List<FlowStep> formattedSteps = formatSteps(flowName, steps);
 
