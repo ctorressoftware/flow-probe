@@ -1,5 +1,7 @@
 package io.github.ctorressoftware.infrastructure.renderer;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import io.github.ctorressoftware.application.port.out.RequestRenderer;
 import io.github.ctorressoftware.domain.model.ReproducibleRequest;
 import io.github.ctorressoftware.domain.model.RequestFormat;
@@ -7,6 +9,8 @@ import io.github.ctorressoftware.domain.model.RequestFormat;
 import java.util.Map;
 
 public class CurlRequestRenderer implements RequestRenderer {
+
+    private final ObjectMapper mapper = new ObjectMapper();
 
     @Override
     public String render(ReproducibleRequest request) {
@@ -28,15 +32,21 @@ public class CurlRequestRenderer implements RequestRenderer {
     private void appendHeaders(StringBuilder curl, Map<String, String> headers) {
         if (headers == null || headers.isEmpty()) return;
 
-        headers.forEach((name, value) ->
-                curl.append(" -H ").append(singleQuote(name + ": " + value))
+        headers.forEach((name, value) -> curl
+                .append(" -H ")
+                .append(singleQuote(name + ": " + value))
         );
     }
 
-    private void appendBody(StringBuilder curl, String body) {
-        if (body == null || body.isBlank()) return;
+    private void appendBody(StringBuilder curl, Object body) {
+        if (body == null) return;
 
-        curl.append(" -d ").append(singleQuote(body));
+        try {
+            String bodyString = mapper.writeValueAsString(body);
+            curl.append(" -d ").append(singleQuote(bodyString));
+        } catch (JsonProcessingException e) {
+            throw new RuntimeException(e); // TODO: create a custom exception
+        }
     }
 
     private String singleQuote(String value) {
