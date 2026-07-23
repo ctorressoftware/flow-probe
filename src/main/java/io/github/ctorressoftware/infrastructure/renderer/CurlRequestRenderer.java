@@ -5,6 +5,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import io.github.ctorressoftware.application.port.out.RequestRenderer;
 import io.github.ctorressoftware.domain.model.ReproducibleRequest;
 import io.github.ctorressoftware.domain.model.RequestFormat;
+import io.github.ctorressoftware.infrastructure.renderer.exception.InvalidCurlBodyException;
 
 import java.util.Map;
 
@@ -45,7 +46,7 @@ public class CurlRequestRenderer implements RequestRenderer {
             String bodyString = mapper.writeValueAsString(body);
             curl.append(" -d ").append(singleQuote(bodyString));
         } catch (JsonProcessingException e) {
-            throw new RuntimeException(e); // TODO: create a custom exception
+            throw new InvalidCurlBodyException(String.valueOf(body), e);
         }
     }
 
