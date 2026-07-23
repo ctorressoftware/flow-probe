@@ -1,14 +1,16 @@
 package io.github.ctorressoftware.infrastructure.renderer;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
 import io.github.ctorressoftware.domain.constant.HttpMethod;
 import io.github.ctorressoftware.domain.model.ReproducibleRequest;
+import io.github.ctorressoftware.infrastructure.readfile.exception.EmptyFileException;
+import io.github.ctorressoftware.infrastructure.renderer.exception.InvalidCurlBodyException;
 import org.junit.jupiter.api.Test;
-
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertThrows;
 
 import java.util.LinkedHashMap;
 import java.util.Map;
+
+import static org.junit.jupiter.api.Assertions.*;
 
 public class CurlRequestRendererTest {
 
@@ -54,5 +56,29 @@ public class CurlRequestRendererTest {
 
         String curl = renderer.render(request);
         assertEquals(expected, curl);
+    }
+
+    @Test
+    void shouldWrapJsonProcessingExceptionAsInvalidCurlBodyException() { // TODO: re-implement with Mockito
+        class Person {
+            Person friend;
+        }
+
+        Person person = new Person();
+        person.friend = person;
+
+        ReproducibleRequest request = new ReproducibleRequest(
+                "https://example.co/api/v1/post-example",
+                HttpMethod.POST,
+                Map.of(),
+                person
+        );
+
+        InvalidCurlBodyException exception = assertThrows(
+                InvalidCurlBodyException.class,
+                () -> renderer.render(request)
+        );
+
+        assertInstanceOf(JsonProcessingException.class, exception.getCause());
     }
 }
