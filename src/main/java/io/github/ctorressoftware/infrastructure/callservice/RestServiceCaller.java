@@ -14,6 +14,7 @@ import java.net.http.HttpClient;
 import java.net.http.HttpRequest;
 import java.net.http.HttpResponse;
 import java.util.Map;
+import java.util.Objects;
 import java.util.stream.Stream;
 
 public class RestServiceCaller implements ServiceCaller {
@@ -21,9 +22,13 @@ public class RestServiceCaller implements ServiceCaller {
     private final HttpClient client;
     private final ObjectMapper objectMapper;
 
+    RestServiceCaller(HttpClient client, ObjectMapper objectMapper) {
+        this.client = Objects.requireNonNull(client);
+        this.objectMapper = Objects.requireNonNull(objectMapper);
+    }
+
     public RestServiceCaller() {
-        this.client = HttpClient.newHttpClient();
-        this.objectMapper = new ObjectMapper();
+        this(HttpClient.newHttpClient(), new ObjectMapper());
     }
 
     public CallResult call(ServiceCall serviceCall) {
