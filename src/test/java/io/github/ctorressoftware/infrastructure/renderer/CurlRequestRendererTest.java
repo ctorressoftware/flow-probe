@@ -1,11 +1,12 @@
 package io.github.ctorressoftware.infrastructure.renderer;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import io.github.ctorressoftware.domain.constant.HttpMethod;
 import io.github.ctorressoftware.domain.model.ReproducibleRequest;
-import io.github.ctorressoftware.infrastructure.readfile.exception.EmptyFileException;
 import io.github.ctorressoftware.infrastructure.renderer.exception.InvalidCurlBodyException;
 import org.junit.jupiter.api.Test;
+import org.mockito.Mockito;
 
 import java.util.LinkedHashMap;
 import java.util.Map;
@@ -52,33 +53,48 @@ public class CurlRequestRendererTest {
                 body
         );
 
-        String expected = "curl -X POST -H 'Content-Type: application/json' -H 'Accept: application/json' -d '{\"option\":\"1\",\"topic\":\"example\"}' 'https://example.co/api/v1/post-example'";
+        String expected = "curl -X POST " +
+                "-H 'Content-Type: application/json' " +
+                "-H 'Accept: application/json' " +
+                "-d '{\"option\":\"1\",\"topic\":\"example\"}' " +
+                "'https://example.co/api/v1/post-example'";
 
         String curl = renderer.render(request);
+        
         assertEquals(expected, curl);
     }
 
     @Test
-    void shouldWrapJsonProcessingExceptionAsInvalidCurlBodyException() { // TODO: re-implement with Mockito
-        class Person {
-            Person friend;
-        }
+    void shouldWrapJsonProcessingExceptionAsInvalidCurlBodyException()
+            throws JsonProcessingException {
 
-        Person person = new Person();
-        person.friend = person;
+        ObjectMapper objectMapper = Mockito.mock(ObjectMapper.class);
+        CurlRequestRenderer renderer =
+                new CurlRequestRenderer(objectMapper);
+
+        Object body = new Object();
 
         ReproducibleRequest request = new ReproducibleRequest(
                 "https://example.co/api/v1/post-example",
                 HttpMethod.POST,
                 Map.of(),
-                person
+                body
         );
+
+        JsonProcessingException cause =
+                Mockito.mock(JsonProcessingException.class);
+
+        Mockito.when(objectMapper.writeValueAsString(body))
+                .thenThrow(cause);
 
         InvalidCurlBodyException exception = assertThrows(
                 InvalidCurlBodyException.class,
                 () -> renderer.render(request)
         );
 
-        assertInstanceOf(JsonProcessingException.class, exception.getCause());
+        assertSame(cause, exception.getCause());
+
+        Mockito.verify(objectMapper)
+                .writeValueAsString(body);
     }
 }

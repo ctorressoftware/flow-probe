@@ -13,6 +13,7 @@ repositories {
 
 dependencies {
     implementation("info.picocli:picocli:4.7.7")
+    implementation("org.mockito:mockito-core:5.23.0")
     annotationProcessor("info.picocli:picocli-codegen:4.7.7")
     implementation("org.yaml:snakeyaml:2.6")
     implementation("com.github.javakeyring:java-keyring:1.0.4")
