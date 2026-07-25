@@ -8,10 +8,19 @@ import io.github.ctorressoftware.domain.model.RequestFormat;
 import io.github.ctorressoftware.infrastructure.renderer.exception.InvalidCurlBodyException;
 
 import java.util.Map;
+import java.util.Objects;
 
 public class CurlRequestRenderer implements RequestRenderer {
 
-    private final ObjectMapper mapper = new ObjectMapper();
+    private final ObjectMapper mapper;
+
+    public CurlRequestRenderer() {
+        this(new ObjectMapper());
+    }
+
+    CurlRequestRenderer(ObjectMapper mapper) {
+        this.mapper = Objects.requireNonNull(mapper);
+    }
 
     @Override
     public String render(ReproducibleRequest request) {
