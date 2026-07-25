@@ -2,6 +2,7 @@ package io.github.ctorressoftware.infrastructure.callservice;
 
 import io.github.ctorressoftware.application.port.out.ServiceCaller;
 import io.github.ctorressoftware.domain.constant.HttpMethod;
+import io.github.ctorressoftware.domain.constant.HttpStatusCode;
 import io.github.ctorressoftware.domain.exception.HttpServiceCallException;
 import io.github.ctorressoftware.domain.model.ServiceCall;
 import io.github.ctorressoftware.domain.model.CallResult;
@@ -45,7 +46,7 @@ public class RestServiceCaller implements ServiceCaller {
         }
 
         if (response == null) {
-            return null;
+            return new CallResult(HttpStatusCode.INTERNAL_SERVER_ERROR, null);
         }
 
         return new CallResult(response.statusCode(), response.body());
