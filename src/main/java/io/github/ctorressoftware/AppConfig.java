@@ -30,7 +30,7 @@ import java.util.Map;
 import java.util.Scanner;
 
 public final class AppConfig {
-    private final Context context = new Context();
+    private final Context context = new Context(); // TODO: check if could be a bug
     private final Scanner scanner = new Scanner(System.in);
     private final HttpClient httpClient = HttpClient.newHttpClient();
     private final ObjectMapper objectMapper = new ObjectMapper();
