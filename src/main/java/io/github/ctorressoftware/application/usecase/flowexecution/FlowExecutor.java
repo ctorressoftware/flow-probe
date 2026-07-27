@@ -11,15 +11,17 @@ import io.github.ctorressoftware.domain.model.*;
 import java.time.Duration;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 
 public class FlowExecutor {
     private final Context context;
     private final ServiceCaller serviceCaller;
-    private final ObjectMapper objectMapper = new ObjectMapper();
+    private final ObjectMapper objectMapper;
 
-    public FlowExecutor(Context context, ServiceCaller serviceCaller) {
-        this.context = context;
-        this.serviceCaller = serviceCaller;
+    public FlowExecutor(Context context, ServiceCaller serviceCaller, ObjectMapper objectMapper) {
+        this.context = Objects.requireNonNull(context);
+        this.serviceCaller = Objects.requireNonNull(serviceCaller);
+        this.objectMapper = Objects.requireNonNull(objectMapper);
     }
 
     public FlowExecutionSummary execute(Flow flow) {

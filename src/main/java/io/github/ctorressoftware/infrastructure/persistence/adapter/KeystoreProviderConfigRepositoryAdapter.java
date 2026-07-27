@@ -11,17 +11,21 @@ import java.util.Map;
 
 public class KeystoreProviderConfigRepositoryAdapter implements ProviderConfigRepository {
 
-    public CredentialsStorageManager credentialsStorageManager;
+    private final ObjectMapper objectMapper;
+    private final CredentialsStorageManager credentialsStorageManager;
 
-    public KeystoreProviderConfigRepositoryAdapter(CredentialsStorageManager credentialsStorageManager) {
+    public KeystoreProviderConfigRepositoryAdapter(
+            ObjectMapper objectMapper,
+            CredentialsStorageManager credentialsStorageManager
+    ) {
+        this.objectMapper = objectMapper;
         this.credentialsStorageManager = credentialsStorageManager;
     }
 
     @Override
     public void save(Map<String, String> credentials) {
-        ObjectMapper mapper = new ObjectMapper();
         try {
-            String jsonCredentials = mapper.writeValueAsString(credentials);
+            String jsonCredentials = objectMapper.writeValueAsString(credentials);
             credentialsStorageManager.store(
                     AzureDevOpsConfiguration.AZURE_DOMAIN,
                     AzureDevOpsConfiguration.AZURE_ACCOUNT,

@@ -1,39 +1,29 @@
 package io.github.ctorressoftware.infrastructure.callservice;
 
 import io.github.ctorressoftware.application.port.out.ServiceCaller;
-import io.github.ctorressoftware.domain.constant.HttpMethod;
 import io.github.ctorressoftware.domain.constant.HttpStatusCode;
 import io.github.ctorressoftware.domain.exception.HttpServiceCallException;
 import io.github.ctorressoftware.domain.model.ServiceCall;
 import io.github.ctorressoftware.domain.model.CallResult;
-import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.ObjectMapper;
 
 import java.io.IOException;
-import java.net.URI;
 import java.net.http.HttpClient;
 import java.net.http.HttpRequest;
 import java.net.http.HttpResponse;
-import java.util.Map;
 import java.util.Objects;
-import java.util.stream.Stream;
 
 public class RestServiceCaller implements ServiceCaller {
 
     private final HttpClient client;
-    private final ObjectMapper objectMapper;
+    private final RequestMapper mapper;
 
-    RestServiceCaller(HttpClient client, ObjectMapper objectMapper) {
+    public RestServiceCaller(HttpClient client, RequestMapper mapper) {
         this.client = Objects.requireNonNull(client);
-        this.objectMapper = Objects.requireNonNull(objectMapper);
-    }
-
-    public RestServiceCaller() {
-        this(HttpClient.newHttpClient(), new ObjectMapper());
+        this.mapper = Objects.requireNonNull(mapper);
     }
 
     public CallResult call(ServiceCall serviceCall) {
-        HttpRequest request = resolveRequest(serviceCall);
+        HttpRequest request = mapper.map(serviceCall);
         HttpResponse<String> response = null;
 
         try {
@@ -50,38 +40,5 @@ public class RestServiceCaller implements ServiceCaller {
         }
 
         return new CallResult(response.statusCode(), response.body());
-    }
-
-    private HttpRequest resolveRequest(ServiceCall request) {
-
-        HttpRequest.BodyPublisher body = request.body() == null || request.method().equals(HttpMethod.GET) ?
-                HttpRequest.BodyPublishers.noBody() :
-                HttpRequest.BodyPublishers.ofString(serializeBody(request.body()));
-
-        Map<String, String> headers =
-                request.headers() == null ? Map.of() : request.headers();
-
-        String[] headersArray = headers.entrySet().stream()
-                .flatMap(entry ->
-                        Stream.of(entry.getKey(), String.valueOf(entry.getValue()))
-                )
-                .toArray(String[]::new);
-
-        return HttpRequest.newBuilder()
-                .uri(URI.create(request.url()))
-                .headers(headersArray)
-                .method(request.method(), body)
-                .build();
-    }
-
-    private String serializeBody(Object body) {
-        if (body instanceof String stringBody) {
-            return stringBody;
-        }
-        try {
-            return objectMapper.writeValueAsString(body);
-        } catch (JsonProcessingException e) {
-            throw new HttpServiceCallException("Could not serialize request body to JSON", e);
-        }
     }
 }

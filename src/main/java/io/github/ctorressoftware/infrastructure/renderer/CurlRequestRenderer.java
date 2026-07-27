@@ -14,11 +14,7 @@ public class CurlRequestRenderer implements RequestRenderer {
 
     private final ObjectMapper mapper;
 
-    public CurlRequestRenderer() {
-        this(new ObjectMapper());
-    }
-
-    CurlRequestRenderer(ObjectMapper mapper) {
+    public CurlRequestRenderer(ObjectMapper mapper) {
         this.mapper = Objects.requireNonNull(mapper);
     }
 
