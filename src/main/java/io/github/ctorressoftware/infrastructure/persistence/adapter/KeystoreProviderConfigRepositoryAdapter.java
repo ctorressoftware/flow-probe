@@ -38,11 +38,10 @@ public class KeystoreProviderConfigRepositoryAdapter implements ProviderConfigRe
 
     @Override
     public Map<String, String> findByDomainAndAccount(String domain, String account) {
-        ObjectMapper mapper = new ObjectMapper();
         String jsonSecret = credentialsStorageManager.find(domain, account);
 
         try {
-            return mapper.readValue(jsonSecret, new TypeReference<>() {});
+            return objectMapper.readValue(jsonSecret, new TypeReference<>() {});
         } catch (JsonProcessingException e) {
             throw new RuntimeException( // InvalidStoredCredentialsException
                     "Stored credentials contain invalid JSON for domain '%s' and account '%s'"
