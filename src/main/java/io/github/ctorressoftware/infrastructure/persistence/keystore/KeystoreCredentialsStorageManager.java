@@ -9,9 +9,15 @@ import io.github.ctorressoftware.infrastructure.persistence.exception.Inaccessib
 
 public class KeystoreCredentialsStorageManager implements CredentialsStorageManager {
 
+    private final KeyringFactory keyringFactory;
+
+    public KeystoreCredentialsStorageManager(KeyringFactory keyringFactory) {
+        this.keyringFactory = keyringFactory;
+    }
+
     @Override
     public void store(String domain, String account, String secret) {
-        try (Keyring keyring = Keyring.create()) {
+        try (Keyring keyring = keyringFactory.create()) {
             keyring.setPassword(domain, account, secret);
         } catch (BackendNotSupportedException e) {
             // TODO: Implement fallback logic by writing a file with restricted permissions (chmod 600)
@@ -23,7 +29,7 @@ public class KeystoreCredentialsStorageManager implements CredentialsStorageMana
 
     @Override
     public void delete(String domain, String account) {
-        try (Keyring keyring = Keyring.create()) {
+        try (Keyring keyring = keyringFactory.create()) {
             keyring.deletePassword(domain, account);
         } catch (BackendNotSupportedException e) {
             // TODO: Implement fallback logic by writing a file with restricted permissions (chmod 600)
@@ -35,7 +41,7 @@ public class KeystoreCredentialsStorageManager implements CredentialsStorageMana
 
     @Override
     public String find(String domain, String account) {
-        try (final Keyring keyring = Keyring.create()) {
+        try (final Keyring keyring = keyringFactory.create()) {
             try {
                 return keyring.getPassword(domain, account);
             } catch (PasswordAccessException e) {

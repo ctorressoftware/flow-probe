@@ -1,6 +1,7 @@
 package io.github.ctorressoftware;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.github.javakeyring.Keyring;
 import io.github.ctorressoftware.application.port.in.createticket.CreateImpedimentTicketUseCase;
 import io.github.ctorressoftware.application.port.in.flowexecution.ExecuteFlowUseCase;
 import io.github.ctorressoftware.application.port.in.provider.configure.ConfigureProviderUseCase;
@@ -16,6 +17,7 @@ import io.github.ctorressoftware.domain.model.Context;
 import io.github.ctorressoftware.infrastructure.callservice.RequestMapper;
 import io.github.ctorressoftware.infrastructure.callservice.RestServiceCaller;
 import io.github.ctorressoftware.infrastructure.persistence.adapter.KeystoreProviderConfigRepositoryAdapter;
+import io.github.ctorressoftware.infrastructure.persistence.keystore.KeyringFactory;
 import io.github.ctorressoftware.infrastructure.persistence.keystore.KeystoreCredentialsStorageManager;
 import io.github.ctorressoftware.infrastructure.provider.azure.AzureProviderConfigurator;
 import io.github.ctorressoftware.infrastructure.provider.azure.AzureProviderPrompt;
@@ -32,6 +34,7 @@ import java.util.Scanner;
 public final class AppConfig {
     private final Context context = new Context(); // TODO: check if could be a bug
     private final Scanner scanner = new Scanner(System.in);
+    private final KeyringFactory keyringFactory = Keyring::create;
     private final HttpClient httpClient = HttpClient.newHttpClient();
     private final ObjectMapper objectMapper = new ObjectMapper();
     private final RequestMapper requestMapper = new RequestMapper(objectMapper);
@@ -42,7 +45,7 @@ public final class AppConfig {
     private final FlowExecutor flowExecutor = new FlowExecutor(context, serviceCaller, objectMapper);
     private final ExecuteFlowUseCase executeFlowUseCase = new ExecuteFlowHandler(flowExecutor);
     private final AzureDevOpsWorkItemClient azureDevOpsWorkItemClient = new AzureDevOpsWorkItemClient();
-    private final CredentialsStorageManager credentialsStorageManager = new KeystoreCredentialsStorageManager();
+    private final CredentialsStorageManager credentialsStorageManager = new KeystoreCredentialsStorageManager(keyringFactory);
     private final ProviderConfigRepository providerConfigRepository = new KeystoreProviderConfigRepositoryAdapter(objectMapper, credentialsStorageManager);
     private final AzureDevOpsWorkItemTicketCreator azureDevOpsWorkItemTicketCreator = new AzureDevOpsWorkItemTicketCreator(azureDevOpsWorkItemClient, providerConfigRepository);
     private final ImpedimentTicketCreator impedimentTicketCreator = new AzureDevOpsImpedimentTicketCreatorAdapter(azureDevOpsWorkItemTicketCreator);
