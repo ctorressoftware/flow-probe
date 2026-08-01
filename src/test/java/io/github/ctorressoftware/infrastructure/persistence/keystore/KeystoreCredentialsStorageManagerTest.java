@@ -2,7 +2,6 @@ package io.github.ctorressoftware.infrastructure.persistence.keystore;
 
 import com.github.javakeyring.BackendNotSupportedException;
 import com.github.javakeyring.Keyring;
-import com.github.javakeyring.PasswordAccessException;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -12,7 +11,7 @@ import org.mockito.Mockito;
 import org.mockito.junit.jupiter.MockitoExtension;
 
 @ExtendWith(MockitoExtension.class)
-public class KeystoreCredentialsStorageManagerTest {
+class KeystoreCredentialsStorageManagerTest {
 
     @Mock
     private KeyringFactory keyringFactory;
@@ -30,38 +29,52 @@ public class KeystoreCredentialsStorageManagerTest {
 
     @Test
     void shouldStoreCredentials() throws Exception {
-        storageManager.store("flowprobe", "azure", "secret");
 
-        try {
-            Mockito.verify(keyring)
-                    .setPassword("flowprobe", "azure", "secret");
-        } catch (PasswordAccessException e) {
-            throw new RuntimeException(e);
-        }
+        String domain = "flowprobe";
+        String account = "azure";
+        String expectedCredentials = "{\"username\":\"password\"}";
 
+        storageManager.store(domain, account, expectedCredentials);
+
+        Mockito.verify(keyringFactory).create();
+        Mockito.verify(keyring).setPassword(domain, account, expectedCredentials);
         Mockito.verify(keyring).close();
+        Mockito.verifyNoMoreInteractions(keyringFactory, keyring);
     }
 
     @Test
     void shouldFindCredentials() throws Exception {
 
+        String domain = "flowprobe";
+        String account = "azure";
+        String expectedCredentials = "{\"username\":\"password\"}";
+
         Mockito
-                .when(keyring.getPassword("flowprobe", "azure"))
-                .thenReturn("{\"username\":\"password\"}");
+                .when(keyring.getPassword(domain, account))
+                .thenReturn(expectedCredentials);
 
-        String serializedCredentials = storageManager.find("flowprobe", "azure");
+        String actualCredentials = storageManager.find(domain, account);
 
-        try {
-            String mockCredentials = Mockito.verify(keyring)
-                    .getPassword("flowprobe", "azure");
+        Assertions.assertEquals(expectedCredentials, actualCredentials);
 
-            Assertions.assertEquals(mockCredentials, serializedCredentials);
-
-        } catch (PasswordAccessException e) {
-            throw new RuntimeException(e);
-        }
-
+        Mockito.verify(keyringFactory).create();
+        Mockito.verify(keyring).getPassword(domain, account);
         Mockito.verify(keyring).close();
+        Mockito.verifyNoMoreInteractions(keyringFactory, keyring);
+    }
+
+    @Test
+    void shouldRemoveCredentials() throws Exception {
+
+        String domain = "flowprobe";
+        String account = "azure";
+
+        storageManager.delete(domain, account);
+
+        Mockito.verify(keyringFactory).create();
+        Mockito.verify(keyring).deletePassword(domain, account);
+        Mockito.verify(keyring).close();
+        Mockito.verifyNoMoreInteractions(keyringFactory, keyring);
     }
 
 }
