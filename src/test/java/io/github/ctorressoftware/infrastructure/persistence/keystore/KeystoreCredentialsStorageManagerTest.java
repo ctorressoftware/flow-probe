@@ -32,12 +32,13 @@ class KeystoreCredentialsStorageManagerTest {
 
         String domain = "flowprobe";
         String account = "azure";
-        String expectedCredentials = "{\"username\":\"password\"}";
+        String credentials = "{\"username\":\"password\"}";
 
-        storageManager.store(domain, account, expectedCredentials);
+        storageManager.store(domain, account, credentials);
 
+        //noinspection resource
         Mockito.verify(keyringFactory).create();
-        Mockito.verify(keyring).setPassword(domain, account, expectedCredentials);
+        Mockito.verify(keyring).setPassword(domain, account, credentials);
         Mockito.verify(keyring).close();
         Mockito.verifyNoMoreInteractions(keyringFactory, keyring);
     }
@@ -57,6 +58,7 @@ class KeystoreCredentialsStorageManagerTest {
 
         Assertions.assertEquals(expectedCredentials, actualCredentials);
 
+        //noinspection resource
         Mockito.verify(keyringFactory).create();
         Mockito.verify(keyring).getPassword(domain, account);
         Mockito.verify(keyring).close();
@@ -71,6 +73,7 @@ class KeystoreCredentialsStorageManagerTest {
 
         storageManager.delete(domain, account);
 
+        //noinspection resource
         Mockito.verify(keyringFactory).create();
         Mockito.verify(keyring).deletePassword(domain, account);
         Mockito.verify(keyring).close();
