@@ -45,7 +45,7 @@ class KeystoreCredentialsStorageManagerTest {
     }
 
     @Test
-    void shouldWrapExceptionsAsCredentialsStorageException()
+    void shouldWrapUnexpectedExceptionsWhenStoringCredentials()
             throws Exception {
 
         String domain = "flowprobe";
@@ -92,6 +92,38 @@ class KeystoreCredentialsStorageManagerTest {
         String actualCredentials = storageManager.find(domain, account);
 
         Assertions.assertEquals(expectedCredentials, actualCredentials);
+
+        //noinspection resource
+        Mockito.verify(keyringFactory).create();
+        Mockito.verify(keyring).getPassword(domain, account);
+        Mockito.verify(keyring).close();
+        Mockito.verifyNoMoreInteractions(keyringFactory, keyring);
+    }
+
+    @Test
+    void shouldWrapUnexpectedExceptionWhenFindingCredentials()
+            throws Exception {
+
+        String domain = "flowprobe";
+        String account = "azure";
+
+        RuntimeException cause = new RuntimeException("Unexpected failure");
+
+        Mockito
+                .when(keyring.getPassword(domain, account))
+                .thenThrow(cause);
+
+        CredentialsStorageException exception = Assertions.assertThrows(
+                CredentialsStorageException.class,
+                () -> storageManager.find(domain, account)
+        );
+
+        Assertions.assertEquals(
+                "An error occurred trying to find " + account + " credentials",
+                exception.getMessage()
+        );
+
+        Assertions.assertSame(cause, exception.getCause());
 
         //noinspection resource
         Mockito.verify(keyringFactory).create();
