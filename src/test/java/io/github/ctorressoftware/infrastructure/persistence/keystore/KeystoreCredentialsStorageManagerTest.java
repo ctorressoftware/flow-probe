@@ -2,6 +2,7 @@ package io.github.ctorressoftware.infrastructure.persistence.keystore;
 
 import com.github.javakeyring.BackendNotSupportedException;
 import com.github.javakeyring.Keyring;
+import io.github.ctorressoftware.infrastructure.persistence.exception.CredentialsStorageException;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -35,6 +36,40 @@ class KeystoreCredentialsStorageManagerTest {
         String credentials = "{\"username\":\"password\"}";
 
         storageManager.store(domain, account, credentials);
+
+        //noinspection resource
+        Mockito.verify(keyringFactory).create();
+        Mockito.verify(keyring).setPassword(domain, account, credentials);
+        Mockito.verify(keyring).close();
+        Mockito.verifyNoMoreInteractions(keyringFactory, keyring);
+    }
+
+    @Test
+    void shouldWrapExceptionsAsCredentialsStorageException()
+            throws Exception {
+
+        String domain = "flowprobe";
+        String account = "azure";
+        String credentials = "{\"username\":\"password\"}";
+
+        RuntimeException cause = new RuntimeException("Unexpected failure");
+
+        Mockito
+                .doThrow(cause)
+                .when(keyring)
+                .setPassword(domain, account, credentials);
+
+        CredentialsStorageException exception = Assertions.assertThrows(
+                CredentialsStorageException.class,
+                () -> storageManager.store(domain, account, credentials)
+        );
+
+        Assertions.assertEquals(
+                "An error occurred trying to store " + account + " credentials",
+                exception.getMessage()
+        );
+
+        Assertions.assertSame(cause, exception.getCause());
 
         //noinspection resource
         Mockito.verify(keyringFactory).create();
