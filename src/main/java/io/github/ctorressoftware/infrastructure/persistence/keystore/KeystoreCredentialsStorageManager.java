@@ -2,6 +2,7 @@ package io.github.ctorressoftware.infrastructure.persistence.keystore;
 
 import com.github.javakeyring.BackendNotSupportedException;
 import com.github.javakeyring.Keyring;
+import com.github.javakeyring.KeyringStorageType;
 import com.github.javakeyring.PasswordAccessException;
 import io.github.ctorressoftware.application.port.out.CredentialsStorageManager;
 import io.github.ctorressoftware.infrastructure.persistence.exception.CredentialsStorageException;
@@ -41,15 +42,16 @@ public class KeystoreCredentialsStorageManager implements CredentialsStorageMana
 
     @Override
     public String find(String domain, String account) {
+
+        String storageType = "UNKNOWN";
         try (final Keyring keyring = keyringFactory.create()) {
-            try {
-                return keyring.getPassword(domain, account);
-            } catch (PasswordAccessException e) {
-                throw new InaccessibleCredentialsException(keyring.getKeyringStorageType().name());
-            }
+            storageType = keyring.getKeyringStorageType().name();
+            return keyring.getPassword(domain, account);
         } catch (BackendNotSupportedException e) {
             // TODO: Implement fallback logic by writing a file with restricted permissions (chmod 600)
             throw new RuntimeException(e);
+        } catch (PasswordAccessException e) {
+            throw new InaccessibleCredentialsException(storageType, e);
         } catch (Exception e) {
             throw new CredentialsStorageException("An error occurred trying to find " + account + " credentials", e);
         }

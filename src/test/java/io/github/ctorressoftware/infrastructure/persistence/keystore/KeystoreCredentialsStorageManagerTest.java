@@ -2,7 +2,10 @@ package io.github.ctorressoftware.infrastructure.persistence.keystore;
 
 import com.github.javakeyring.BackendNotSupportedException;
 import com.github.javakeyring.Keyring;
+import com.github.javakeyring.KeyringStorageType;
+import com.github.javakeyring.PasswordAccessException;
 import io.github.ctorressoftware.infrastructure.persistence.exception.CredentialsStorageException;
+import io.github.ctorressoftware.infrastructure.persistence.exception.InaccessibleCredentialsException;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -95,6 +98,46 @@ class KeystoreCredentialsStorageManagerTest {
 
         //noinspection resource
         Mockito.verify(keyringFactory).create();
+        Mockito.verify(keyring).getPassword(domain, account);
+        Mockito.verify(keyring).close();
+        Mockito.verifyNoMoreInteractions(keyringFactory, keyring);
+    }
+
+    @Test
+    void shouldWrapPasswordAccessExceptionAsInaccessibleCredentialsException()
+            throws Exception {
+
+        String domain = "flowprobe";
+        String account = "azure";
+
+        KeyringStorageType storageType = KeyringStorageType.OSX_KEYCHAIN;
+
+        PasswordAccessException cause =
+                new PasswordAccessException("PasswordAccessException");
+
+        Mockito
+                .when(keyring.getKeyringStorageType())
+                .thenReturn(storageType);
+
+        Mockito
+                .when(keyring.getPassword(domain, account))
+                .thenThrow(cause);
+
+        InaccessibleCredentialsException exception = Assertions.assertThrows(
+                InaccessibleCredentialsException.class,
+                () -> storageManager.find(domain, account)
+        );
+
+        Assertions.assertEquals(
+                "Credentials are inaccessible for the storage type: " + storageType.name(),
+                exception.getMessage()
+        );
+
+        Assertions.assertSame(cause, exception.getCause());
+
+        //noinspection resource
+        Mockito.verify(keyringFactory).create();
+        Mockito.verify(keyring).getKeyringStorageType();
         Mockito.verify(keyring).getPassword(domain, account);
         Mockito.verify(keyring).close();
         Mockito.verifyNoMoreInteractions(keyringFactory, keyring);
