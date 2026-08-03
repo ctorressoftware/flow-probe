@@ -50,7 +50,7 @@ public final class AppConfig {
     private final AzureDevOpsWorkItemTicketCreator azureDevOpsWorkItemTicketCreator = new AzureDevOpsWorkItemTicketCreator(azureDevOpsWorkItemClient, providerConfigRepository);
     private final ImpedimentTicketCreator impedimentTicketCreator = new AzureDevOpsImpedimentTicketCreatorAdapter(azureDevOpsWorkItemTicketCreator);
     private final CreateImpedimentTicketUseCase createImpedimentTicketUseCase = new CreateImpedimentTicketHandler(impedimentTicketCreator);
-    private final ProviderPrompt azurePrompt = new AzureProviderPrompt(System.out, scanner);
+    private final ProviderPrompt azurePrompt = new AzureProviderPrompt(System.out, scanner, System.console());
     private final ProviderConfigurator azureConfigurator = new AzureProviderConfigurator(providerConfigRepository);
     private final ConfigureProviderUseCase configureProviderUseCase = new ConfigureProviderHandler(
             Map.of(Provider.AZURE, azureConfigurator),

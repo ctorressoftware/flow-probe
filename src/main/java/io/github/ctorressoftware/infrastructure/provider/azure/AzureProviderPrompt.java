@@ -2,6 +2,7 @@ package io.github.ctorressoftware.infrastructure.provider.azure;
 
 import io.github.ctorressoftware.application.port.out.ProviderPrompt;
 
+import java.io.Console;
 import java.io.PrintStream;
 import java.util.Map;
 import java.util.Scanner;
@@ -10,10 +11,12 @@ public class AzureProviderPrompt implements ProviderPrompt {
 
     private final PrintStream out;
     private final Scanner scanner;
+    private final Console console;
 
-    public AzureProviderPrompt(PrintStream out, Scanner scanner) {
+    public AzureProviderPrompt(PrintStream out, Scanner scanner, Console console) {
         this.out = out;
         this.scanner = scanner;
+        this.console = console;
     }
 
     @Override
@@ -42,7 +45,6 @@ public class AzureProviderPrompt implements ProviderPrompt {
      * until garbage collection. Refactor the related interfaces to use char[] where possible.
      */
     private String askForSecret(String promptMessage) {
-        java.io.Console console = System.console();
         if (console != null) {
             char[] passwordChars = console.readPassword(promptMessage);
             return new String(passwordChars);
