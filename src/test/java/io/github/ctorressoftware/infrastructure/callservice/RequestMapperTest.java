@@ -2,7 +2,6 @@ package io.github.ctorressoftware.infrastructure.callservice;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.sun.net.httpserver.Headers;
 import io.github.ctorressoftware.domain.constant.HttpMethod;
 import io.github.ctorressoftware.domain.exception.HttpServiceCallException;
 import io.github.ctorressoftware.domain.model.ServiceCall;
@@ -16,7 +15,6 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import static org.junit.jupiter.api.Assertions.*;
 
 import java.net.URI;
-import java.net.http.HttpHeaders;
 import java.net.http.HttpRequest;
 import java.util.Map;
 
