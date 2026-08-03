@@ -2,14 +2,17 @@ package io.github.ctorressoftware.infrastructure.provider.azure;
 
 import io.github.ctorressoftware.application.port.out.ProviderPrompt;
 
+import java.io.PrintStream;
 import java.util.Map;
 import java.util.Scanner;
 
 public class AzureProviderPrompt implements ProviderPrompt {
 
+    private final PrintStream out;
     private final Scanner scanner;
 
-    public AzureProviderPrompt(Scanner scanner) {
+    public AzureProviderPrompt(PrintStream out, Scanner scanner) {
+        this.out = out;
         this.scanner = scanner;
     }
 
@@ -30,7 +33,7 @@ public class AzureProviderPrompt implements ProviderPrompt {
     }
 
     private String askFor(String something) { // TODO: move ask methods to a different file like ProviderDataAsker
-        System.out.print(something);
+        out.print(something);
         return scanner.nextLine();
     }
 
@@ -44,7 +47,7 @@ public class AzureProviderPrompt implements ProviderPrompt {
             char[] passwordChars = console.readPassword(promptMessage);
             return new String(passwordChars);
         } else {
-            System.out.print(promptMessage);
+            out.print(promptMessage);
             return scanner.nextLine();
         }
     }
