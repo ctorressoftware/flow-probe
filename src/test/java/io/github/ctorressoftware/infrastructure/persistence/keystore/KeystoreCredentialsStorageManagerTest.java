@@ -38,6 +38,12 @@ class KeystoreCredentialsStorageManagerTest {
         String account = "azure";
         String credentials = "{\"username\":\"password\"}";
 
+        KeyringStorageType storageType = KeyringStorageType.OSX_KEYCHAIN;
+
+        Mockito
+                .when(keyring.getKeyringStorageType())
+                .thenReturn(storageType);
+
         storageManager.store(domain, account, credentials);
 
         //noinspection resource
@@ -55,7 +61,13 @@ class KeystoreCredentialsStorageManagerTest {
         String account = "azure";
         String credentials = "{\"username\":\"password\"}";
 
+        KeyringStorageType storageType = KeyringStorageType.OSX_KEYCHAIN;
+
         RuntimeException cause = new RuntimeException("Unexpected failure");
+
+        Mockito
+                .when(keyring.getKeyringStorageType())
+                .thenReturn(storageType);
 
         Mockito
                 .doThrow(cause)
@@ -88,6 +100,12 @@ class KeystoreCredentialsStorageManagerTest {
         String account = "azure";
         String expectedCredentials = "{\"username\":\"password\"}";
 
+        KeyringStorageType storageType = KeyringStorageType.OSX_KEYCHAIN;
+
+        Mockito
+                .when(keyring.getKeyringStorageType())
+                .thenReturn(storageType);
+
         Mockito
                 .when(keyring.getPassword(domain, account))
                 .thenReturn(expectedCredentials);
@@ -104,7 +122,7 @@ class KeystoreCredentialsStorageManagerTest {
     }
 
     @Test
-    void shouldWrapPasswordAccessExceptionAsInaccessibleCredentialsException()
+    void shouldWrapPasswordAccessExceptionWhenFindingCredentials()
             throws Exception {
 
         String domain = "flowprobe";
@@ -150,7 +168,13 @@ class KeystoreCredentialsStorageManagerTest {
         String domain = "flowprobe";
         String account = "azure";
 
+        KeyringStorageType storageType = KeyringStorageType.OSX_KEYCHAIN;
+
         RuntimeException cause = new RuntimeException("Unexpected failure");
+
+        Mockito
+                .when(keyring.getKeyringStorageType())
+                .thenReturn(storageType);
 
         Mockito
                 .when(keyring.getPassword(domain, account))
@@ -181,6 +205,12 @@ class KeystoreCredentialsStorageManagerTest {
         String domain = "flowprobe";
         String account = "azure";
 
+        KeyringStorageType storageType = KeyringStorageType.OSX_KEYCHAIN;
+
+        Mockito
+                .when(keyring.getKeyringStorageType())
+                .thenReturn(storageType);
+
         storageManager.delete(domain, account);
 
         //noinspection resource
@@ -190,4 +220,41 @@ class KeystoreCredentialsStorageManagerTest {
         Mockito.verifyNoMoreInteractions(keyringFactory, keyring);
     }
 
+    @Test
+    void shouldWrapUnexpectedExceptionWhenRemovingCredentials() throws Exception {
+
+        String domain = "flowprobe";
+        String account = "azure";
+
+        KeyringStorageType storageType = KeyringStorageType.OSX_KEYCHAIN;
+
+        RuntimeException cause = new RuntimeException("Unexpected failure");
+
+        Mockito
+                .when(keyring.getKeyringStorageType())
+                .thenReturn(storageType);
+
+        Mockito
+                .doThrow(cause)
+                .when(keyring)
+                .deletePassword(domain, account);
+
+        CredentialsStorageException exception = Assertions.assertThrows(
+                CredentialsStorageException.class,
+                () -> storageManager.delete(domain, account)
+        );
+
+        Assertions.assertEquals(
+                "An error occurred trying to remove " + account + " credentials",
+                exception.getMessage()
+        );
+
+        Assertions.assertSame(cause, exception.getCause());
+
+        //noinspection resource
+        Mockito.verify(keyringFactory).create();
+        Mockito.verify(keyring).deletePassword(domain, account);
+        Mockito.verify(keyring).close();
+        Mockito.verifyNoMoreInteractions(keyringFactory, keyring);
+    }
 }
