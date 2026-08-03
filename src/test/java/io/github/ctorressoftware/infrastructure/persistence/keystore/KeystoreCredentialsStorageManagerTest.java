@@ -54,6 +54,48 @@ class KeystoreCredentialsStorageManagerTest {
     }
 
     @Test
+    void shouldWrapPasswordAccessExceptionWhenStoringCredentials()
+            throws Exception {
+
+        String domain = "flowprobe";
+        String account = "azure";
+        String credentials = "{\"username\":\"password\"}";
+
+        KeyringStorageType storageType = KeyringStorageType.OSX_KEYCHAIN;
+
+        PasswordAccessException cause =
+                new PasswordAccessException("PasswordAccessException");
+
+        Mockito
+                .when(keyring.getKeyringStorageType())
+                .thenReturn(storageType);
+
+        Mockito
+                .doThrow(cause)
+                .when(keyring)
+                .setPassword(domain, account, credentials);
+
+        InaccessibleCredentialsException exception = Assertions.assertThrows(
+                InaccessibleCredentialsException.class,
+                () -> storageManager.store(domain, account, credentials)
+        );
+
+        Assertions.assertEquals(
+                "Credentials are inaccessible for the storage type: " + storageType.name(),
+                exception.getMessage()
+        );
+
+        Assertions.assertSame(cause, exception.getCause());
+
+        //noinspection resource
+        Mockito.verify(keyringFactory).create();
+        Mockito.verify(keyring).getKeyringStorageType();
+        Mockito.verify(keyring).setPassword(domain, account, credentials);
+        Mockito.verify(keyring).close();
+        Mockito.verifyNoMoreInteractions(keyringFactory, keyring);
+    }
+
+    @Test
     void shouldWrapUnexpectedExceptionsWhenStoringCredentials()
             throws Exception {
 
