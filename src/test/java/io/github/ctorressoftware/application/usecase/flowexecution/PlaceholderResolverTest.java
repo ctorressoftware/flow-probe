@@ -25,5 +25,11 @@ class PlaceholderResolverTest {
         );
     }
 
+    @Test
+    void shouldReturnsNullWhenValueIsNull() {
+        Assertions.assertNull(
+                PlaceholderResolver.resolve(Map.of("variable", "value"), null)
+        );
+    }
 
 }
