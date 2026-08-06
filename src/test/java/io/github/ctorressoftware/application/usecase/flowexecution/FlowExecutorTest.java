@@ -1,5 +1,6 @@
 package io.github.ctorressoftware.application.usecase.flowexecution;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import io.github.ctorressoftware.application.port.out.ServiceCaller;
 import io.github.ctorressoftware.domain.constant.HttpMethod;
@@ -63,5 +64,56 @@ class FlowExecutorTest {
         Assertions.assertTrue(summary.isSuccessfulExecution());
         Assertions.assertEquals(3, summary.getStepsResults().size());
         Mockito.verify(serviceCaller, Mockito.times(3)).call(serviceCall);
+    }
+
+    @Test
+    void shouldExecuteFlowWithMultipleStepsExportingVariables() throws JsonProcessingException {
+
+        ServiceCall allPokemonServiceCall = new ServiceCall(
+                "https://pokeapi.co/api/v2/pokemon?offset=0&limit=1350",
+                HttpMethod.GET,
+                Map.of("accept", "application/json"),
+                null
+        );
+
+        ServiceCall getPikachuServiceCall = new ServiceCall(
+                "https://pokeapi.co/api/v2/pokemon/${pokemonName}",
+                HttpMethod.GET,
+                Map.of("accept", "application/json"),
+                null
+        );
+
+        List<FlowStep> steps = List.of(
+                FlowStep.create(
+                        "flow",
+                        "first",
+                        allPokemonServiceCall,
+                        null,
+                        Map.of("pokemonName",  "results.0.name")
+                ),
+                FlowStep.create(
+                        "flow",
+                        "second",
+                        getPikachuServiceCall,
+                        Map.of("name", "${pokemonName}"),
+                        null
+                )
+        );
+
+        CallResult result = new CallResult(HttpStatusCode.OK, null);
+
+        Mockito.when(serviceCaller.call(allPokemonServiceCall)).thenReturn(result);
+        Mockito.when(serviceCaller.call(getPikachuServiceCall)).thenReturn(result);
+        Mockito.when(objectMapper.readTree("test")).thenReturn("111");
+        Mockito.when(objectMapper.readTree("test"));
+
+        FlowExecutionSummary summary = flowExecutor.execute(Flow.create("flow", steps));
+
+        Assertions.assertNotNull(summary);
+        Assertions.assertEquals(summary.getFlowName(), steps.getFirst().getFlowName());
+        Assertions.assertTrue(summary.isSuccessfulExecution());
+        Assertions.assertEquals(2, summary.getStepsResults().size());
+        Mockito.verify(serviceCaller, Mockito.times(1)).call(allPokemonServiceCall);
+        Mockito.verify(serviceCaller, Mockito.times(1)).call(getPikachuServiceCall);
     }
 }
