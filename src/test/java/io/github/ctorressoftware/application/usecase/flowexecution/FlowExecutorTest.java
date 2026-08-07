@@ -27,13 +27,13 @@ class FlowExecutorTest {
     @Mock
     private ServiceCaller serviceCaller;
 
-    @Mock
     private ObjectMapper objectMapper;
 
     private FlowExecutor flowExecutor;
 
     @BeforeEach
     void init() {
+        objectMapper = new ObjectMapper();
         flowExecutor = new FlowExecutor(context, serviceCaller, objectMapper);
     }
 
@@ -69,58 +69,65 @@ class FlowExecutorTest {
     @Test
     void shouldExecuteFlowWithMultipleStepsExportingVariables() throws JsonProcessingException {
 
-        ServiceCall allPokemonServiceCall = new ServiceCall(
+        ServiceCall getAll = new ServiceCall(
                 "https://pokeapi.co/api/v2/pokemon?offset=0&limit=1350",
                 HttpMethod.GET,
                 Map.of("accept", "application/json"),
                 null
         );
 
-        ServiceCall getPikachuServiceCall = new ServiceCall(
+        String firstResponse = """
+                {
+                  "results": [
+                    {
+                      "name": "Pikachu"
+                    }
+                  ]
+                }
+                """;
+
+        ServiceCall getPikachu = new ServiceCall(
                 "https://pokeapi.co/api/v2/pokemon/${pokemonName}",
                 HttpMethod.GET,
                 Map.of("accept", "application/json"),
                 null
         );
 
+        String secondResponse = """
+                {
+                  "name": "Pikachu"
+                }
+                """;
+
         List<FlowStep> steps = List.of(
                 FlowStep.create(
                         "flow",
                         "first",
-                        allPokemonServiceCall,
+                        getAll,
                         null,
-                        Map.of("pokemonName",  "results.0.name")
+                        Map.of("pokemonName", "results.0.name")
                 ),
                 FlowStep.create(
                         "flow",
                         "second",
-                        getPikachuServiceCall,
+                        getPikachu,
                         Map.of("name", "${pokemonName}"),
                         null
                 )
         );
 
-        String response = "{ \"pokemonName\": \"Pikachu\"}";
+        CallResult firstResult = new CallResult(HttpStatusCode.OK, objectMapper.writeValueAsString(firstResponse));
+        CallResult secondResult = new CallResult(HttpStatusCode.OK, objectMapper.writeValueAsString(secondResponse));
 
-        CallResult result = new CallResult(HttpStatusCode.OK, response);
-
-        Mockito.when(serviceCaller.call(allPokemonServiceCall)).thenReturn(result);
-        Mockito.when(serviceCaller.call(getPikachuServiceCall)).thenReturn(result);
-
-        JsonNode mockNode = Mockito.mock(JsonNode.class);
-        Mockito.when(objectMapper.readTree(response)).thenReturn(mockNode);
-
-        JsonNode innerNode = Mockito.mock(JsonNode.class);
-        Mockito.when(mockNode.at("/results/0/name")).thenReturn(innerNode);
-        Mockito.when(innerNode.asText()).thenReturn("Pikachu");
-
+        Mockito.when(serviceCaller.call(getAll)).thenReturn(firstResult);
+        Mockito.when(serviceCaller.call(getPikachu)).thenReturn(secondResult);
         FlowExecutionSummary summary = flowExecutor.execute(Flow.create("flow", steps));
 
         Assertions.assertNotNull(summary);
         Assertions.assertEquals(summary.getFlowName(), steps.getFirst().getFlowName());
         Assertions.assertTrue(summary.isSuccessfulExecution());
         Assertions.assertEquals(2, summary.getStepsResults().size());
-        Mockito.verify(serviceCaller, Mockito.times(1)).call(allPokemonServiceCall);
-        Mockito.verify(serviceCaller, Mockito.times(1)).call(getPikachuServiceCall);
+        Mockito.verify(serviceCaller, Mockito.times(1)).call(getAll);
+        Mockito.verify(serviceCaller, Mockito.times(1)).call(getPikachu);
     }
 }
