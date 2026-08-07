@@ -1,6 +1,8 @@
 package io.github.ctorressoftware.application.usecase.flowexecution;
 
+import com.fasterxml.jackson.core.JsonPointer;
 import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import io.github.ctorressoftware.application.port.out.ServiceCaller;
 import io.github.ctorressoftware.domain.constant.HttpMethod;
@@ -100,12 +102,19 @@ class FlowExecutorTest {
                 )
         );
 
-        CallResult result = new CallResult(HttpStatusCode.OK, null);
+        String response = "{ \"pokemonName\": \"Pikachu\"}";
+
+        CallResult result = new CallResult(HttpStatusCode.OK, response);
 
         Mockito.when(serviceCaller.call(allPokemonServiceCall)).thenReturn(result);
         Mockito.when(serviceCaller.call(getPikachuServiceCall)).thenReturn(result);
-        Mockito.when(objectMapper.readTree("test")).thenReturn("111");
-        Mockito.when(objectMapper.readTree("test"));
+
+        JsonNode mockNode = Mockito.mock(JsonNode.class);
+        Mockito.when(objectMapper.readTree(response)).thenReturn(mockNode);
+
+        JsonNode innerNode = Mockito.mock(JsonNode.class);
+        Mockito.when(mockNode.at("/results/0/name")).thenReturn(innerNode);
+        Mockito.when(innerNode.asText()).thenReturn("Pikachu");
 
         FlowExecutionSummary summary = flowExecutor.execute(Flow.create("flow", steps));
 
