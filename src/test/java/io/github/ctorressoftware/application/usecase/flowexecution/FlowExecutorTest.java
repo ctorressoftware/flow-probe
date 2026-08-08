@@ -5,6 +5,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import io.github.ctorressoftware.application.port.out.ServiceCaller;
 import io.github.ctorressoftware.domain.constant.HttpMethod;
 import io.github.ctorressoftware.domain.constant.HttpStatusCode;
+import io.github.ctorressoftware.domain.exception.NoDefinedFlowException;
 import io.github.ctorressoftware.domain.model.*;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
@@ -128,5 +129,13 @@ class FlowExecutorTest {
         Assertions.assertEquals(2, summary.getStepsResults().size());
         Mockito.verify(serviceCaller, Mockito.times(1)).call(getAll);
         Mockito.verify(serviceCaller, Mockito.times(1)).call(getPikachu);
+    }
+
+    @Test
+    void shouldThrowNoDefinedFlowException() {
+        Assertions.assertThrows(
+                NoDefinedFlowException.class,
+                () -> flowExecutor.execute(null)
+        );
     }
 }
