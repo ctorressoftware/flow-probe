@@ -1,19 +1,20 @@
 package io.github.ctorressoftware.application.usecase.flowexecution;
 
-import java.util.Map;
+import io.github.ctorressoftware.domain.model.ContextVariable;
+
+import java.util.List;
 
 public class PlaceholderResolver {
 
-    public static String resolve(Map<String, Object> variables, String value) {
+    public static String resolve(List<ContextVariable> variables, String value) {
         if (value == null) return null;
 
         String resolved = value;
 
-        for (Map.Entry<String, Object> entry : variables.entrySet()) {
-            resolved = resolved.replace("${" + entry.getKey() + "}", String.valueOf(entry.getValue()));
+        for (ContextVariable variable : variables) {
+            resolved = resolved.replace("${" + variable.name() + "}", String.valueOf(variable.value()));
         }
 
         return resolved;
     }
-
 }
