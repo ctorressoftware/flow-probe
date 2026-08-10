@@ -11,7 +11,7 @@ steps:
 
     requires: null
 
-    export:
+    exports:
       pokemonName: "results.0.name"
 
   - name: "get-pokemon"
@@ -27,7 +27,7 @@ steps:
     requires:
       name: ${pokemonName}
 
-    export: null
+    exports: null
 
   - name: "get-pikachu"
     request:
@@ -38,4 +38,4 @@ steps:
 
     requires: null
 
-    export: null
+    exports: null
