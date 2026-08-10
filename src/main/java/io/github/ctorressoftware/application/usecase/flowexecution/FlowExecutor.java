@@ -1,8 +1,6 @@
 package io.github.ctorressoftware.application.usecase.flowexecution;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.JsonNode;
-import com.fasterxml.jackson.databind.ObjectMapper;
+import io.github.ctorressoftware.application.port.out.ContextManager;
 import io.github.ctorressoftware.application.port.out.ServiceCaller;
 import io.github.ctorressoftware.domain.constant.HttpStatusCode;
 import io.github.ctorressoftware.domain.exception.NoDefinedFlowException;
@@ -10,18 +8,20 @@ import io.github.ctorressoftware.domain.model.*;
 
 import java.time.Duration;
 import java.util.List;
-import java.util.Map;
 import java.util.Objects;
 
 public class FlowExecutor {
-    private final Context context;
+    private final ContextManager contextManager;
     private final ServiceCaller serviceCaller;
-    private final ObjectMapper objectMapper;
+    private final PlaceholderResolver placeholderResolver;
 
-    public FlowExecutor(Context context, ServiceCaller serviceCaller, ObjectMapper objectMapper) {
-        this.context = Objects.requireNonNull(context);
+    public FlowExecutor(
+            ContextManager contextManager,
+            ServiceCaller serviceCaller,
+            PlaceholderResolver placeholderResolver) {
+        this.contextManager = Objects.requireNonNull(contextManager);
         this.serviceCaller = Objects.requireNonNull(serviceCaller);
-        this.objectMapper = Objects.requireNonNull(objectMapper);
+        this.placeholderResolver = Objects.requireNonNull(placeholderResolver);
     }
 
     public FlowExecutionSummary execute(Flow flow) {
@@ -35,19 +35,6 @@ public class FlowExecutor {
         return new FlowExecutionSummary(flow.getName(), successfulExecution, resumeDetails);
     }
 
-    private ServiceCall normalizeServiceCall(ServiceCall call, boolean hasExpectedValues) {
-
-        String body = serializeBody(call.body());
-        String url = call.url();
-
-        if (hasExpectedValues) {
-            url = PlaceholderResolver.resolve(context.variables(), url);
-            body = PlaceholderResolver.resolve(context.variables(), body);
-        }
-
-        return new ServiceCall(url, call.method(), call.headers(), body);
-    }
-
     private List<FlowExecutionSummaryDetail> executeTasks(List<FlowStep> flowSteps) {
         return flowSteps.stream()
                 .map(this::executeStep)
@@ -55,15 +42,15 @@ public class FlowExecutor {
     }
 
     private FlowExecutionSummaryDetail executeStep(FlowStep step) {
-        boolean hasExpectedValues = hasRequiredValues(step);
 
-        ServiceCall normalizedCall = normalizeServiceCall(step.getServiceCall(), hasExpectedValues);
+        ServiceCall normalizedCall = placeholderResolver
+                .resolve(contextManager.getVariables(), step.getServiceCall());
 
         CallResult response = serviceCaller.call(normalizedCall);
 
         boolean successfulExecution = HttpStatusCode.isSuccess(response.statusCode());
 
-        exportVariables(response.responseBody(), step.getExport());
+        contextManager.exportVariables(response.responseBody(), step.getExport());
 
         return new FlowExecutionSummaryDetail(
                 step.getStepName(),
@@ -72,35 +59,5 @@ public class FlowExecutor {
                 Duration.ZERO,
                 response.responseBody()
         );
-    }
-
-    private boolean hasRequiredValues(FlowStep step) {
-        return step.getRequires() != null && !step.getRequires().isEmpty();
-    }
-
-    private void exportVariables(String response, Map<String, String> variablesToExport) {
-        // TODO: add custom exception
-        if (variablesToExport != null && !variablesToExport.isEmpty()) {
-            try {
-                JsonNode root = objectMapper.readTree(response);
-                variablesToExport.forEach((key, keyValue) -> {
-                    String valuePath = "/" + keyValue.replace(".", "/");
-                    String value = root.at(valuePath).asText();
-                    context.putVariable(key, value);
-                });
-            } catch (JsonProcessingException e) {
-                throw new RuntimeException(e);
-            }
-        }
-    }
-
-    private String serializeBody(Object body) {
-        if (body == null) return null;
-        if (body instanceof String stringBody) return stringBody;
-        try {
-            return objectMapper.writeValueAsString(body);
-        } catch (JsonProcessingException e) {
-            throw new RuntimeException("Could not serialize request body to JSON", e);
-        }
     }
 }
