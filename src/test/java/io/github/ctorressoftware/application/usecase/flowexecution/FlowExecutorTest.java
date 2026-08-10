@@ -2,6 +2,7 @@ package io.github.ctorressoftware.application.usecase.flowexecution;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import io.github.ctorressoftware.application.port.out.ContextManager;
 import io.github.ctorressoftware.application.port.out.ServiceCaller;
 import io.github.ctorressoftware.domain.constant.HttpMethod;
 import io.github.ctorressoftware.domain.constant.HttpStatusCode;
@@ -11,6 +12,7 @@ import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.ArgumentCaptor;
 import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.junit.jupiter.MockitoExtension;
@@ -22,19 +24,20 @@ import java.util.Map;
 class FlowExecutorTest {
 
     @Mock
-    private Context context;
+    private ContextManager contextManager;
 
     @Mock
     private ServiceCaller serviceCaller;
 
-    private ObjectMapper objectMapper;
+    private JsonUtils jsonUtils;
 
     private FlowExecutor flowExecutor;
 
     @BeforeEach
     void init() {
-        objectMapper = new ObjectMapper();
-        flowExecutor = new FlowExecutor(context, serviceCaller, objectMapper);
+        this.jsonUtils = new JsonUtils(new ObjectMapper());
+        PlaceholderResolver placeholderResolver = new PlaceholderResolver(jsonUtils);
+        flowExecutor = new FlowExecutor(contextManager, serviceCaller, placeholderResolver);
     }
 
     @Test
@@ -55,15 +58,49 @@ class FlowExecutorTest {
 
         CallResult result = new CallResult(HttpStatusCode.OK, null);
 
-        Mockito.when(serviceCaller.call(serviceCall)).thenReturn(result);
+        Mockito
+                .when(contextManager.getVariables())
+                .thenReturn(List.of());
 
-        FlowExecutionSummary summary = flowExecutor.execute(Flow.create("flow", steps));
+        Mockito
+                .when(serviceCaller.call(Mockito.any(ServiceCall.class)))
+                .thenReturn(result);
+
+        FlowExecutionSummary summary =
+                flowExecutor.execute(Flow.create("flow", steps));
 
         Assertions.assertNotNull(summary);
-        Assertions.assertEquals(summary.getFlowName(), steps.getFirst().getFlowName());
+
+        Assertions.assertEquals(
+                steps.getFirst().getFlowName(),
+                summary.getFlowName()
+        );
+
         Assertions.assertTrue(summary.isSuccessfulExecution());
-        Assertions.assertEquals(3, summary.getStepsResults().size());
-        Mockito.verify(serviceCaller, Mockito.times(3)).call(serviceCall);
+
+        Assertions.assertEquals(
+                3,
+                summary.getStepsResults().size()
+        );
+
+        ArgumentCaptor<ServiceCall> captor =
+                ArgumentCaptor.forClass(ServiceCall.class);
+
+        Mockito
+                .verify(serviceCaller, Mockito.times(3))
+                .call(captor.capture());
+
+        List<ServiceCall> actualCalls = captor.getAllValues();
+
+        Assertions.assertEquals(3, actualCalls.size());
+
+        actualCalls.forEach(actualCall -> {
+            Assertions.assertEquals(serviceCall.url(), actualCall.url());
+            Assertions.assertEquals(serviceCall.method(), actualCall.method());
+            Assertions.assertEquals(serviceCall.headers(), actualCall.headers());
+            Assertions.assertEquals(serviceCall.body(), actualCall.body());
+            Assertions.assertEquals(serviceCall, actualCall);
+        });
     }
 
     @Test
@@ -116,8 +153,8 @@ class FlowExecutorTest {
                 )
         );
 
-        CallResult firstResult = new CallResult(HttpStatusCode.OK, objectMapper.writeValueAsString(firstResponse));
-        CallResult secondResult = new CallResult(HttpStatusCode.OK, objectMapper.writeValueAsString(secondResponse));
+        CallResult firstResult = new CallResult(HttpStatusCode.OK, jsonUtils.serialize(firstResponse));
+        CallResult secondResult = new CallResult(HttpStatusCode.OK, jsonUtils.serialize(secondResponse));
 
         Mockito.when(serviceCaller.call(getAll)).thenReturn(firstResult);
         Mockito.when(serviceCaller.call(getPikachu)).thenReturn(secondResult);
