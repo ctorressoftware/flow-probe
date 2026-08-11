@@ -1,7 +1,7 @@
 package io.github.ctorressoftware.infrastructure.callservice;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.ObjectMapper;
+import io.github.ctorressoftware.application.exception.JsonSerializationException;
+import io.github.ctorressoftware.application.port.out.JsonProcessor;
 import io.github.ctorressoftware.domain.constant.HttpMethod;
 import io.github.ctorressoftware.domain.exception.HttpServiceCallException;
 import io.github.ctorressoftware.domain.model.ServiceCall;
@@ -14,10 +14,10 @@ import java.util.stream.Stream;
 
 public class RequestMapper {
 
-    private final ObjectMapper objectMapper;
+    private final JsonProcessor jsonProcessor;
 
-    public RequestMapper(ObjectMapper objectMapper) {
-        this.objectMapper = Objects.requireNonNull(objectMapper);
+    public RequestMapper(JsonProcessor jsonProcessor) {
+        this.jsonProcessor = Objects.requireNonNull(jsonProcessor);
     }
 
     public HttpRequest map(ServiceCall request) {
@@ -43,12 +43,9 @@ public class RequestMapper {
     }
 
     private String serializeBody(Object body) {
-        if (body instanceof String stringBody) {
-            return stringBody;
-        }
         try {
-            return objectMapper.writeValueAsString(body);
-        } catch (JsonProcessingException e) {
+            return jsonProcessor.serialize(body);
+        } catch (JsonSerializationException e) {
             throw new HttpServiceCallException("Could not serialize request body to JSON", e);
         }
     }
