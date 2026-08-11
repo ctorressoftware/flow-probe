@@ -1,4 +1,4 @@
-package io.github.ctorressoftware.application.usecase.flowexecution;
+package io.github.ctorressoftware.application.usecase;
 
 import io.github.ctorressoftware.application.port.in.flowexecution.ExecuteFlowCommand;
 import io.github.ctorressoftware.application.port.in.flowexecution.ExecuteFlowResult;
