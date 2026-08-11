@@ -2,7 +2,6 @@ package io.github.ctorressoftware.application.usecase.flowexecution;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import io.github.ctorressoftware.application.port.out.ContextManager;
 import io.github.ctorressoftware.application.port.out.JsonProcessor;
 import io.github.ctorressoftware.application.port.out.ServiceCaller;
 import io.github.ctorressoftware.domain.constant.HttpMethod;
