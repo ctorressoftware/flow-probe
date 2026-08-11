@@ -1,6 +1,5 @@
 package io.github.ctorressoftware.application.usecase.flowexecution;
 
-import io.github.ctorressoftware.application.port.out.ContextManager;
 import io.github.ctorressoftware.application.port.out.Executor;
 import io.github.ctorressoftware.application.port.out.ServiceCaller;
 import io.github.ctorressoftware.domain.constant.HttpStatusCode;

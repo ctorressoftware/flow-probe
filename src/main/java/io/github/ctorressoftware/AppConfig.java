@@ -44,7 +44,7 @@ public final class AppConfig {
     private final FlowFileReader flowFileReader = new YamlReader();
     private final ReadFileUseCase readFileUseCase = new ReadFileHandler(flowFileReader);
     private final PlaceholderResolver placeholderResolver = new PlaceholderResolver(jsonProcessor);
-    private final ContextManager contextManager = new FlowContextManager(context, jsonProcessor);
+    private final ContextManager contextManager = new ContextManager(context, jsonProcessor);
     private final ServiceCaller serviceCaller = new RestServiceCaller(httpClient, requestMapper);
     private final Executor executor = new FlowExecutor(contextManager, serviceCaller, placeholderResolver);
     private final ExecuteFlowUseCase executeFlowUseCase = new ExecuteFlowHandler(executor);
