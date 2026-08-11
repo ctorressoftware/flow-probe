@@ -44,8 +44,8 @@ public final class AppConfig {
     private final PlaceholderResolver placeholderResolver = new PlaceholderResolver(jsonUtils);
     private final ContextManager contextManager = new FlowContextManager(context, objectMapper);
     private final ServiceCaller serviceCaller = new RestServiceCaller(httpClient, requestMapper);
-    private final FlowExecutor flowExecutor = new FlowExecutor(contextManager, serviceCaller, placeholderResolver);
-    private final ExecuteFlowUseCase executeFlowUseCase = new ExecuteFlowHandler(flowExecutor);
+    private final Executor executor = new FlowExecutor(contextManager, serviceCaller, placeholderResolver);
+    private final ExecuteFlowUseCase executeFlowUseCase = new ExecuteFlowHandler(executor);
     private final AzureDevOpsWorkItemClient azureDevOpsWorkItemClient = new AzureDevOpsWorkItemClient();
     private final CredentialsStorageManager credentialsStorageManager = new KeystoreCredentialsStorageManager(keyringFactory);
     private final ProviderConfigRepository providerConfigRepository = new KeystoreProviderConfigRepositoryAdapter(objectMapper, credentialsStorageManager);
