@@ -1,8 +1,7 @@
 package io.github.ctorressoftware.infrastructure.persistence.adapter;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.ObjectMapper;
 import io.github.ctorressoftware.application.port.out.CredentialsStorageManager;
+import io.github.ctorressoftware.application.port.out.JsonProcessor;
 import io.github.ctorressoftware.infrastructure.ticket.azuredevops.AzureDevOpsConfiguration;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
@@ -18,7 +17,7 @@ import java.util.Map;
 public class KeystoreProviderConfigRepositoryAdapterTest {
 
     @Mock
-    private ObjectMapper objectMapper;
+    private JsonProcessor jsonProcessor;
 
     @Mock
     private CredentialsStorageManager credentialsStorageManager;
@@ -27,19 +26,18 @@ public class KeystoreProviderConfigRepositoryAdapterTest {
 
     @BeforeEach
     void init() {
-        this.configurator = new KeystoreProviderConfigRepositoryAdapter(objectMapper, credentialsStorageManager);
+        this.configurator = new KeystoreProviderConfigRepositoryAdapter(jsonProcessor, credentialsStorageManager);
     }
 
     @Test
-    void shouldSaveCredentialsWithoutExceptions()
-            throws JsonProcessingException {
+    void shouldSaveCredentialsWithoutExceptions() {
 
         Map<String, String> credentials = Map.of("username", "password");
 
         String serializedCredentials = "{\"username\":\"password\"}";
 
         Mockito
-                .when(objectMapper.writeValueAsString(credentials))
+                .when(jsonProcessor.serialize(credentials))
                 .thenReturn(serializedCredentials);
 
         Assertions.assertDoesNotThrow(

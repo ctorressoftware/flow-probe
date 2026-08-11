@@ -1,7 +1,8 @@
 package io.github.ctorressoftware.infrastructure.renderer;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.ObjectMapper;
+import io.github.ctorressoftware.application.exception.JsonSerializationException;
+import io.github.ctorressoftware.application.port.out.JsonProcessor;
 import io.github.ctorressoftware.domain.constant.HttpMethod;
 import io.github.ctorressoftware.domain.model.ReproducibleRequest;
 import io.github.ctorressoftware.infrastructure.renderer.exception.InvalidCurlBodyException;
@@ -21,13 +22,13 @@ import static org.junit.jupiter.api.Assertions.*;
 public class CurlRequestRendererTest {
 
     @Mock
-    private ObjectMapper mapper;
+    private JsonProcessor jsonProcessor;
 
     private CurlRequestRenderer renderer;
 
     @BeforeEach
     void init() {
-        this.renderer = new CurlRequestRenderer(mapper);
+        this.renderer = new CurlRequestRenderer(jsonProcessor);
     }
 
     @Test
@@ -73,7 +74,7 @@ public class CurlRequestRendererTest {
                 "-d '{\"option\":\"1\",\"topic\":\"example\"}' " +
                 "'https://example.co/api/v1/post-example'";
 
-        Mockito.when(mapper.writeValueAsString(request.body()))
+        Mockito.when(jsonProcessor.serialize(request.body()))
                 .thenReturn( "{\"option\":\"1\",\"topic\":\"example\"}");
 
         String curl = renderer.render(request);
@@ -82,8 +83,7 @@ public class CurlRequestRendererTest {
     }
 
     @Test
-    void shouldWrapJsonProcessingExceptionAsInvalidCurlBodyException()
-            throws JsonProcessingException {
+    void shouldWrapJsonSerializationExceptionAsInvalidCurlBodyException() {
 
         Object body = new Object();
 
@@ -94,10 +94,10 @@ public class CurlRequestRendererTest {
                 body
         );
 
-        JsonProcessingException cause =
-                Mockito.mock(JsonProcessingException.class);
+        JsonSerializationException cause =
+                Mockito.mock(JsonSerializationException.class);
 
-        Mockito.when(mapper.writeValueAsString(body))
+        Mockito.when(jsonProcessor.serialize(body))
                 .thenThrow(cause);
 
         InvalidCurlBodyException exception = assertThrows(
@@ -107,7 +107,7 @@ public class CurlRequestRendererTest {
 
         assertSame(cause, exception.getCause());
 
-        Mockito.verify(mapper)
-                .writeValueAsString(body);
+        Mockito.verify(jsonProcessor)
+                .serialize(body);
     }
 }

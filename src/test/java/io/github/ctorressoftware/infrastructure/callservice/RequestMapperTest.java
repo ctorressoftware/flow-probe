@@ -1,7 +1,7 @@
 package io.github.ctorressoftware.infrastructure.callservice;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.ObjectMapper;
+import io.github.ctorressoftware.application.exception.JsonSerializationException;
+import io.github.ctorressoftware.application.port.out.JsonProcessor;
 import io.github.ctorressoftware.domain.constant.HttpMethod;
 import io.github.ctorressoftware.domain.exception.HttpServiceCallException;
 import io.github.ctorressoftware.domain.model.ServiceCall;
@@ -21,14 +21,14 @@ import java.util.Map;
 @ExtendWith(MockitoExtension.class)
 public class RequestMapperTest {
 
-    @Mock
-    private ObjectMapper objectMapper;
+    @Mock // TODO: refactor this to use a real JsonProcessor
+    private JsonProcessor jsonProcessor;
 
     private RequestMapper requestMapper;
 
     @BeforeEach
     void init() {
-        this.requestMapper = new RequestMapper(objectMapper);
+        this.requestMapper = new RequestMapper(jsonProcessor);
     }
 
     @Test
@@ -54,8 +54,7 @@ public class RequestMapperTest {
     }
 
     @Test
-    void shouldWrapJsonProcessingExceptionAsHttpServiceCallException()
-            throws JsonProcessingException {
+    void shouldWrapJsonProcessingExceptionAsHttpServiceCallException() {
 
         ServiceCall request = new ServiceCall(
                 "https://pokeapi.co/api/v2/pokemon?offset=0&limit=1350",
@@ -64,11 +63,11 @@ public class RequestMapperTest {
                 Map.of("bodyTest", "testValue")
         );
 
-        JsonProcessingException cause =
-                Mockito.mock(JsonProcessingException.class);
+        JsonSerializationException cause =
+                Mockito.mock(JsonSerializationException.class);
 
         Mockito
-                .when(objectMapper.writeValueAsString(request.body()))
+                .when(jsonProcessor.serialize(request.body()))
                 .thenThrow(cause);
 
         HttpServiceCallException exception = assertThrows(
@@ -81,5 +80,4 @@ public class RequestMapperTest {
                 exception.getMessage()
         );
     }
-
 }
