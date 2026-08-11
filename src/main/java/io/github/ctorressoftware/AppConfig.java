@@ -39,8 +39,8 @@ public final class AppConfig {
     private final KeyringFactory keyringFactory = Keyring::create;
     private final JsonProcessor jsonProcessor = new JacksonJsonProcessor(objectMapper);
     private final HttpClient httpClient = HttpClient.newHttpClient();
-    private final RequestMapper requestMapper = new RequestMapper(objectMapper);
-    private final RequestRenderer requestRenderer = new CurlRequestRenderer(objectMapper);
+    private final RequestMapper requestMapper = new RequestMapper(jsonProcessor);
+    private final RequestRenderer requestRenderer = new CurlRequestRenderer(jsonProcessor);
     private final FlowFileReader flowFileReader = new YamlReader();
     private final ReadFileUseCase readFileUseCase = new ReadFileHandler(flowFileReader);
     private final PlaceholderResolver placeholderResolver = new PlaceholderResolver(jsonProcessor);
@@ -50,7 +50,7 @@ public final class AppConfig {
     private final ExecuteFlowUseCase executeFlowUseCase = new ExecuteFlowHandler(executor);
     private final AzureDevOpsWorkItemClient azureDevOpsWorkItemClient = new AzureDevOpsWorkItemClient();
     private final CredentialsStorageManager credentialsStorageManager = new KeystoreCredentialsStorageManager(keyringFactory);
-    private final ProviderConfigRepository providerConfigRepository = new KeystoreProviderConfigRepositoryAdapter(objectMapper, credentialsStorageManager);
+    private final ProviderConfigRepository providerConfigRepository = new KeystoreProviderConfigRepositoryAdapter(jsonProcessor, credentialsStorageManager);
     private final AzureDevOpsWorkItemTicketCreator azureDevOpsWorkItemTicketCreator = new AzureDevOpsWorkItemTicketCreator(azureDevOpsWorkItemClient, providerConfigRepository);
     private final ImpedimentTicketCreator impedimentTicketCreator = new AzureDevOpsImpedimentTicketCreatorAdapter(azureDevOpsWorkItemTicketCreator);
     private final CreateImpedimentTicketUseCase createImpedimentTicketUseCase = new CreateImpedimentTicketHandler(impedimentTicketCreator);
