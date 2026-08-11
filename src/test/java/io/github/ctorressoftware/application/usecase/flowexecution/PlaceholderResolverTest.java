@@ -1,8 +1,9 @@
 package io.github.ctorressoftware.application.usecase.flowexecution;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import io.github.ctorressoftware.application.port.out.JsonProcessor;
 import io.github.ctorressoftware.domain.model.ContextVariable;
-import io.github.ctorressoftware.domain.model.ServiceCall;
+import io.github.ctorressoftware.infrastructure.json.jackson.JacksonJsonProcessor;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 
@@ -10,12 +11,12 @@ import java.util.List;
 
 class PlaceholderResolverTest {
 
-    private final JsonUtils jsonUtils = new JsonUtils(new ObjectMapper());
+    private final JsonProcessor jsonProcessor = new JacksonJsonProcessor(new ObjectMapper());
 
     private final PlaceholderResolver placeholderResolver;
 
     public PlaceholderResolverTest() {
-        placeholderResolver = new PlaceholderResolver(jsonUtils);
+        placeholderResolver = new PlaceholderResolver(jsonProcessor);
     }
 
     @Test

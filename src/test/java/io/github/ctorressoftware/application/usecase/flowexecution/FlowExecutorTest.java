@@ -3,11 +3,13 @@ package io.github.ctorressoftware.application.usecase.flowexecution;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import io.github.ctorressoftware.application.port.out.ContextManager;
+import io.github.ctorressoftware.application.port.out.JsonProcessor;
 import io.github.ctorressoftware.application.port.out.ServiceCaller;
 import io.github.ctorressoftware.domain.constant.HttpMethod;
 import io.github.ctorressoftware.domain.constant.HttpStatusCode;
 import io.github.ctorressoftware.domain.exception.NoDefinedFlowException;
 import io.github.ctorressoftware.domain.model.*;
+import io.github.ctorressoftware.infrastructure.json.jackson.JacksonJsonProcessor;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -29,14 +31,14 @@ class FlowExecutorTest {
     @Mock
     private ServiceCaller serviceCaller;
 
-    private JsonUtils jsonUtils;
+    private JsonProcessor jsonProcessor;
 
     private FlowExecutor flowExecutor;
 
     @BeforeEach
     void init() {
-        this.jsonUtils = new JsonUtils(new ObjectMapper());
-        PlaceholderResolver placeholderResolver = new PlaceholderResolver(jsonUtils);
+        this.jsonProcessor = new JacksonJsonProcessor(new ObjectMapper());
+        PlaceholderResolver placeholderResolver = new PlaceholderResolver(jsonProcessor);
         flowExecutor = new FlowExecutor(contextManager, serviceCaller, placeholderResolver);
     }
 
@@ -153,8 +155,8 @@ class FlowExecutorTest {
                 )
         );
 
-        CallResult firstResult = new CallResult(HttpStatusCode.OK, jsonUtils.serialize(firstResponse));
-        CallResult secondResult = new CallResult(HttpStatusCode.OK, jsonUtils.serialize(secondResponse));
+        CallResult firstResult = new CallResult(HttpStatusCode.OK, jsonProcessor.serialize(firstResponse));
+        CallResult secondResult = new CallResult(HttpStatusCode.OK, jsonProcessor.serialize(secondResponse));
 
         Mockito.when(serviceCaller.call(getAll)).thenReturn(firstResult);
         Mockito.when(serviceCaller.call(getPikachu)).thenReturn(secondResult);
