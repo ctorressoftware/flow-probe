@@ -1,5 +1,6 @@
 package io.github.ctorressoftware.application.usecase.flowexecution;
 
+import io.github.ctorressoftware.application.port.out.JsonProcessor;
 import io.github.ctorressoftware.domain.model.ContextVariable;
 import io.github.ctorressoftware.domain.model.ServiceCall;
 
@@ -9,10 +10,10 @@ import java.util.Map;
 
 public class PlaceholderResolver {
 
-    private final JsonUtils jsonUtils;
+    private final JsonProcessor jsonProcessor;
 
-    public PlaceholderResolver(JsonUtils jsonUtils) {
-        this.jsonUtils = jsonUtils;
+    public PlaceholderResolver(JsonProcessor jsonProcessor) {
+        this.jsonProcessor = jsonProcessor;
     }
 
     public ServiceCall resolve(List<ContextVariable> variables, ServiceCall serviceCall) {
@@ -37,7 +38,7 @@ public class PlaceholderResolver {
             return null;
         }
 
-        return resolveString(variables, jsonUtils.serialize(body));
+        return resolveString(variables, jsonProcessor.serialize(body));
     }
 
     public String resolveString(List<ContextVariable> variables, String value) {
