@@ -1,38 +1,40 @@
 package io.github.ctorressoftware.infrastructure.persistence.adapter;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.core.type.TypeReference;
-import com.fasterxml.jackson.databind.ObjectMapper;
+import io.github.ctorressoftware.application.exception.JsonDeserializationException;
+import io.github.ctorressoftware.application.exception.JsonSerializationException;
 import io.github.ctorressoftware.application.port.out.CredentialsStorageManager;
+import io.github.ctorressoftware.application.port.out.JsonProcessor;
 import io.github.ctorressoftware.application.port.out.ProviderConfigRepository;
+import io.github.ctorressoftware.infrastructure.persistence.exception.CredentialsSavingException;
+import io.github.ctorressoftware.infrastructure.persistence.exception.InvalidStoredCredentialsException;
 import io.github.ctorressoftware.infrastructure.ticket.azuredevops.AzureDevOpsConfiguration;
 
 import java.util.Map;
 
 public class KeystoreProviderConfigRepositoryAdapter implements ProviderConfigRepository {
 
-    private final ObjectMapper objectMapper;
+    private final JsonProcessor jsonProcessor;
     private final CredentialsStorageManager credentialsStorageManager;
 
     public KeystoreProviderConfigRepositoryAdapter(
-            ObjectMapper objectMapper,
+            JsonProcessor jsonProcessor,
             CredentialsStorageManager credentialsStorageManager
     ) {
-        this.objectMapper = objectMapper;
+        this.jsonProcessor = jsonProcessor;
         this.credentialsStorageManager = credentialsStorageManager;
     }
 
     @Override
     public void save(Map<String, String> credentials) {
         try {
-            String jsonCredentials = objectMapper.writeValueAsString(credentials);
+            String jsonCredentials = jsonProcessor.serialize(credentials);
             credentialsStorageManager.store(
                     AzureDevOpsConfiguration.AZURE_DOMAIN,
                     AzureDevOpsConfiguration.AZURE_ACCOUNT,
                     jsonCredentials
             ); // TODO: return Credentials.CONFIGURED or a boolean to validate;
-        } catch (JsonProcessingException e) {
-            throw new RuntimeException(e);
+        } catch (JsonSerializationException e) {
+            throw new CredentialsSavingException("Could not prepare credentials for storage", e);
         }
     }
 
@@ -41,9 +43,9 @@ public class KeystoreProviderConfigRepositoryAdapter implements ProviderConfigRe
         String jsonSecret = credentialsStorageManager.find(domain, account);
 
         try {
-            return objectMapper.readValue(jsonSecret, new TypeReference<>() {});
-        } catch (JsonProcessingException e) {
-            throw new RuntimeException( // InvalidStoredCredentialsException
+            return jsonProcessor.readStringMap(jsonSecret);
+        } catch (JsonDeserializationException e) {
+            throw new InvalidStoredCredentialsException(
                     "Stored credentials contain invalid JSON for domain '%s' and account '%s'"
                             .formatted(domain, account),
                     e
@@ -62,7 +64,7 @@ public class KeystoreProviderConfigRepositoryAdapter implements ProviderConfigRe
     @Override
     public boolean exists() {
         String jsonSecret = credentialsStorageManager.find(
-                AzureDevOpsConfiguration.AZURE_DOMAIN, 
+                AzureDevOpsConfiguration.AZURE_DOMAIN,
                 AzureDevOpsConfiguration.AZURE_ACCOUNT
         );
         return !jsonSecret.isBlank();
