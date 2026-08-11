@@ -1,7 +1,7 @@
 package io.github.ctorressoftware.infrastructure.renderer;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.ObjectMapper;
+import io.github.ctorressoftware.application.exception.JsonSerializationException;
+import io.github.ctorressoftware.application.port.out.JsonProcessor;
 import io.github.ctorressoftware.application.port.out.RequestRenderer;
 import io.github.ctorressoftware.domain.model.ReproducibleRequest;
 import io.github.ctorressoftware.domain.model.RequestFormat;
@@ -12,10 +12,10 @@ import java.util.Objects;
 
 public class CurlRequestRenderer implements RequestRenderer {
 
-    private final ObjectMapper mapper;
+    private final JsonProcessor jsonProcessor;
 
-    public CurlRequestRenderer(ObjectMapper mapper) {
-        this.mapper = Objects.requireNonNull(mapper);
+    public CurlRequestRenderer(JsonProcessor jsonProcessor) {
+        this.jsonProcessor = Objects.requireNonNull(jsonProcessor);
     }
 
     @Override
@@ -45,12 +45,11 @@ public class CurlRequestRenderer implements RequestRenderer {
     }
 
     private void appendBody(StringBuilder curl, Object body) {
-        if (body == null) return;
-
         try {
-            String bodyString = mapper.writeValueAsString(body);
-            curl.append(" -d ").append(singleQuote(bodyString));
-        } catch (JsonProcessingException e) {
+            if (body == null) return;
+            String serialized = jsonProcessor.serialize(body);
+            curl.append(" -d ").append(singleQuote(serialized));
+        } catch (JsonSerializationException e) {
             throw new InvalidCurlBodyException(String.valueOf(body), e);
         }
     }
