@@ -3,13 +3,14 @@ package io.github.ctorressoftware.application.usecase.flowexecution;
 import io.github.ctorressoftware.application.port.in.flowexecution.ExecuteFlowCommand;
 import io.github.ctorressoftware.application.port.in.flowexecution.ExecuteFlowResult;
 import io.github.ctorressoftware.application.port.in.flowexecution.ExecuteFlowUseCase;
+import io.github.ctorressoftware.application.port.out.Executor;
 import io.github.ctorressoftware.domain.model.FlowExecutionSummary;
 
 public class ExecuteFlowHandler implements ExecuteFlowUseCase {
 
-    private final FlowExecutor executor;
+    private final Executor executor;
 
-    public ExecuteFlowHandler(FlowExecutor executor) {
+    public ExecuteFlowHandler(Executor executor) {
         this.executor = executor;
     }
 

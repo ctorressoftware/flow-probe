@@ -1,6 +1,7 @@
 package io.github.ctorressoftware.application.usecase.flowexecution;
 
 import io.github.ctorressoftware.application.port.out.ContextManager;
+import io.github.ctorressoftware.application.port.out.Executor;
 import io.github.ctorressoftware.application.port.out.ServiceCaller;
 import io.github.ctorressoftware.domain.constant.HttpStatusCode;
 import io.github.ctorressoftware.domain.exception.NoDefinedFlowException;
@@ -10,7 +11,7 @@ import java.time.Duration;
 import java.util.List;
 import java.util.Objects;
 
-public class FlowExecutor {
+public class FlowExecutor implements Executor {
     private final ContextManager contextManager;
     private final ServiceCaller serviceCaller;
     private final PlaceholderResolver placeholderResolver;
