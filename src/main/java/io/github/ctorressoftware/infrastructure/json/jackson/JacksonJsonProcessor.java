@@ -1,9 +1,15 @@
 package io.github.ctorressoftware.infrastructure.json.jackson;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import io.github.ctorressoftware.application.exception.JsonDeserializationException;
+import io.github.ctorressoftware.application.exception.JsonExtractionException;
+import io.github.ctorressoftware.application.exception.JsonSerializationException;
 import io.github.ctorressoftware.application.port.out.JsonProcessor;
+
+import java.util.Map;
 
 public class JacksonJsonProcessor implements JsonProcessor {
 
@@ -17,7 +23,10 @@ public class JacksonJsonProcessor implements JsonProcessor {
         try {
             return objectMapper.writeValueAsString(data);
         } catch (JsonProcessingException e) {
-            throw new RuntimeException("Could not serialize request body to JSON", e); // TODO: customize
+            throw new JsonSerializationException(
+                    "Could not serialize data to JSON",
+                    e
+            );
         }
     }
 
@@ -27,7 +36,21 @@ public class JacksonJsonProcessor implements JsonProcessor {
             JsonNode root = objectMapper.readTree(data);
             return root.at(valuePath).asText();
         } catch (JsonProcessingException e) {
-            throw new RuntimeException(e); // TODO: customize
+            throw new JsonExtractionException(
+                    "Could not extract data from JSON",
+                    e);
+        }
+    }
+
+    @Override
+    public Map<String, String> readStringMap(String json) {
+        try {
+            return objectMapper.readValue(json, new TypeReference<>() {});
+        } catch (JsonProcessingException e) {
+            throw new JsonDeserializationException(
+                    "Could not read deserialize data from JSON",
+                    e
+            );
         }
     }
 }
