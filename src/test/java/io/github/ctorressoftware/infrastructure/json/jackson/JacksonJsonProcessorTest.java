@@ -4,10 +4,8 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import io.github.ctorressoftware.application.exception.JsonSerializationException;
 import org.junit.jupiter.api.Assertions;
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
-import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.junit.jupiter.MockitoExtension;
 import static org.junit.jupiter.api.Assertions.assertThrows;
@@ -15,22 +13,13 @@ import static org.junit.jupiter.api.Assertions.assertThrows;
 @ExtendWith(MockitoExtension.class)
 public class JacksonJsonProcessorTest {
 
-    @Mock
-    private ObjectMapper mockObjectMapper;
-
     private ObjectMapper objectMapper;
 
     private JacksonJsonProcessor jacksonJsonProcessor;
 
-    @BeforeEach
-    void init() {
-        mockObjectMapper = Mockito.mock(ObjectMapper.class);
-        objectMapper = new ObjectMapper();
-    }
-
     @Test
     void shouldReturnSerializedText() {
-
+        objectMapper = new ObjectMapper();
         jacksonJsonProcessor = new JacksonJsonProcessor(objectMapper);
 
         String expected = """
@@ -74,13 +63,14 @@ public class JacksonJsonProcessorTest {
     void shouldWrapJsonProcessingExceptionAsJsonSerializationException()
             throws JsonProcessingException {
 
-        jacksonJsonProcessor = new JacksonJsonProcessor(mockObjectMapper);
+        objectMapper = Mockito.mock(ObjectMapper.class);
+        jacksonJsonProcessor = new JacksonJsonProcessor(objectMapper);
 
         JsonProcessingException cause =
                 Mockito.mock(JsonProcessingException.class);
 
         Mockito
-                .when(mockObjectMapper.writeValueAsString(Mockito.anyString()))
+                .when(objectMapper.writeValueAsString(Mockito.anyString()))
                 .thenThrow(cause);
 
         JsonSerializationException exception = assertThrows(
@@ -90,7 +80,7 @@ public class JacksonJsonProcessorTest {
 
         Assertions.assertSame(cause, exception.getCause());
 
-        Mockito.verify(mockObjectMapper, Mockito.times(1))
+        Mockito.verify(objectMapper, Mockito.times(1))
                 .writeValueAsString(Mockito.anyString());
 
         Assertions.assertEquals(
@@ -98,5 +88,4 @@ public class JacksonJsonProcessorTest {
                 exception.getMessage()
         );
     }
-
 }
