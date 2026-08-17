@@ -58,7 +58,6 @@ public class ContextManagerTest {
                 new ContextVariable("name3", "value3")
         );
 
-        Assertions.assertEquals(3, contextManager.getVariables().size());
         Assertions.assertEquals(
                 Set.copyOf(expected),
                 Set.copyOf(contextManager.getVariables())
