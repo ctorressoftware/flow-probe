@@ -12,6 +12,7 @@ import org.junit.jupiter.api.Test;
 
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 public class ContextManagerTest {
 
@@ -59,8 +60,8 @@ public class ContextManagerTest {
 
         Assertions.assertEquals(3, contextManager.getVariables().size());
         Assertions.assertEquals(
-                expected,
-                contextManager.getVariables()
+                Set.copyOf(expected),
+                Set.copyOf(contextManager.getVariables())
         );
     }
 
