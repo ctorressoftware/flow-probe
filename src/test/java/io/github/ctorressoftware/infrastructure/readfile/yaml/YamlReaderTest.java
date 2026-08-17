@@ -1,9 +1,8 @@
-package io.github.ctorressoftware.infrastructure.readfile;
+package io.github.ctorressoftware.infrastructure.readfile.yaml;
 
 import io.github.ctorressoftware.domain.model.FilePath;
 import io.github.ctorressoftware.domain.model.Flow;
 import io.github.ctorressoftware.infrastructure.readfile.exception.*;
-import io.github.ctorressoftware.infrastructure.readfile.yaml.YamlReader;
 import org.junit.jupiter.api.Test;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
