@@ -2,11 +2,14 @@ package io.github.ctorressoftware.infrastructure.readfile.yaml;
 
 import io.github.ctorressoftware.domain.model.FilePath;
 import io.github.ctorressoftware.domain.model.Flow;
+import io.github.ctorressoftware.domain.model.FlowStep;
+import io.github.ctorressoftware.domain.model.ServiceCall;
 import io.github.ctorressoftware.infrastructure.readfile.exception.*;
+import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertThrows;
+import java.util.List;
+import java.util.Map;
 
 public class YamlReaderTest {
     private static final String BASE_PATH = "src/test/resources/yaml-cases/";
@@ -14,21 +17,65 @@ public class YamlReaderTest {
 
     @Test
     void parsesFullyValidFlow() {
-        Flow flow = reader.read(new FilePath(BASE_PATH + "fully-valid-flow.yaml"));
-        assertEquals("pokeapi-success-flow", flow.getName());
-        assertEquals(3, flow.getSteps().size());
+
+        Flow expected = Flow.create(
+                "pokeapi-success-flow",
+                List.of(
+                        FlowStep.create(
+                                "pokeapi-success-flow",
+                                "get-all-pokemon",
+                                new ServiceCall(
+                                        "https://pokeapi.co/api/v2/pokemon?offset=0&limit=1350",
+                                        "GET",
+                                        Map.of("accept", "application/json"),
+                                        null
+                                ),
+                                null,
+                                Map.of("pokemonName", "results.0.name")
+                        ),
+                        FlowStep.create(
+                                "pokeapi-success-flow",
+                                "get-pokemon",
+                                new ServiceCall(
+                                        "https://pokeapi.co/api/v2/pokemon/${pokemonName}",
+                                        "GET",
+                                        Map.of("accept", "application/json"),
+                                        null
+                                ),
+                                Map.of("name", "${pokemonName}"),
+                                null
+                        ),
+                        FlowStep.create(
+                                "pokeapi-success-flow",
+                                "get-pikachu",
+                                new ServiceCall(
+                                        "https://pokeapi.co/api/v2/pokemon/pikachu",
+                                        "GET",
+                                        Map.of("accept", "application/json"),
+                                        null
+                                ),
+                                null,
+                                null
+                        )
+                )
+        );
+
+        Assertions.assertEquals(
+                expected,
+                reader.read(new FilePath(BASE_PATH + "fully-valid-flow.yaml"))
+        );
     }
 
     @Test
     void rejectsEmptyFlowFile() {
         FilePath filePath = new FilePath(BASE_PATH + "empty-flow.yaml");
 
-        EmptyFileException exception = assertThrows(
+        EmptyFileException exception = Assertions.assertThrows(
                 EmptyFileException.class,
                 () -> reader.read(filePath)
         );
 
-        assertEquals(
+        Assertions.assertEquals(
                 "Specified YAML file is empty: " + filePath.value(),
                 exception.getMessage()
         );
@@ -38,12 +85,12 @@ public class YamlReaderTest {
     void rejectsCorruptFlowFile() {
         FilePath filePath = new FilePath(BASE_PATH + "corrupted-flow.yaml");
 
-        InvalidYamlFileException exception = assertThrows(
+        InvalidYamlFileException exception = Assertions.assertThrows(
                 InvalidYamlFileException.class,
                 () -> reader.read(filePath)
         );
 
-        assertEquals(
+        Assertions.assertEquals(
                 "Could not parse YAML file: " + filePath.value(),
                 exception.getMessage()
         );
@@ -53,12 +100,12 @@ public class YamlReaderTest {
     void rejectsFlowWithoutName() {
         FilePath filePath = new FilePath(BASE_PATH + "no-name-flow.yaml");
 
-        NoFlowNameException exception = assertThrows(
+        NoFlowNameException exception = Assertions.assertThrows(
                 NoFlowNameException.class,
                 () -> reader.read(filePath)
         );
 
-        assertEquals(
+        Assertions.assertEquals(
                 "Could not read YAML flow name from: " + filePath.value(),
                 exception.getMessage()
         );
@@ -68,12 +115,12 @@ public class YamlReaderTest {
     void rejectsFlowWithoutSteps() {
         FilePath filePath = new FilePath(BASE_PATH + "flow-without-steps.yaml");
 
-        NoDefinedStepsException exception = assertThrows(
+        NoDefinedStepsException exception = Assertions.assertThrows(
                 NoDefinedStepsException.class,
                 () -> reader.read(filePath)
         );
 
-        assertEquals(
+        Assertions.assertEquals(
                 "No defined steps in the specified file: " + filePath.value(),
                 exception.getMessage()
         );
@@ -83,12 +130,12 @@ public class YamlReaderTest {
     void rejectsFlowWithoutStepName() {
         FilePath filePath = new FilePath(BASE_PATH + "flow-without-step-name.yaml");
 
-        InvalidFlowStepException exception = assertThrows(
+        InvalidFlowStepException exception = Assertions.assertThrows(
                 InvalidFlowStepException.class,
                 () -> reader.read(filePath)
         );
 
-        assertEquals(
+        Assertions.assertEquals(
                 "Flow step name cannot be blank",
                 exception.getMessage()
         );
@@ -98,12 +145,12 @@ public class YamlReaderTest {
     void rejectsFlowWithoutStepRequest() {
         FilePath filePath = new FilePath(BASE_PATH + "flow-without-step-request.yaml");
 
-        InvalidFlowStepException exception = assertThrows(
+        InvalidFlowStepException exception = Assertions.assertThrows(
                 InvalidFlowStepException.class,
                 () -> reader.read(filePath)
         );
 
-        assertEquals(
+        Assertions.assertEquals(
                 "Request is required for step: invalid-step",
                 exception.getMessage()
         );
@@ -113,12 +160,12 @@ public class YamlReaderTest {
     void rejectsFlowWithoutStepRequestUrl() {
         FilePath filePath = new FilePath(BASE_PATH + "flow-without-step-request-url.yaml");
 
-        InvalidFlowStepException exception = assertThrows(
+        InvalidFlowStepException exception = Assertions.assertThrows(
                 InvalidFlowStepException.class,
                 () -> reader.read(filePath)
         );
 
-        assertEquals(
+        Assertions.assertEquals(
                 "Request url is required for step: invalid-request-url",
                 exception.getMessage()
         );
@@ -128,28 +175,43 @@ public class YamlReaderTest {
     void rejectsFlowWithoutStepRequestMethod() {
         FilePath filePath = new FilePath(BASE_PATH + "flow-without-step-request-method.yaml");
 
-        InvalidFlowStepException exception = assertThrows(
+        InvalidFlowStepException exception = Assertions.assertThrows(
                 InvalidFlowStepException.class,
                 () -> reader.read(filePath)
         );
 
-        assertEquals(
+        Assertions.assertEquals(
                 "Request method is required for step: invalid-request-method",
                 exception.getMessage()
         );
     }
 
     @Test
-    void rejectsWrongYamlFlowStructure() {
-        FilePath filePath = new FilePath(BASE_PATH + "wrong-yaml-flow-structure");
+    void rejectsNonExistingFile() {
+        FilePath filePath = new FilePath(BASE_PATH + "404.yaml");
 
-        UnreadableFileException exception = assertThrows(
+        UnreadableFileException exception = Assertions.assertThrows(
                 UnreadableFileException.class,
                 () -> reader.read(filePath)
         );
 
-        assertEquals(
+        Assertions.assertEquals(
                 "Could not read YAML file: " + filePath.value(),
+                exception.getMessage()
+        );
+    }
+
+    @Test
+    void rejectsWrongYamlFlowStructure() {
+        FilePath filePath = new FilePath(BASE_PATH + "wrong-yaml-flow-structure.yaml");
+
+        InvalidYamlFileException exception = Assertions.assertThrows(
+                InvalidYamlFileException.class,
+                () -> reader.read(filePath)
+        );
+
+        Assertions.assertEquals(
+                "Could not parse YAML file: " + filePath.value(),
                 exception.getMessage()
         );
     }
