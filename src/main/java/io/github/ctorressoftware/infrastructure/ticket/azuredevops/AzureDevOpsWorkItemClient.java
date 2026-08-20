@@ -15,13 +15,12 @@ import com.fasterxml.jackson.databind.SerializationFeature;
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 import io.github.ctorressoftware.domain.constant.HttpStatusCode;
 
-// TODO: This is a temporary logic to test Azure DevOps API. Refactor this later.
 public class AzureDevOpsWorkItemClient {
 
     private final HttpClient client;
 
-    public AzureDevOpsWorkItemClient() {
-        this.client = HttpClient.newHttpClient();
+    public AzureDevOpsWorkItemClient(HttpClient client) {
+        this.client = client;
     }
 
     public AzureDevOpsWorkItemResponse createWorkItem(
