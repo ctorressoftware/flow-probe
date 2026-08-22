@@ -1,10 +1,10 @@
 package io.github.ctorressoftware.infrastructure.renderer;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
 import io.github.ctorressoftware.application.exception.JsonSerializationException;
 import io.github.ctorressoftware.application.port.out.JsonProcessor;
 import io.github.ctorressoftware.domain.constant.HttpMethod;
 import io.github.ctorressoftware.domain.model.ReproducibleRequest;
+import io.github.ctorressoftware.domain.model.RequestFormat;
 import io.github.ctorressoftware.infrastructure.renderer.exception.InvalidCurlBodyException;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -50,8 +50,41 @@ public class CurlRequestRendererTest {
     }
 
     @Test
-    void renderCurlWithPostMethod()
-            throws JsonProcessingException {
+    void shouldGetOutOfAppendHeadersMethodIfHeadersAreEmpty() {
+
+        ReproducibleRequest request = new ReproducibleRequest(
+                "https://pokeapi.co/api/v2/pokemon?offset=0&limit=1350",
+                HttpMethod.GET,
+                Map.of(),
+                null
+        );
+
+        String expected = "curl -X GET " +
+                "'https://pokeapi.co/api/v2/pokemon?offset=0&limit=1350'";
+
+        String curl = renderer.render(request);
+        assertEquals(expected, curl);
+    }
+
+    @Test
+    void shouldGetOutOfAppendHeadersMethodIfHeadersAreNull() {
+
+        ReproducibleRequest request = new ReproducibleRequest(
+                "https://pokeapi.co/api/v2/pokemon?offset=0&limit=1350",
+                HttpMethod.GET,
+                null,
+                null
+        );
+
+        String expected = "curl -X GET " +
+                "'https://pokeapi.co/api/v2/pokemon?offset=0&limit=1350'";
+
+        String curl = renderer.render(request);
+        assertEquals(expected, curl);
+    }
+
+    @Test
+    void renderCurlWithPostMethod() {
 
         Map<String, String> headers = new LinkedHashMap<>();
         headers.put("Content-Type", "application/json");
@@ -109,5 +142,15 @@ public class CurlRequestRendererTest {
 
         Mockito.verify(jsonProcessor)
                 .serialize(body);
+    }
+
+    @Test
+    void shouldReturnTrueIfRequestFormatIsCurl() {
+        assertTrue(renderer.supports(RequestFormat.CURL));
+    }
+
+    @Test
+    void shouldReturnFalseIfRequestFormatIsNotCurl() {
+        assertFalse(renderer.supports(RequestFormat.HTTP_RAW));
     }
 }
