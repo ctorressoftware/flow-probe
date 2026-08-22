@@ -1,13 +1,20 @@
 package io.github.ctorressoftware.infrastructure.json.jackson;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import io.github.ctorressoftware.application.exception.JsonDeserializationException;
+import io.github.ctorressoftware.application.exception.JsonExtractionException;
 import io.github.ctorressoftware.application.exception.JsonSerializationException;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.ArgumentMatchers;
 import org.mockito.Mockito;
 import org.mockito.junit.jupiter.MockitoExtension;
+
+import java.util.Map;
+
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
 @ExtendWith(MockitoExtension.class)
@@ -85,6 +92,96 @@ public class JacksonJsonProcessorTest {
 
         Assertions.assertEquals(
                 "Could not serialize data to JSON",
+                exception.getMessage()
+        );
+    }
+
+    @Test
+    void shouldWrapJsonProcessingExceptionAsJsonExtractionException()
+            throws JsonProcessingException {
+
+        objectMapper = Mockito.mock(ObjectMapper.class);
+        jacksonJsonProcessor = new JacksonJsonProcessor(objectMapper);
+
+        JsonProcessingException cause =
+                Mockito.mock(JsonProcessingException.class);
+
+        String json = """
+                {"username": "password"}
+                """.stripTrailing();
+
+        Mockito
+                .when(objectMapper.readTree(Mockito.anyString()))
+                .thenThrow(cause);
+
+        JsonExtractionException exception = assertThrows(
+                JsonExtractionException.class,
+                () -> jacksonJsonProcessor.extractValue(
+                        json,
+                        "username"
+                )
+        );
+
+        Assertions.assertSame(cause, exception.getCause());
+
+        Mockito.verify(objectMapper, Mockito.times(1))
+                .readTree(Mockito.anyString());
+
+        Assertions.assertEquals(
+                "Could not extract data from JSON",
+                exception.getMessage()
+        );
+    }
+
+    @Test
+    void shouldReturnMapFromJsonString() {
+
+        objectMapper = new ObjectMapper();
+        jacksonJsonProcessor = new JacksonJsonProcessor(objectMapper);
+
+        Map<String, String> expected = Map.of("username", "password");
+
+        Map<String, String> result = jacksonJsonProcessor.readStringMap("""
+                {"username": "password"}
+                """.stripTrailing());
+
+        Assertions.assertEquals(expected, result);
+    }
+
+    @Test
+    void shouldWrapJsonProcessingExceptionAsJsonDeserializationException()
+            throws JsonProcessingException {
+
+        objectMapper = Mockito.mock(ObjectMapper.class);
+        jacksonJsonProcessor = new JacksonJsonProcessor(objectMapper);
+
+        JsonProcessingException cause =
+                Mockito.mock(JsonProcessingException.class);
+
+        String json = "{\"username\":\"password\"}";
+
+        Mockito
+                .when(objectMapper.readValue(
+                        Mockito.eq(json),
+                        ArgumentMatchers.<TypeReference<Map<String, String>>>any()
+                ))
+                .thenThrow(cause);
+
+        JsonDeserializationException exception = assertThrows(
+                JsonDeserializationException.class,
+                () -> jacksonJsonProcessor.readStringMap(json)
+        );
+
+        Assertions.assertSame(cause, exception.getCause());
+
+        Mockito.verify(objectMapper, Mockito.times(1))
+                .readValue(
+                        Mockito.eq(json),
+                        ArgumentMatchers.<TypeReference<Map<String, String>>>any()
+                );
+
+        Assertions.assertEquals(
+                "Could not read deserialize data from JSON",
                 exception.getMessage()
         );
     }
