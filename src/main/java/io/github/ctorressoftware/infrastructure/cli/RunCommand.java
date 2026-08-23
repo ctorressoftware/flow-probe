@@ -13,6 +13,7 @@ import io.github.ctorressoftware.application.port.out.RequestRenderer;
 import io.github.ctorressoftware.domain.model.*;
 import picocli.CommandLine;
 
+import java.io.PrintStream;
 import java.util.List;
 import java.util.Objects;
 import java.util.Scanner;
@@ -22,6 +23,7 @@ import java.util.stream.Collectors;
 @CommandLine.Command(name = "run")
 public class RunCommand implements Callable<Integer> {
     private final Scanner scanner;
+    private final PrintStream out;
     private final RequestRenderer requestRenderer;
 
     @CommandLine.Option(
@@ -54,12 +56,14 @@ public class RunCommand implements Callable<Integer> {
     private final CreateImpedimentTicketUseCase createImpedimentTicketUseCase;
 
     public RunCommand(
+            PrintStream out,
             Scanner scanner,
             RequestRenderer requestRenderer,
             ReadFileUseCase readFileUseCase,
             ExecuteFlowUseCase executeFlowUseCase,
             CreateImpedimentTicketUseCase createImpedimentTicketUseCase
     ) {
+        this.out = out;
         this.scanner = scanner;
         this.requestRenderer = requestRenderer;
         this.readFileUseCase = readFileUseCase;
@@ -86,7 +90,7 @@ public class RunCommand implements Callable<Integer> {
         renderReproducibleRequests(resume);
 
         if (!resume.isSuccessfulExecution() && Objects.isNull(impedimentCreation)) {
-            System.out.print("Do you want to create an impediment? (Y/N): ");
+            out.print("Do you want to create an impediment? (Y/N): ");
             impedimentCreation = scanner.next().equalsIgnoreCase("Y");
         }
 
@@ -95,7 +99,7 @@ public class RunCommand implements Callable<Integer> {
             CreateImpedimentTicketResult ticketCreationResult = createImpedimentTicketUseCase
                     .createTicket(new CreateImpedimentTicketCommand(ticket));
             ImpedimentTicket impedimentTicket = ticketCreationResult.created();
-            System.out.println("Impediment ticket created. ID = " + impedimentTicket.getId());
+            out.println("Impediment ticket created. ID = " + impedimentTicket.getId());
         }
 
         return 0;
@@ -106,7 +110,7 @@ public class RunCommand implements Callable<Integer> {
             ServiceCall call = detail.executed();
             ReproducibleRequest reproducibleRequest = ReproducibleRequest.fromServiceCall(call);
             String request = requestRenderer.render(reproducibleRequest);
-            System.out.println(request);
+            out.println(request);
         });
     }
 
