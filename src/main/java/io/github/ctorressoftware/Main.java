@@ -12,6 +12,7 @@ public class Main {
         CommandLine commandLine = new CommandLine(rootCommand);
 
         commandLine.addSubcommand("run", new RunCommand(
+                config.out(),
                 config.scanner(),
                 config.requestRenderer(),
                 config.readFileUseCase(),
