@@ -11,6 +11,7 @@ import io.github.ctorressoftware.application.port.in.readfile.ReadFileResult;
 import io.github.ctorressoftware.application.port.in.readfile.ReadFileUseCase;
 import io.github.ctorressoftware.application.port.out.RequestRenderer;
 import io.github.ctorressoftware.domain.model.*;
+import io.github.ctorressoftware.infrastructure.cli.exception.MissingFilepathException;
 import picocli.CommandLine;
 
 import java.io.PrintStream;
@@ -28,9 +29,9 @@ public class RunCommand implements Callable<Integer> {
 
     @CommandLine.Option(
             names = {"-f", "--file"},
-            required = true,
-            paramLabel = "FILE",
-            description = "Required YAML file path to read it"
+            paramLabel = "FILEPATH",
+            description = "Required YAML file path to read it",
+            required = true
     )
     private String filePath;
 
@@ -83,6 +84,7 @@ public class RunCommand implements Callable<Integer> {
     }
 
     private Integer run() {
+        if (filePath == null || filePath.isBlank()) throw new MissingFilepathException();
         ReadFileResult readFileResult = readFileUseCase.read(new ReadFileCommand(new FilePath(filePath)));
         Flow flow = readFileResult.flow();
         ExecuteFlowResult executeFlowResult = executeFlowUseCase.execute(new ExecuteFlowCommand(flow));
