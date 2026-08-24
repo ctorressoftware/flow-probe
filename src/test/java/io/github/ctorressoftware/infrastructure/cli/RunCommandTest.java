@@ -14,6 +14,7 @@ import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.ArgumentCaptor;
 import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.junit.jupiter.MockitoExtension;
@@ -129,8 +130,39 @@ public class RunCommandTest {
         CommandLine cmd = new CommandLine(rootCommand);
         cmd.addSubcommand("run", runCommand);
 
-        int exit = cmd.execute("run", "--file", "src/test/resources/flow-failure.yaml");
+        int exitCode = cmd.execute(
+                "run",
+                "--file",
+                "src/test/resources/flow-failure.yaml"
+        );
 
-        Assertions.assertEquals(0, exit);
+        Assertions.assertEquals(0, exitCode);
+
+        ArgumentCaptor<ReadFileCommand> readCaptor =
+                ArgumentCaptor.forClass(ReadFileCommand.class);
+
+        Mockito.verify(readFileUseCase)
+                .read(readCaptor.capture());
+
+        Assertions.assertEquals(
+                "src/test/resources/flow-failure.yaml",
+                readCaptor.getValue().filePath().value()
+        );
+
+        ArgumentCaptor<ExecuteFlowCommand> executeCaptor =
+                ArgumentCaptor.forClass(ExecuteFlowCommand.class);
+
+        Mockito.verify(executeFlowUseCase)
+                .execute(executeCaptor.capture());
+
+        Assertions.assertEquals(
+                flow,
+                executeCaptor.getValue().flow()
+        );
+
+        Mockito.verifyNoMoreInteractions(
+                readFileUseCase,
+                executeFlowUseCase
+        );
     }
 }
