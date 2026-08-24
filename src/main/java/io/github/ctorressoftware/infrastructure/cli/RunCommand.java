@@ -79,7 +79,7 @@ public class RunCommand implements Callable<Integer> {
         } catch (Exception e) {
             String reason = e.getMessage() != null ? e.getMessage() : e.getClass().getSimpleName();
             System.err.println("FlowProbe failed to run: " + reason);
-            return 1;
+            return ExitCode.EXECUTION_ERROR.getCode();
         }
     }
 
@@ -104,7 +104,7 @@ public class RunCommand implements Callable<Integer> {
             out.println("Impediment ticket created. ID = " + impedimentTicket.getId());
         }
 
-        return 0;
+        return ExitCode.SUCCESS.getCode();
     }
 
     private void renderReproducibleRequests(FlowExecutionSummary resume) {
