@@ -185,4 +185,24 @@ public class RunCommandTest {
                 executeFlowUseCase
         );
     }
+
+    @Test
+    void shouldFailWhenFilePathIsEmpty() {
+
+        FlowProbeCommand rootCommand = new FlowProbeCommand();
+        CommandLine cmd = new CommandLine(rootCommand);
+        cmd.addSubcommand("run", runCommand);
+
+        int exitCode = cmd.execute("run", "--file", "");
+
+        Assertions.assertEquals(
+                ExitCode.EXECUTION_ERROR.getCode(),
+                exitCode
+        );
+
+        Mockito.verifyNoInteractions(
+                readFileUseCase,
+                executeFlowUseCase
+        );
+    }
 }
