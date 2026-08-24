@@ -165,4 +165,24 @@ public class RunCommandTest {
                 executeFlowUseCase
         );
     }
+
+    @Test
+    void shouldFailWhenFilePathArgumentIsNotProvided() {
+
+        FlowProbeCommand rootCommand = new FlowProbeCommand();
+        CommandLine cmd = new CommandLine(rootCommand);
+        cmd.addSubcommand("run", runCommand);
+
+        int exitCode = cmd.execute("run");
+
+        Assertions.assertEquals(
+                ExitCode.INVALID_ARGUMENTS.getCode(),
+                exitCode
+        );
+
+        Mockito.verifyNoInteractions(
+                readFileUseCase,
+                executeFlowUseCase
+        );
+    }
 }
