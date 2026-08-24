@@ -170,13 +170,15 @@ public class RunCommandTest {
     void shouldFailWhenFilePathArgumentIsNotProvided() {
 
         FlowProbeCommand rootCommand = new FlowProbeCommand();
-        CommandLine cmd = new CommandLine(rootCommand);
-        cmd.addSubcommand("run", runCommand);
+        CommandLine commandLine = new CommandLine(rootCommand);
+        commandLine
+                .setParameterExceptionHandler((e, args) -> ExitCode.INVALID_ARGUMENTS.code())
+                .addSubcommand("run", runCommand);
 
-        int exitCode = cmd.execute("run");
+        int exitCode = commandLine.execute("run");
 
         Assertions.assertEquals(
-                ExitCode.INVALID_ARGUMENTS.getCode(),
+                ExitCode.INVALID_ARGUMENTS.code(),
                 exitCode
         );
 
@@ -195,10 +197,7 @@ public class RunCommandTest {
 
         int exitCode = cmd.execute("run", "--file", "");
 
-        Assertions.assertEquals(
-                ExitCode.EXECUTION_ERROR.getCode(),
-                exitCode
-        );
+        Assertions.assertEquals(ExitCode.EXECUTION_ERROR.code(), exitCode);
 
         Mockito.verifyNoInteractions(
                 readFileUseCase,
