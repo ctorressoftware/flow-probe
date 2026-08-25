@@ -22,6 +22,7 @@ public class Main {
         ));
 
         commandLine.addSubcommand("configure", new ConfigureCommand(
+                config.out(),
                 config.configureProviderUseCase()
         ));
 
