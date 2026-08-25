@@ -84,7 +84,7 @@ public class RunCommand implements Callable<Integer> {
     }
 
     private Integer run() {
-        if (filePath == null || filePath.isBlank()) throw new MissingFilepathException();
+        if (filePath.isBlank()) throw new MissingFilepathException();
         ReadFileResult readFileResult = readFileUseCase.read(new ReadFileCommand(new FilePath(filePath)));
         Flow flow = readFileResult.flow();
         ExecuteFlowResult executeFlowResult = executeFlowUseCase.execute(new ExecuteFlowCommand(flow));
