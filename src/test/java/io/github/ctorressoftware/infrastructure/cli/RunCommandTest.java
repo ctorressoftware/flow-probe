@@ -243,27 +243,6 @@ public class RunCommandTest {
 
         Flow flow = Flow.create("flow", steps);
 
-        FlowExecutionSummary resume = new FlowExecutionSummary(
-                "flow",
-                true,
-                List.of(
-                        new FlowExecutionSummaryDetail(
-                                "first",
-                                true,
-                                getAll,
-                                Duration.ZERO,
-                                "{}"
-                        ),
-                        new FlowExecutionSummaryDetail(
-                                "second",
-                                true,
-                                getPikachu,
-                                Duration.ZERO,
-                                "{}"
-                        )
-                )
-        );
-
         Mockito
                 .when(readFileUseCase.read(Mockito.any(ReadFileCommand.class)))
                 .thenReturn(new ReadFileResult(flow));
