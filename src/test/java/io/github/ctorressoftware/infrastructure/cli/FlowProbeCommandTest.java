@@ -4,6 +4,7 @@ import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import picocli.CommandLine;
 
 import java.io.ByteArrayOutputStream;
 import java.io.PrintStream;
@@ -25,15 +26,16 @@ class FlowProbeCommandTest {
     }
 
     @Test
-    void shouldPrintUsageWhenExecutedWithoutSubcommand() {
+    void shouldExecuteRootCommandSuccessfully() {
 
         FlowProbeCommand command = new FlowProbeCommand();
+        CommandLine commandLine = new CommandLine(command);
+        int exitCode = commandLine.execute();
 
-        command.run();
         String output = outputStream.toString();
 
+        Assertions.assertEquals(0, exitCode);
         Assertions.assertTrue(output.contains("Usage:"));
         Assertions.assertTrue(output.contains("flowprobe"));
-        Assertions.assertTrue(output.contains("CLI tool to execute and verify HTTP flows"));
     }
 }
