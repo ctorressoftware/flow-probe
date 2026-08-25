@@ -136,7 +136,7 @@ public class RunCommandTest {
                 "src/test/resources/flow-failure.yaml"
         );
 
-        Assertions.assertEquals(0, exitCode);
+        Assertions.assertEquals(ExitCode.SUCCESS.code(), exitCode);
 
         ArgumentCaptor<ReadFileCommand> readCaptor =
                 ArgumentCaptor.forClass(ReadFileCommand.class);
@@ -189,17 +189,122 @@ public class RunCommandTest {
     }
 
     @Test
-    void shouldFailWhenFilePathIsEmpty() {
+    void shouldFailWhenFilePathIsBlank() {
 
         FlowProbeCommand rootCommand = new FlowProbeCommand();
         CommandLine cmd = new CommandLine(rootCommand);
         cmd.addSubcommand("run", runCommand);
 
-        int exitCode = cmd.execute("run", "--file", "");
+        int exitCode = cmd.execute("run", "--file", " ");
 
         Assertions.assertEquals(ExitCode.EXECUTION_ERROR.code(), exitCode);
 
         Mockito.verifyNoInteractions(
+                readFileUseCase,
+                executeFlowUseCase
+        );
+    }
+
+    @Test
+    void shouldFailWhenExecuteFlowWithUnknownException() {
+
+        ServiceCall getAll = new ServiceCall(
+                "https://pokeapi.co/api/v2/pokemon?offset=0&limit=1350",
+                HttpMethod.GET,
+                Map.of("accept", "application/json"),
+                null
+        );
+
+        ServiceCall getPikachu = new ServiceCall(
+                "https://pokeapi.co/api/v2/pokemon/${pokemonName}",
+                HttpMethod.GET,
+                Map.of("accept", "application/json"),
+                null
+        );
+
+        List<FlowStep> steps = List.of(
+                FlowStep.create(
+                        "flow",
+                        "first",
+                        getAll,
+                        null,
+                        Map.of("pokemonName", "results.0.name")
+                ),
+                FlowStep.create(
+                        "flow",
+                        "second",
+                        getPikachu,
+                        Map.of("name", "${pokemonName}"),
+                        null
+                )
+        );
+
+        Flow flow = Flow.create("flow", steps);
+
+        FlowExecutionSummary resume = new FlowExecutionSummary(
+                "flow",
+                true,
+                List.of(
+                        new FlowExecutionSummaryDetail(
+                                "first",
+                                true,
+                                getAll,
+                                Duration.ZERO,
+                                "{}"
+                        ),
+                        new FlowExecutionSummaryDetail(
+                                "second",
+                                true,
+                                getPikachu,
+                                Duration.ZERO,
+                                "{}"
+                        )
+                )
+        );
+
+        Mockito
+                .when(readFileUseCase.read(Mockito.any(ReadFileCommand.class)))
+                .thenReturn(new ReadFileResult(flow));
+
+        Mockito
+                .when(executeFlowUseCase.execute(new ExecuteFlowCommand(flow)))
+                .thenThrow(new RuntimeException());
+
+        FlowProbeCommand rootCommand = new FlowProbeCommand();
+        CommandLine cmd = new CommandLine(rootCommand);
+        cmd.addSubcommand("run", runCommand);
+
+        int exitCode = cmd.execute(
+                "run",
+                "--file",
+                "src/test/resources/flow-failure.yaml"
+        );
+
+        Assertions.assertEquals(ExitCode.EXECUTION_ERROR.code(), exitCode);
+
+        ArgumentCaptor<ReadFileCommand> readCaptor =
+                ArgumentCaptor.forClass(ReadFileCommand.class);
+
+        Mockito.verify(readFileUseCase)
+                .read(readCaptor.capture());
+
+        Assertions.assertEquals(
+                "src/test/resources/flow-failure.yaml",
+                readCaptor.getValue().filePath().value()
+        );
+
+        ArgumentCaptor<ExecuteFlowCommand> executeCaptor =
+                ArgumentCaptor.forClass(ExecuteFlowCommand.class);
+
+        Mockito.verify(executeFlowUseCase)
+                .execute(executeCaptor.capture());
+
+        Assertions.assertEquals(
+                flow,
+                executeCaptor.getValue().flow()
+        );
+
+        Mockito.verifyNoMoreInteractions(
                 readFileUseCase,
                 executeFlowUseCase
         );
