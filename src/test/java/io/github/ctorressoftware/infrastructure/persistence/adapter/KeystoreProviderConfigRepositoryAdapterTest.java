@@ -2,6 +2,7 @@ package io.github.ctorressoftware.infrastructure.persistence.adapter;
 
 import io.github.ctorressoftware.application.port.out.CredentialsStorageManager;
 import io.github.ctorressoftware.application.port.out.JsonProcessor;
+import io.github.ctorressoftware.infrastructure.json.jackson.JacksonJsonProcessor;
 import io.github.ctorressoftware.infrastructure.ticket.azuredevops.AzureDevOpsConfiguration;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
@@ -11,34 +12,38 @@ import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.junit.jupiter.MockitoExtension;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
+
 import java.util.Map;
 
 @ExtendWith(MockitoExtension.class)
 public class KeystoreProviderConfigRepositoryAdapterTest {
 
     @Mock
-    private JsonProcessor jsonProcessor;
-
-    @Mock
     private CredentialsStorageManager credentialsStorageManager;
+
+    private ObjectMapper objectMapper;
+
+    private JsonProcessor jsonProcessor;
 
     private KeystoreProviderConfigRepositoryAdapter configurator;
 
     @BeforeEach
     void init() {
-        this.configurator = new KeystoreProviderConfigRepositoryAdapter(jsonProcessor, credentialsStorageManager);
+        this.objectMapper = new ObjectMapper();
+        this.jsonProcessor = new JacksonJsonProcessor(objectMapper);
+        this.configurator = new KeystoreProviderConfigRepositoryAdapter(
+            jsonProcessor, 
+            credentialsStorageManager
+        );
     }
 
     @Test
-    void shouldSaveCredentialsWithoutExceptions() {
+    void shouldSaveCredentialsSuccessfully() {
 
         Map<String, String> credentials = Map.of("username", "password");
 
         String serializedCredentials = "{\"username\":\"password\"}";
-
-        Mockito
-                .when(jsonProcessor.serialize(credentials))
-                .thenReturn(serializedCredentials);
 
         Assertions.assertDoesNotThrow(
                 () -> configurator.save(credentials)
@@ -49,5 +54,37 @@ public class KeystoreProviderConfigRepositoryAdapterTest {
                 AzureDevOpsConfiguration.AZURE_ACCOUNT,
                 serializedCredentials
         );
+    }
+
+    @Test
+    void shouldFindCredentialsByDomainAndAccountSuccessfully() {
+
+        String domain = "flowprobe";
+        String account = "azure";
+
+        Map<String, String> expected = Map.of("username", "password");
+
+        Mockito
+            .when(credentialsStorageManager.find(domain, account))
+            .thenReturn("{\"username\":\"password\"}");
+
+        Map<String, String> credentials = configurator.findByDomainAndAccount(domain, account);
+
+        Assertions.assertEquals(expected, credentials);
+        Mockito.verify(credentialsStorageManager).find(domain, account);
+        Mockito.verifyNoMoreInteractions(credentialsStorageManager);
+    }
+
+    @Test
+    void shouldRemoveStoredCredentials() {
+
+        String domain = "flowprobe";
+        String account = "azure";
+
+        Assertions
+            .assertDoesNotThrow(() -> credentialsStorageManager.delete(domain, account));
+
+        Mockito.verify(credentialsStorageManager).delete(domain, account);
+        Mockito.verifyNoMoreInteractions(credentialsStorageManager);
     }
 }
