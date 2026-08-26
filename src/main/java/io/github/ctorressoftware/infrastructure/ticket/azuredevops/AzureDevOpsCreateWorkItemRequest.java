@@ -11,11 +11,11 @@ public record AzureDevOpsCreateWorkItemRequest(List<AzureDevOpsPatchOperation> o
                 List.of(
                         AzureDevOpsPatchOperation.add(
                                 "/fields/System.Title",
-                                ticket.getTitle()
+                                ticket.title()
                         ),
                         AzureDevOpsPatchOperation.add(
                                 "/fields/System.Description",
-                                ticket.getDescription()
+                                ticket.description()
                         ),
                         AzureDevOpsPatchOperation.add(
                                 "/multilineFieldsFormat/System.Description",

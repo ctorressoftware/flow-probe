@@ -43,9 +43,9 @@ class AzureDevOpsImpedimentTicketCreatorAdapterTest {
         ImpedimentTicket result = adapter.create(inputTicket);
 
         Assertions.assertNotNull(result);
-        Assertions.assertEquals(123L, result.getId());
-        Assertions.assertEquals("Title", result.getTitle());
-        Assertions.assertEquals("Description", result.getDescription());
+        Assertions.assertEquals(123L, result.id());
+        Assertions.assertEquals("Title", result.title());
+        Assertions.assertEquals("Description", result.description());
 
         Mockito.verify(azureDevOpsWorkItemTicketCreator)
                 .create(inputTicket);
