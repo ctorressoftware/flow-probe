@@ -8,6 +8,7 @@ import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 
 import java.util.List;
+import java.util.Map;
 
 class PlaceholderResolverTest {
 
@@ -35,7 +36,7 @@ class PlaceholderResolverTest {
     }
 
     @Test
-    void shouldReturnsNullWhenServiceCallIsNull() {
+    void shouldReturnNullWhenServiceCallIsNull() {
 
         List<ContextVariable> variables = List.of(new ContextVariable("variableName", "variableValue"));
 
@@ -45,4 +46,21 @@ class PlaceholderResolverTest {
         );
     }
 
+    @Test
+    void shouldResolveStringMapCorrectly() {
+
+        Map<String, String> headers = Map.of(
+            "accept", "${variableToResolve}"
+        );
+
+        Map<String, String> expected = Map.of(
+            "accept", "variableValue"
+        );
+
+        List<ContextVariable> variables = List.of(new ContextVariable("variableToResolve", "variableValue"));
+
+        Map<String, String> resolved = placeholderResolver.resolveMap(variables, headers);
+
+        Assertions.assertEquals(expected,resolved);
+    }
 }
