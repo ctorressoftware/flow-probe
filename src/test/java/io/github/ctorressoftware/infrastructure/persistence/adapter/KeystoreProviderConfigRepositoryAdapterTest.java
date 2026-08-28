@@ -76,13 +76,13 @@ public class KeystoreProviderConfigRepositoryAdapterTest {
     }
 
     @Test
-    void shouldRemoveStoredCredentials() {
+    void shouldRemoveStoredCredentialsSuccessfully() {
 
         String domain = "flowprobe";
         String account = "azure";
 
         Assertions
-            .assertDoesNotThrow(() -> credentialsStorageManager.delete(domain, account));
+            .assertDoesNotThrow(() -> configurator.remove());
 
         Mockito.verify(credentialsStorageManager).delete(domain, account);
         Mockito.verifyNoMoreInteractions(credentialsStorageManager);
