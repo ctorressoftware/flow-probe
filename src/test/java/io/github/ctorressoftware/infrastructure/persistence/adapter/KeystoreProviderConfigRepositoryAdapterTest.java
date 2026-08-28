@@ -105,4 +105,20 @@ public class KeystoreProviderConfigRepositoryAdapterTest {
         Mockito.verify(credentialsStorageManager).find(domain, account);
         Mockito.verifyNoMoreInteractions(credentialsStorageManager);
     }
+
+    @Test
+    void shouldReturnFalseIfProviderCredentialsAreNotStored() {
+
+        String domain = "flowprobe";
+        String account = "azure";
+
+        Mockito
+                .when(credentialsStorageManager.find(domain, account))
+                .thenReturn("");
+
+        Assertions.assertFalse(configurator.exists());
+
+        Mockito.verify(credentialsStorageManager).find(domain, account);
+        Mockito.verifyNoMoreInteractions(credentialsStorageManager);
+    }
 }
