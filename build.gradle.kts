@@ -38,6 +38,14 @@ tasks.test {
 tasks.jacocoTestReport {
     dependsOn(tasks.test)
     description = "Generate Jacoco coverage reports after running tests."
+    classDirectories.setFrom(
+        files(classDirectories.files.map {
+            fileTree(it) {
+                exclude("**/generated/**")
+                exclude("io/github/ctorressoftware/Main.class")
+            }
+        })
+    )
     reports {
         xml.required = true
         csv.required = false
@@ -48,6 +56,14 @@ tasks.jacocoTestReport {
 
 tasks.jacocoTestCoverageVerification {
     dependsOn(tasks.test)
+    classDirectories.setFrom(
+        files(classDirectories.files.map {
+            fileTree(it) {
+                exclude("**/generated/**")
+                exclude("io/github/ctorressoftware/Main.class")
+            }
+        })
+    )
     violationRules {
         rule {
             limit {
