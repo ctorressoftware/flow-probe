@@ -1,8 +1,10 @@
 package io.github.ctorressoftware.infrastructure.persistence.adapter;
 
+import io.github.ctorressoftware.application.exception.JsonSerializationException;
 import io.github.ctorressoftware.application.port.out.CredentialsStorageManager;
 import io.github.ctorressoftware.application.port.out.JsonProcessor;
 import io.github.ctorressoftware.infrastructure.json.jackson.JacksonJsonProcessor;
+import io.github.ctorressoftware.infrastructure.persistence.exception.CredentialsSavingException;
 import io.github.ctorressoftware.infrastructure.ticket.azuredevops.AzureDevOpsConfiguration;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
@@ -12,7 +14,10 @@ import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.junit.jupiter.MockitoExtension;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
+
+import static org.junit.jupiter.api.Assertions.assertSame;
 
 import java.util.Map;
 
@@ -33,9 +38,8 @@ public class KeystoreProviderConfigRepositoryAdapterTest {
         this.objectMapper = new ObjectMapper();
         this.jsonProcessor = new JacksonJsonProcessor(objectMapper);
         this.configurator = new KeystoreProviderConfigRepositoryAdapter(
-            jsonProcessor, 
-            credentialsStorageManager
-        );
+                jsonProcessor,
+                credentialsStorageManager);
     }
 
     @Test
@@ -46,14 +50,12 @@ public class KeystoreProviderConfigRepositoryAdapterTest {
         String serializedCredentials = "{\"username\":\"password\"}";
 
         Assertions.assertDoesNotThrow(
-                () -> configurator.save(credentials)
-        );
+                () -> configurator.save(credentials));
 
         Mockito.verify(credentialsStorageManager).store(
                 AzureDevOpsConfiguration.AZURE_DOMAIN,
                 AzureDevOpsConfiguration.AZURE_ACCOUNT,
-                serializedCredentials
-        );
+                serializedCredentials);
     }
 
     @Test
@@ -65,8 +67,8 @@ public class KeystoreProviderConfigRepositoryAdapterTest {
         Map<String, String> expected = Map.of("username", "password");
 
         Mockito
-            .when(credentialsStorageManager.find(domain, account))
-            .thenReturn("{\"username\":\"password\"}");
+                .when(credentialsStorageManager.find(domain, account))
+                .thenReturn("{\"username\":\"password\"}");
 
         Map<String, String> credentials = configurator.findByDomainAndAccount(domain, account);
 
@@ -82,12 +84,11 @@ public class KeystoreProviderConfigRepositoryAdapterTest {
         String account = "azure";
 
         Assertions
-            .assertDoesNotThrow(() -> configurator.remove());
+                .assertDoesNotThrow(() -> configurator.remove());
 
         Mockito.verify(credentialsStorageManager).delete(domain, account);
         Mockito.verifyNoMoreInteractions(credentialsStorageManager);
     }
-
 
     @Test
     void shouldReturnTrueIfProviderCredentialsAreStored() {
@@ -120,5 +121,37 @@ public class KeystoreProviderConfigRepositoryAdapterTest {
 
         Mockito.verify(credentialsStorageManager).find(domain, account);
         Mockito.verifyNoMoreInteractions(credentialsStorageManager);
+    }
+
+    @Test
+    void shouldWrapJsonSerializationExceptionAsCredentialsSavingException() {
+
+        JacksonJsonProcessor jacksonJsonProcessor = Mockito.mock(JacksonJsonProcessor.class);
+        
+        configurator = new KeystoreProviderConfigRepositoryAdapter(
+                jacksonJsonProcessor,
+                credentialsStorageManager
+        );
+
+        JsonSerializationException cause =
+                Mockito.mock(JsonSerializationException.class);
+
+        Map<String, String> data = Map.of("username", "password");
+
+        Mockito
+            .when(jacksonJsonProcessor.serialize(data))
+            .thenThrow(cause);
+
+        CredentialsSavingException exception = Assertions.assertThrows(
+            CredentialsSavingException.class,
+            () -> configurator.save(data)
+        );
+
+        Assertions.assertEquals(
+            "Could not prepare credentials for storage",
+            exception.getMessage()
+        );
+
+        assertSame(cause, exception.getCause());
     }
 }
