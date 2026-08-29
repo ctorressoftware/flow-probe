@@ -7,7 +7,12 @@ import io.github.ctorressoftware.infrastructure.cli.RunCommand;
 import picocli.CommandLine;
 
 public class Main {
+
     public static void main(String[] args) {
+        System.exit(run(args));
+    }
+
+    static int run(String[] args) {
         AppConfig config = new AppConfig();
         FlowProbeCommand rootCommand = new FlowProbeCommand();
         CommandLine commandLine = commandLine(rootCommand);
@@ -26,8 +31,7 @@ public class Main {
                 config.configureProviderUseCase()
         ));
 
-        int exitCode = commandLine.execute(args);
-        System.exit(exitCode);
+        return commandLine.execute(args);
     }
 
     private static CommandLine commandLine(FlowProbeCommand rootCommand) {
