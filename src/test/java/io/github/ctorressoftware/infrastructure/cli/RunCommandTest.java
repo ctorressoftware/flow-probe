@@ -29,7 +29,7 @@ import java.util.Map;
 import java.util.Scanner;
 
 @ExtendWith(MockitoExtension.class)
-public class RunCommandTest {
+class RunCommandTest {
 
     @Mock
     private PrintStream out;

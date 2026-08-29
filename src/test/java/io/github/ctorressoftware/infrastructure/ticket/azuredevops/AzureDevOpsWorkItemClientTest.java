@@ -16,7 +16,7 @@ import java.net.http.HttpRequest;
 import java.net.http.HttpResponse;
 
 @ExtendWith(MockitoExtension.class)
-public class AzureDevOpsWorkItemClientTest {
+class AzureDevOpsWorkItemClientTest {
 
     @Mock
     private HttpClient httpClient;

@@ -3,7 +3,7 @@ package io.github.ctorressoftware.infrastructure.ticket.azuredevops;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 
-public class AzureDevOpsPatchOperationTest {
+class AzureDevOpsPatchOperationTest {
 
     @Test
     void shouldAddAzureDevOpsPatchOperationData() {

@@ -14,7 +14,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
-public class ContextManagerTest {
+class ContextManagerTest {
 
     private Context context;
     private JsonProcessor jsonProcessor;

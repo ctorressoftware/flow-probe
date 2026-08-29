@@ -23,7 +23,7 @@ import io.github.ctorressoftware.domain.model.FlowStep;
 import io.github.ctorressoftware.domain.model.ServiceCall;
 
 @ExtendWith(MockitoExtension.class)
-public class ExecuteFlowHandlerTest {
+class ExecuteFlowHandlerTest {
     
     @Mock
     private Executor executor;

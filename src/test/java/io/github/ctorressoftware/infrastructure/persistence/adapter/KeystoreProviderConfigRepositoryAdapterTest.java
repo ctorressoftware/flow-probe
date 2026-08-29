@@ -22,7 +22,7 @@ import static org.junit.jupiter.api.Assertions.assertSame;
 import java.util.Map;
 
 @ExtendWith(MockitoExtension.class)
-public class KeystoreProviderConfigRepositoryAdapterTest {
+class KeystoreProviderConfigRepositoryAdapterTest {
 
     @Mock
     private CredentialsStorageManager credentialsStorageManager;

@@ -18,7 +18,7 @@ import java.util.Map;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
 @ExtendWith(MockitoExtension.class)
-public class JacksonJsonProcessorTest {
+class JacksonJsonProcessorTest {
 
     private ObjectMapper objectMapper;
 

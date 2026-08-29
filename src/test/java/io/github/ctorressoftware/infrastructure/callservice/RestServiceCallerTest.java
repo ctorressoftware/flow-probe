@@ -20,7 +20,7 @@ import java.util.Map;
 import static org.junit.jupiter.api.Assertions.*;
 
 @ExtendWith(MockitoExtension.class)
-public class RestServiceCallerTest {
+class RestServiceCallerTest {
 
     @Mock
     private HttpClient client;

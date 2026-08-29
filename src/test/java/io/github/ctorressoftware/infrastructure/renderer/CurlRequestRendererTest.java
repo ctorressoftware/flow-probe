@@ -19,7 +19,7 @@ import java.util.Map;
 import static org.junit.jupiter.api.Assertions.*;
 
 @ExtendWith(MockitoExtension.class)
-public class CurlRequestRendererTest {
+class CurlRequestRendererTest {
 
     @Mock
     private JsonProcessor jsonProcessor;

@@ -19,7 +19,7 @@ import java.net.http.HttpRequest;
 import java.util.Map;
 
 @ExtendWith(MockitoExtension.class)
-public class RequestMapperTest {
+class RequestMapperTest {
 
     @Mock // TODO: refactor this to use a real JsonProcessor
     private JsonProcessor jsonProcessor;

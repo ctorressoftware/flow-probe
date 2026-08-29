@@ -11,7 +11,7 @@ import org.junit.jupiter.api.Test;
 import java.util.List;
 import java.util.Map;
 
-public class YamlReaderTest {
+class YamlReaderTest {
     private static final String BASE_PATH = "src/test/resources/yaml-cases/";
     private final YamlReader reader = new YamlReader();
 

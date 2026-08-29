@@ -14,7 +14,7 @@ import io.github.ctorressoftware.application.port.in.provider.configure.Provider
 import io.github.ctorressoftware.application.port.out.ProviderConfigRepository;
 
 @ExtendWith(MockitoExtension.class)
-public class AzureProviderConfiguratorTest {
+class AzureProviderConfiguratorTest {
     
     @Mock
     private ProviderConfigRepository providerConfigRepository;

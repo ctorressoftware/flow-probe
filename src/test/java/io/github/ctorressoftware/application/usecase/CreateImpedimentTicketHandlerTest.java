@@ -14,7 +14,7 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import io.github.ctorressoftware.application.port.out.ImpedimentTicketCreator;
 
 @ExtendWith(MockitoExtension.class)
-public class CreateImpedimentTicketHandlerTest {
+class CreateImpedimentTicketHandlerTest {
     
     @Mock
     private ImpedimentTicketCreator impedimentTicketCreator;
