@@ -15,14 +15,10 @@ class FlowProbeApplicationTest {
     private final PrintStream originalOut = System.out;
     private final PrintStream originalErr = System.err;
 
-    private ByteArrayOutputStream outContent;
-    private ByteArrayOutputStream errContent;
-
     @BeforeEach
     void setUp() {
-        outContent = new ByteArrayOutputStream();
-        errContent = new ByteArrayOutputStream();
-
+        ByteArrayOutputStream outContent = new ByteArrayOutputStream();
+        ByteArrayOutputStream errContent = new ByteArrayOutputStream();
         System.setOut(new PrintStream(outContent));
         System.setErr(new PrintStream(errContent));
     }
