@@ -1,6 +1,13 @@
 <component name="ProjectRunConfigurationManager">
   <configuration default="false" name="All Tests" type="JUnit" factoryName="JUnit">
     <module name="flow-probe.test" />
+    <extension name="coverage">
+      <pattern>
+        <option name="PATTERN" value="io.github.ctorressoftware.Main" />
+        <option name="ENABLED" value="true" />
+        <option name="INCLUDE" value="false" />
+      </pattern>
+    </extension>
     <option name="PACKAGE_NAME" value="" />
     <option name="MAIN_CLASS_NAME" value="" />
     <option name="METHOD_NAME" value="" />
