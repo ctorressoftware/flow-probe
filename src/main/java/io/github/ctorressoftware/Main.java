@@ -39,7 +39,7 @@ public class Main {
 
         commandLine.setParameterExceptionHandler((exception, varargs) -> {
             CommandLine cmd = exception.getCommandLine();
-            cmd.getErr().println("Invalid command arguments: " + exception.getMessage());
+            cmd.getErr().println("Invalid command arguments. " + exception.getMessage());
             return ExitCode.INVALID_ARGUMENTS.code();
         });
         return commandLine;
