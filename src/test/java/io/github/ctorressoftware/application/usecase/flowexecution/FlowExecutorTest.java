@@ -71,7 +71,7 @@ class FlowExecutorTest {
         Assertions.assertNotNull(summary);
 
         Assertions.assertEquals(
-                steps.getFirst().getFlowName(),
+                steps.getFirst().flowName(),
                 summary.flowName()
         );
 
@@ -158,7 +158,7 @@ class FlowExecutorTest {
         FlowExecutionSummary summary = flowExecutor.execute(flow);
 
         Assertions.assertNotNull(summary);
-        Assertions.assertEquals(summary.flowName(), flow.steps().getFirst().getFlowName());
+        Assertions.assertEquals(summary.flowName(), flow.steps().getFirst().flowName());
         Assertions.assertTrue(summary.successfulExecution());
         Assertions.assertEquals(2, summary.stepsResults().size());
         Mockito.verify(serviceCaller, Mockito.times(1)).call(getAll);
