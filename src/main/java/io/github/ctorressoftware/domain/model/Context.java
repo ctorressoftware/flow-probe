@@ -20,8 +20,12 @@ public class Context {
     }
 
     private void validateName(String name) {
-        if (name == null || name.isBlank()) {
-            throw new IllegalArgumentException("Variable name cannot be null or blank");
+        if (name == null) {
+            throw new IllegalArgumentException("Variable name cannot be null");
+        }
+
+        if (name.isBlank()) {
+            throw new IllegalArgumentException("Variable name cannot be blank");
         }
 
         if (variables.stream().anyMatch(v -> v.name().equals(name))) {
