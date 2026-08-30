@@ -1,8 +1,6 @@
 package io.github.ctorressoftware.domain.model;
 
 import io.github.ctorressoftware.domain.exception.DuplicateVariableException;
-import io.github.ctorressoftware.domain.exception.EmptyContextException;
-import io.github.ctorressoftware.domain.exception.MissingVariableException;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -15,22 +13,6 @@ public class Context {
         validateName(name);
         ContextVariable variable = new ContextVariable(name, value);
         variables.add(variable);
-    }
-
-    public ContextVariable getVariable(String name) {
-
-        if (variables.isEmpty()) {
-            throw new EmptyContextException();
-        }
-
-        if (variables.stream().noneMatch(v -> v.name().equals(name))) {
-            throw new MissingVariableException(name);
-        }
-
-        return variables.stream()
-                .filter(v -> v.name().equals(name))
-                .toList()
-                .getFirst();
     }
 
     public List<ContextVariable> variables() {
