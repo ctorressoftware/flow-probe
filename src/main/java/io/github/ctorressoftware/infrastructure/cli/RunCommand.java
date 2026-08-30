@@ -78,7 +78,7 @@ public class RunCommand implements Callable<Integer> {
             return run();
         } catch (Exception e) {
             String reason = e.getMessage() != null ? e.getMessage() : e.getClass().getSimpleName();
-            out.println("FlowProbe failed to run: " + reason);
+            out.println("FlowProbe failed to run. " + reason);
             return ExitCode.EXECUTION_ERROR.code();
         }
     }
