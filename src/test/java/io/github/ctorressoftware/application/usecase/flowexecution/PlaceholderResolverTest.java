@@ -3,64 +3,224 @@ package io.github.ctorressoftware.application.usecase.flowexecution;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import io.github.ctorressoftware.application.port.out.JsonProcessor;
 import io.github.ctorressoftware.domain.model.ContextVariable;
+import io.github.ctorressoftware.domain.model.ServiceCall;
 import io.github.ctorressoftware.infrastructure.json.jackson.JacksonJsonProcessor;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 
+import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 
 class PlaceholderResolverTest {
 
     private final JsonProcessor jsonProcessor = new JacksonJsonProcessor(new ObjectMapper());
-
-    private final PlaceholderResolver placeholderResolver;
-
-    public PlaceholderResolverTest() {
-        placeholderResolver = new PlaceholderResolver(jsonProcessor);
-    }
+    private final PlaceholderResolver placeholderResolver = new PlaceholderResolver(jsonProcessor);
 
     @Test
-    void shouldResolveUrlPlaceholdersCorrectly() {
+    void shouldResolveServiceCallPlaceholders() {
 
-        String url = "https://placeholder-resolver.com/${variableToResolve}";
+        List<ContextVariable> variables = List.of(
+                new ContextVariable("host", "pokeapi.co"),
+                new ContextVariable("pokemon", "Pikachu"),
+                new ContextVariable("method", "GET"),
+                new ContextVariable("token", "123456")
+        );
 
-        List<ContextVariable> variables = List.of(new ContextVariable("variableToResolve", "variableValue"));
+        ServiceCall serviceCall = new ServiceCall(
+                "https://${host}/api/v2/pokemon/${pokemon}",
+                "${method}",
+                Map.of(
+                        "Authorization", "Bearer ${token}",
+                        "X-Pokemon", "${pokemon}"
+                ),
+                null
+        );
 
-        String normalizeUrl = placeholderResolver.resolveString(variables, url);
+        ServiceCall resolved = placeholderResolver.resolve(variables, serviceCall);
 
         Assertions.assertEquals(
-                "https://placeholder-resolver.com/variableValue",
-                normalizeUrl
+                "https://pokeapi.co/api/v2/pokemon/Pikachu",
+                resolved.url()
+        );
+
+        Assertions.assertEquals(
+                "GET",
+                resolved.method()
+        );
+
+        Assertions.assertEquals(
+                Map.of(
+                        "Authorization", "Bearer 123456",
+                        "X-Pokemon", "Pikachu"
+                ),
+                resolved.headers()
+        );
+
+        Assertions.assertNull(resolved.body());
+    }
+
+    @Test
+    void shouldResolveBodyPlaceholders() {
+
+        List<ContextVariable> variables = List.of(
+                new ContextVariable("pokemonName", "Pikachu"),
+                new ContextVariable("level", 25)
+        );
+
+        Map<String, Object> body = new LinkedHashMap<>();
+        body.put("name", "${pokemonName}");
+        body.put("level", "${level}");
+
+        ServiceCall serviceCall = new ServiceCall(
+                "https://pokeapi.co",
+                "POST",
+                Map.of("Content-Type", "application/json"),
+                body
+        );
+
+        ServiceCall resolved = placeholderResolver.resolve(variables, serviceCall);
+
+        Assertions.assertEquals(
+                "{\"name\":\"Pikachu\",\"level\":\"25\"}",
+                resolved.body()
         );
     }
 
     @Test
-    void shouldReturnNullWhenServiceCallIsNull() {
+    void shouldPreserveNullBody() {
 
-        List<ContextVariable> variables = List.of(new ContextVariable("variableName", "variableValue"));
+        ServiceCall serviceCall = new ServiceCall(
+                "https://pokeapi.co",
+                "GET",
+                null,
+                null
+        );
 
-        Assertions.assertThrows(
+        ServiceCall resolved = placeholderResolver.resolve(List.of(), serviceCall);
+
+        Assertions.assertNull(resolved.body());
+    }
+
+    @Test
+    void shouldPreserveNullServiceCallValues() {
+
+        ServiceCall serviceCall =
+                new ServiceCall(null, null, null, null);
+
+        ServiceCall resolved = placeholderResolver.resolve(List.of(), serviceCall);
+
+        Assertions.assertNull(resolved.url());
+        Assertions.assertNull(resolved.method());
+        Assertions.assertNull(resolved.headers());
+        Assertions.assertNull(resolved.body());
+    }
+
+    @Test
+    void shouldLeaveServiceCallUnchangedWhenThereAreNoVariables() {
+
+        ServiceCall serviceCall = new ServiceCall(
+                "https://pokeapi.co/api/v2/pokemon",
+                "GET",
+                Map.of("accept", "application/json"),
+                null
+        );
+
+        ServiceCall resolved = placeholderResolver.resolve(List.of(), serviceCall);
+
+        Assertions.assertEquals(serviceCall, resolved);
+    }
+
+    @Test
+    void shouldThrowWhenServiceCallIsNull() {
+
+        IllegalArgumentException exception =
+                Assertions.assertThrows(
+                        IllegalArgumentException.class,
+                        () -> placeholderResolver.resolve(List.of(), null)
+                );
+
+        Assertions.assertEquals(
+                "serviceCall cannot be null",
+                exception.getMessage()
+        );
+    }
+
+    @Test
+    void shouldReplaceNullVariableValueWithEmptyString() {
+
+        List<ContextVariable> variables = List.of(
+                new ContextVariable("pokemonName", null)
+        );
+
+        ServiceCall serviceCall = new ServiceCall(
+                "https://pokeapi.co/api/v2/pokemon/${pokemonName}",
+                "GET",
+                Map.of("X-Pokemon", "${pokemonName}"),
+                null
+        );
+
+        ServiceCall resolved = placeholderResolver.resolve(variables, serviceCall);
+
+        Assertions.assertEquals(
+                "https://pokeapi.co/api/v2/pokemon/",
+                resolved.url()
+        );
+
+        Assertions.assertEquals(
+                Map.of("X-Pokemon", ""),
+                resolved.headers()
+        );
+
+        Assertions.assertNull(resolved.body());
+    }
+
+    @Test
+    void shouldThrowWhenHeaderKeyIsNull() {
+
+        Map<String, String> headers = new HashMap<>();
+        headers.put(null, "value");
+
+        ServiceCall serviceCall = new ServiceCall(
+                "https://pokeapi.co",
+                "GET",
+                headers,
+                null
+        );
+
+        IllegalArgumentException exception = Assertions.assertThrows(
                 IllegalArgumentException.class,
-                () -> placeholderResolver.resolve(variables, null)
+                () -> placeholderResolver.resolve(List.of(), serviceCall)
+        );
+
+        Assertions.assertEquals(
+                "Header key cannot be null",
+                exception.getMessage()
         );
     }
 
     @Test
-    void shouldResolveStringMapCorrectly() {
+    void shouldThrowWhenHeaderValueIsNull() {
 
-        Map<String, String> headers = Map.of(
-            "accept", "${variableToResolve}"
+        Map<String, String> headers = new HashMap<>();
+        headers.put("Authorization", null);
+
+        ServiceCall serviceCall = new ServiceCall(
+                "https://pokeapi.co",
+                "GET",
+                headers,
+                null
         );
 
-        Map<String, String> expected = Map.of(
-            "accept", "variableValue"
+        IllegalArgumentException exception = Assertions.assertThrows(
+                IllegalArgumentException.class,
+                () -> placeholderResolver.resolve(List.of(), serviceCall)
         );
 
-        List<ContextVariable> variables = List.of(new ContextVariable("variableToResolve", "variableValue"));
-
-        Map<String, String> resolved = placeholderResolver.resolveMap(variables, headers);
-
-        Assertions.assertEquals(expected,resolved);
+        Assertions.assertEquals(
+                "Header value cannot be null: Authorization",
+                exception.getMessage()
+        );
     }
 }
