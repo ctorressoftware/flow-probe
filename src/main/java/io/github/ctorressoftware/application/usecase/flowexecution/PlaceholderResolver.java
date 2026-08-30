@@ -41,40 +41,58 @@ public class PlaceholderResolver {
         return resolveString(variables, jsonProcessor.serialize(body));
     }
 
-    public String resolveString(List<ContextVariable> variables, String value) {
+    private String resolveString(List<ContextVariable> variables, String value) {
 
         if (value == null) return null;
 
         String resolved = value;
 
         for (ContextVariable variable : variables) {
-            resolved = resolved.replace("${" + variable.name() + "}", String.valueOf(variable.value()));
+            resolved = resolved.replace("${" + variable.name() + "}", replacementValue(variable));
         }
 
         return resolved;
     }
 
-    public Map<String, String> resolveMap(List<ContextVariable> variables, Map<String, String> stringMap) {
+    private Map<String, String> resolveMap(List<ContextVariable> variables, Map<String, String> stringMap) {
         if (stringMap == null) return null;
 
         Map<String, String> mapResolved = new HashMap<>();
 
         for (Map.Entry<String, String> entry : stringMap.entrySet()) {
+
+            validateHeader(entry);
             String newKey = entry.getKey();
             String newVal = entry.getValue();
 
             for (ContextVariable variable : variables) {
                 String placeholder = "${" + variable.name() + "}";
-                String replacement = variable.value() != null ? variable.value().toString() : "";
+                String replacement = replacementValue(variable);
 
                 newKey = newKey.replace(placeholder, replacement);
-                if (newVal != null) {
-                    newVal = newVal.replace(placeholder, replacement);
-                }
+                newVal = newVal.replace(placeholder, replacement);
             }
             mapResolved.put(newKey, newVal);
         }
 
         return mapResolved;
+    }
+
+    private String replacementValue(ContextVariable variable) {
+        return variable.value() == null
+                ? ""
+                : variable.value().toString();
+    }
+
+    private void validateHeader(Map.Entry<String, String> entry) {
+        if (entry.getKey() == null) {
+            throw new IllegalArgumentException("Header key cannot be null");
+        }
+
+        if (entry.getValue() == null) {
+            throw new IllegalArgumentException(
+                    "Header value cannot be null: " + entry.getKey()
+            );
+        }
     }
 }
