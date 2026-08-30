@@ -44,16 +44,16 @@ public class FlowExecutor implements Executor {
     private FlowExecutionSummaryDetail executeStep(FlowStep step) {
 
         ServiceCall normalizedCall = placeholderResolver
-                .resolve(contextManager.getVariables(), step.getServiceCall());
+                .resolve(contextManager.getVariables(), step.serviceCall());
 
         CallResult response = serviceCaller.call(normalizedCall);
 
         boolean successfulExecution = HttpStatusCode.isSuccess(response.statusCode());
 
-        contextManager.exportVariables(response.responseBody(), step.getExport());
+        contextManager.exportVariables(response.responseBody(), step.export());
 
         return new FlowExecutionSummaryDetail(
-                step.getStepName(),
+                step.stepName(),
                 successfulExecution,
                 normalizedCall,
                 Duration.ZERO,
