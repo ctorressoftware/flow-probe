@@ -91,12 +91,12 @@ public class RunCommand implements Callable<Integer> {
         FlowExecutionSummary resume = executeFlowResult.resume();
         renderReproducibleRequests(resume);
 
-        if (!resume.isSuccessfulExecution() && Objects.isNull(impedimentCreation)) {
+        if (!resume.successfulExecution() && Objects.isNull(impedimentCreation)) {
             out.print("Do you want to create an impediment? (Y/N): ");
             impedimentCreation = scanner.next().equalsIgnoreCase("Y");
         }
 
-        if (!resume.isSuccessfulExecution() && impedimentCreation) {
+        if (!resume.successfulExecution() && impedimentCreation) {
             ImpedimentTicket ticket = createTicketFromResume(resume);
             CreateImpedimentTicketResult ticketCreationResult = createImpedimentTicketUseCase
                     .createTicket(new CreateImpedimentTicketCommand(ticket));
@@ -108,7 +108,7 @@ public class RunCommand implements Callable<Integer> {
     }
 
     private void renderReproducibleRequests(FlowExecutionSummary resume) {
-        resume.getStepsResults().forEach(detail -> {
+        resume.stepsResults().forEach(detail -> {
             ServiceCall call = detail.executed();
             ReproducibleRequest reproducibleRequest = ReproducibleRequest.fromServiceCall(call);
             String request = requestRenderer.render(reproducibleRequest);
@@ -118,9 +118,9 @@ public class RunCommand implements Callable<Integer> {
 
     private ImpedimentTicket createTicketFromResume(FlowExecutionSummary resume) {
 
-        String title = "Impediment ticket: " + resume.getFlowName();
+        String title = "Impediment ticket: " + resume.flowName();
 
-        List<FlowExecutionSummaryDetail> failures = resume.getStepsResults().stream()
+        List<FlowExecutionSummaryDetail> failures = resume.stepsResults().stream()
                 .filter(x -> !x.successful())
                 .toList();
 

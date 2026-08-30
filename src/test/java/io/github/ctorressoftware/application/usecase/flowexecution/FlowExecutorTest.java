@@ -72,14 +72,14 @@ class FlowExecutorTest {
 
         Assertions.assertEquals(
                 steps.getFirst().getFlowName(),
-                summary.getFlowName()
+                summary.flowName()
         );
 
-        Assertions.assertTrue(summary.isSuccessfulExecution());
+        Assertions.assertTrue(summary.successfulExecution());
 
         Assertions.assertEquals(
                 3,
-                summary.getStepsResults().size()
+                summary.stepsResults().size()
         );
 
         ArgumentCaptor<ServiceCall> captor =
@@ -158,9 +158,9 @@ class FlowExecutorTest {
         FlowExecutionSummary summary = flowExecutor.execute(flow);
 
         Assertions.assertNotNull(summary);
-        Assertions.assertEquals(summary.getFlowName(), flow.getSteps().getFirst().getFlowName());
-        Assertions.assertTrue(summary.isSuccessfulExecution());
-        Assertions.assertEquals(2, summary.getStepsResults().size());
+        Assertions.assertEquals(summary.flowName(), flow.steps().getFirst().getFlowName());
+        Assertions.assertTrue(summary.successfulExecution());
+        Assertions.assertEquals(2, summary.stepsResults().size());
         Mockito.verify(serviceCaller, Mockito.times(1)).call(getAll);
         Mockito.verify(serviceCaller, Mockito.times(1)).call(getPikachuResolved);
         Mockito.verifyNoMoreInteractions(serviceCaller);

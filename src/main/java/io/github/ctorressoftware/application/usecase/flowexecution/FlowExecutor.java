@@ -28,11 +28,11 @@ public class FlowExecutor implements Executor {
 
         if (flow == null) throw new NoDefinedFlowException();
 
-        List<FlowExecutionSummaryDetail> resumeDetails = executeTasks(flow.getSteps());
+        List<FlowExecutionSummaryDetail> resumeDetails = executeTasks(flow.steps());
 
         boolean successfulExecution = resumeDetails.stream()
                 .allMatch(FlowExecutionSummaryDetail::successful);
-        return new FlowExecutionSummary(flow.getName(), successfulExecution, resumeDetails);
+        return new FlowExecutionSummary(flow.name(), successfulExecution, resumeDetails);
     }
 
     private List<FlowExecutionSummaryDetail> executeTasks(List<FlowStep> flowSteps) {
