@@ -40,12 +40,12 @@ public final class YamlFlowMapper {
     private ExpectedResponse mapExpectedResponse(YamlExpectations yamlExpectations) {
         if (yamlExpectations == null) return null;
 
-        var bodyExpectations = yamlExpectations.getBody() == null
-                ? List.<BodyExpectation>of()
-                : yamlExpectations.getBody()
-                .stream()
-                .map(this::mapBodyExpectation)
-                .toList();
+        var bodyExpectations = yamlExpectations.getBody() == null ?
+                List.<BodyExpectation>of() :
+                yamlExpectations.getBody()
+                        .stream()
+                        .map(this::mapBodyExpectation)
+                        .toList();
 
         return new ExpectedResponse(
                 yamlExpectations.getStatus(),
