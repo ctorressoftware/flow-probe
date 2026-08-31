@@ -7,23 +7,23 @@ public record FlowStep(
         String flowName,
         String stepName,
         ServiceCall serviceCall,
-        Map<String, String> requires,
-        Map<String, String> export
+        ExpectedResponse expectedResponse,
+        Map<String, String> exports
 ) {
 
     public static FlowStep create(
             String flowName,
             String stepName,
             ServiceCall serviceCall,
-            Map<String, String> requires,
-            Map<String, String> export) {
+            ExpectedResponse expectedResponse,
+            Map<String, String> exports) {
 
         return new FlowStep(
                 Objects.requireNonNull(flowName),
                 Objects.requireNonNull(stepName),
                 Objects.requireNonNull(serviceCall),
-                requires == null ? null : Map.copyOf(requires),
-                export == null ? null : Map.copyOf(export)
+                expectedResponse, // TODO: Can be null yet. Have to think later it should be mandatory or not
+                exports == null ? null : Map.copyOf(exports)
         );
     }
 }
