@@ -7,8 +7,7 @@ public class YamlFlow {
     private String name;
     private List<YamlStep> steps;
 
-    public YamlFlow() {
-    }
+    public YamlFlow() {}
 
     public String getName() {
         return name;
