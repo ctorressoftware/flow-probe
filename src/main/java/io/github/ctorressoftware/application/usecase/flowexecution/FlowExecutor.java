@@ -50,7 +50,7 @@ public class FlowExecutor implements Executor {
 
         boolean successfulExecution = HttpStatusCode.isSuccess(response.statusCode());
 
-        contextManager.exportVariables(response.responseBody(), step.export());
+        contextManager.exportVariables(response.responseBody(), step.exports());
 
         return new FlowExecutionSummaryDetail(
                 step.stepName(),
