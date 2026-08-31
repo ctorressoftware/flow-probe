@@ -10,6 +10,7 @@ import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -95,6 +96,57 @@ class ContextManagerTest {
 
         Assertions.assertEquals(
                 "Variable already exists in context: " + variableName,
+                exception.getMessage()
+        );
+    }
+
+    @Test
+    void shouldRejectNullVariableNameWhenExporting() {
+
+        String data = """
+            {
+              "user": {
+                "name": "value1"
+              }
+            }
+            """;
+
+        Map<String, String> toExport = new HashMap<>();
+        toExport.put(null, "user.name");
+
+        IllegalArgumentException exception = Assertions.assertThrows(
+                IllegalArgumentException.class,
+                () -> contextManager.exportVariables(data, toExport)
+        );
+
+        Assertions.assertEquals(
+                "Variable name cannot be null",
+                exception.getMessage()
+        );
+    }
+
+    @Test
+    void shouldRejectBlankVariableNameWhenExporting() {
+
+        String data = """
+            {
+              "user": {
+                "name": "value1"
+              }
+            }
+            """;
+
+        Map<String, String> toExport = Map.of(
+                " ", "user.name"
+        );
+
+        IllegalArgumentException exception = Assertions.assertThrows(
+                IllegalArgumentException.class,
+                () -> contextManager.exportVariables(data, toExport)
+        );
+
+        Assertions.assertEquals(
+                "Variable name cannot be blank",
                 exception.getMessage()
         );
     }
