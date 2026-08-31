@@ -9,8 +9,6 @@ steps:
         accept: "application/json"
       body: null
 
-    requires: null
-
     exports:
       pokemonName: "results.0.name"
 
@@ -21,9 +19,6 @@ steps:
       headers:
         accept: "application/json"
       body: null
-
-    requires: null
-
     exports:
       pokemonNameTest: "results.0.name"
 
@@ -36,10 +31,6 @@ steps:
       body:
         test: 1
         test2: 2
-
-    requires:
-      name: ${pokemonName}
-
     exports: null
 
   - name: "get-pikachu"
@@ -55,7 +46,4 @@ steps:
       method: "GET"
       headers:
         accept: "application/json"
-
-    requires: null
-
     exports: null
