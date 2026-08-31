@@ -6,11 +6,10 @@ import java.util.Objects;
 public class YamlStep {
     private String name;
     private YamlStepRequest request;
-    private Map<String, String> requires;
+    private YamlExpectations expect;
     private Map<String, String> exports;
 
-    public YamlStep() {
-    }
+    public YamlStep() {}
 
     public String getName() {
         return name;
@@ -28,12 +27,12 @@ public class YamlStep {
         this.request = request;
     }
 
-    public Map<String, String> getRequires() {
-        return requires;
+    public YamlExpectations getExpect() {
+        return expect;
     }
 
-    public void setRequires(Map<String, String> requires) {
-        this.requires = requires;
+    public void setExpect(YamlExpectations expect) {
+        this.expect = expect;
     }
 
     public Map<String, String> getExports() {
@@ -47,12 +46,15 @@ public class YamlStep {
     @Override
     public boolean equals(Object o) {
         if (!(o instanceof YamlStep yamlStep)) return false;
-        return Objects.equals(name, yamlStep.name) && Objects.equals(request, yamlStep.request) && Objects.equals(requires, yamlStep.requires) && Objects.equals(exports, yamlStep.exports);
+        return Objects.equals(name, yamlStep.name)
+                && Objects.equals(request, yamlStep.request)
+                && Objects.equals(expect, yamlStep.expect)
+                && Objects.equals(exports, yamlStep.exports);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(name, request, requires, exports);
+        return Objects.hash(name, request, expect, exports);
     }
 
     @Override
@@ -60,7 +62,7 @@ public class YamlStep {
         return "YamlStep{" +
                 "name='" + name + '\'' +
                 ", request=" + request +
-                ", requires=" + requires +
+                ", expect=" + expect +
                 ", exports=" + exports +
                 '}';
     }
