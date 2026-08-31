@@ -4,7 +4,6 @@ name: "flow-without-step-name"
 
 steps:
   - name: ""
-    requires: null
     request:
       url: "https://pokeapi.co/api/v2/pokemon?offset=0&limit=1350"
       method: "GET"

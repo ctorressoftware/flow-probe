@@ -92,7 +92,7 @@ class RunCommandTest {
                         "flow",
                         "second",
                         getPikachu,
-                        Map.of("name", "${pokemonName}"),
+                        null,
                         null
                 )
         );
@@ -236,7 +236,7 @@ class RunCommandTest {
                         "flow",
                         "second",
                         getPikachu,
-                        Map.of("name", "${pokemonName}"),
+                        null,
                         null
                 )
         );
@@ -320,7 +320,7 @@ class RunCommandTest {
                         "flow",
                         "second",
                         getPikachu,
-                        Map.of("name", "${pokemonName}"),
+                        null,
                         null
                 )
         );

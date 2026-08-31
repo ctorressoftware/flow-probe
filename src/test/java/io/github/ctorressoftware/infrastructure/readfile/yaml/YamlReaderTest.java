@@ -42,7 +42,7 @@ class YamlReaderTest {
                                         Map.of("accept", "application/json"),
                                         null
                                 ),
-                                Map.of("name", "${pokemonName}"),
+                                null,
                                 null
                         ),
                         FlowStep.create(

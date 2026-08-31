@@ -4,7 +4,6 @@ name: "flow-without-step-request"
 
 steps:
   - name: "get-all-pokemon"
-    requires: null
     request:
       url: "https://pokeapi.co/api/v2/pokemon?offset=0&limit=1350"
       method: "GET"
@@ -23,10 +22,6 @@ steps:
       body:
         test: 1
         test2: 2
-
-    requires:
-      name: ${pokemonName}
-
     exports: null
 
   - name: "invalid-step"

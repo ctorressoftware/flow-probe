@@ -4,7 +4,6 @@ name: "flow-without-step-request-url"
 
 steps:
   - name: "invalid-request-url"
-    requires: null
     request:
       url:
       method: "GET"

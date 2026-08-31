@@ -142,7 +142,7 @@ class FlowExecutorTest {
                         "Flow",
                         "get-pikachu",
                         getPikachuUnresolved,
-                        Map.of("name", "${pokemonName}"),
+                        null,
                         null
                 )
         ));
