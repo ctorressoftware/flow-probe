@@ -11,7 +11,7 @@ steps:
         accept: "application/json"
       body: null
     exports:
-      pokemonName: "results.0.name"
+      pokemonName: "/results/0/name"
 
   - name: "get-pokemon"
     request:

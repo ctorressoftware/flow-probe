@@ -46,9 +46,9 @@ class ContextManagerTest {
         """;
 
         Map<String, String> toExport = Map.of(
-                "name1", "user.name",
-                "name2", "user.profile.nickname",
-                "name3", "metadata.code"
+                "name1", "/user/name",
+                "name2", "/user/profile/nickname",
+                "name3", "/metadata/code"
         );
 
         contextManager.exportVariables(data, toExport);
@@ -84,7 +84,7 @@ class ContextManagerTest {
         """;
 
         Map<String, String> toExport = Map.of(
-                variableName, "user.name"
+                variableName, "/user/name"
         );
 
         contextManager.exportVariables(data, toExport);
@@ -112,7 +112,7 @@ class ContextManagerTest {
             """;
 
         Map<String, String> toExport = new HashMap<>();
-        toExport.put(null, "user.name");
+        toExport.put(null, "/user/name");
 
         IllegalArgumentException exception = Assertions.assertThrows(
                 IllegalArgumentException.class,
@@ -137,7 +137,7 @@ class ContextManagerTest {
             """;
 
         Map<String, String> toExport = Map.of(
-                " ", "user.name"
+                " ", "/user/name"
         );
 
         IllegalArgumentException exception = Assertions.assertThrows(

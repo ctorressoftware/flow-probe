@@ -31,7 +31,7 @@ class YamlReaderTest {
                                         null
                                 ),
                                 null,
-                                Map.of("pokemonName", "results.0.name")
+                                Map.of("pokemonName", "/results/0/name")
                         ),
                         FlowStep.create(
                                 "pokeapi-success-flow",

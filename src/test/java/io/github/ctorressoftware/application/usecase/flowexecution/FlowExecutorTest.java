@@ -3,6 +3,13 @@ package io.github.ctorressoftware.application.usecase.flowexecution;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import io.github.ctorressoftware.application.port.out.JsonProcessor;
 import io.github.ctorressoftware.application.port.out.ServiceCaller;
+import io.github.ctorressoftware.application.usecase.flowexecution.validation.BodyValidator;
+import io.github.ctorressoftware.application.usecase.flowexecution.validation.DefaultResponseValidator;
+import io.github.ctorressoftware.application.usecase.flowexecution.validation.ResponseValidator;
+import io.github.ctorressoftware.application.usecase.flowexecution.validation.StatusValidator;
+import io.github.ctorressoftware.application.usecase.flowexecution.validation.evaluator.EqualsExpectationEvaluator;
+import io.github.ctorressoftware.application.usecase.flowexecution.validation.evaluator.ExpectationEvaluatorRegistry;
+import io.github.ctorressoftware.application.usecase.flowexecution.validation.evaluator.NotEqualsExpectationEvaluator;
 import io.github.ctorressoftware.domain.constant.HttpMethod;
 import io.github.ctorressoftware.domain.constant.HttpStatusCode;
 import io.github.ctorressoftware.domain.exception.NoDefinedFlowException;
@@ -25,21 +32,30 @@ class FlowExecutorTest {
 
     @Mock
     private ServiceCaller serviceCaller;
-
-    private ContextManager contextManager;
-
     private JsonProcessor jsonProcessor;
-
+    private ContextManager contextManager;
+    private ExpectationEvaluatorRegistry registry;
+    private StatusValidator statusValidator;
+    private BodyValidator bodyValidator;
+    private ResponseValidator responseValidator;
     private FlowExecutor flowExecutor;
 
     @BeforeEach
     void init() {
         this.jsonProcessor = new JacksonJsonProcessor(new ObjectMapper());
         this.contextManager = new ContextManager(new Context(), jsonProcessor);
+        this.registry = new ExpectationEvaluatorRegistry(List.of(
+                new EqualsExpectationEvaluator(),
+                new NotEqualsExpectationEvaluator()
+        ));
+        this.statusValidator = new StatusValidator(registry);
+        this.bodyValidator = new BodyValidator(jsonProcessor, registry);
+        this.responseValidator = new DefaultResponseValidator(statusValidator, bodyValidator);
         this.flowExecutor = new FlowExecutor(
                 contextManager,
                 serviceCaller,
-                new PlaceholderResolver(jsonProcessor)
+                new PlaceholderResolver(jsonProcessor),
+                responseValidator
         );
     }
 
@@ -136,7 +152,7 @@ class FlowExecutorTest {
                         "get-all-pokemon",
                         getAll,
                         null,
-                        Map.of("pokemonName", "results.0.name")
+                        Map.of("pokemonName", "/results/0/name")
                 ),
                 FlowStep.create(
                         "Flow",
