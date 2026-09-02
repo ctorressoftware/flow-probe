@@ -213,7 +213,7 @@ steps:
     requires: null
 
     export:
-      pokemonName: "results.0.name"
+      pokemonName: "/results/0/name"
 
   - name: "get-pokemon"
 
@@ -281,7 +281,7 @@ Exports map a variable name to a path in the JSON response:
 
 ```yaml
 export:
-  pokemonName: "results.0.name"
+  pokemonName: "/results/0/name"
 ```
 
 Given a response like:
