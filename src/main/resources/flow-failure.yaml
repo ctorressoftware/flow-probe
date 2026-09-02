@@ -2,36 +2,31 @@ name: "pokeapi-failure-flow"
 
 steps:
   - name: "get-all-pokemon"
+    exports:
+      pokemonName: "/results/0/name"
     request:
       url: "https://pokeapi.co/api/v2/pokemon?offset=0&limit=1350"
       method: "GET"
       headers:
         accept: "application/json"
-      body: null
-
-    exports:
-      pokemonName: "results.0.name"
 
   - name: "get-duplicated-variable-exception"
+    exports:
+      pokemonNameTest: "/results/0/name"
     request:
       url: "https://pokeapi.co/api/v2/pokemon?offset=0&limit=1350"
       method: "GET"
       headers:
         accept: "application/json"
       body: null
-    exports:
-      pokemonNameTest: "results.0.name"
 
   - name: "get-pokemon"
+    exports: null
     request:
       url: "https://pokeapi.co/api/v2/pokemon/${pokemonName}"
       method: "GET"
       headers:
         accept: "application/json"
-      body:
-        test: 1
-        test2: 2
-    exports: null
 
   - name: "get-pikachu"
     request:
@@ -41,9 +36,9 @@ steps:
         accept: "application/json"
 
   - name: "get-raichu"
+    exports: null
     request:
       url: "https://pokeapi.co/api/v2/pokemon/raychu"
       method: "GET"
       headers:
         accept: "application/json"
-    exports: null
