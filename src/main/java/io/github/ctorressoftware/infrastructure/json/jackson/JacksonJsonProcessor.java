@@ -34,11 +34,19 @@ public class JacksonJsonProcessor implements JsonProcessor {
     public String extractValue(String data, String valuePath) {
         try {
             JsonNode root = objectMapper.readTree(data);
-            return root.at(valuePath).asText();
+            JsonNode node = root.at(valuePath);
+
+            if (node.isMissingNode()) {
+                throw new JsonExtractionException(
+                        "JSON path does not exist: " + valuePath
+                );
+            }
+            return node.asText();
         } catch (JsonProcessingException e) {
             throw new JsonExtractionException(
                     "Could not extract data from JSON",
-                    e);
+                    e
+            );
         }
     }
 
