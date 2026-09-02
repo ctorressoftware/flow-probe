@@ -10,7 +10,7 @@ steps:
     expect:
       status: 200
     exports:
-      pokemonName: "results.0.name"
+      pokemonName: "/results/0/name"
 
   - name: "get-pokemon"
     request:
@@ -18,9 +18,8 @@ steps:
       method: "GET"
       headers:
         accept: "application/json"
-      body:
-        test: 1
-        test2: 2
+    expect:
+      status: 200
     exports: null
 
   - name: "get-pikachu"
@@ -29,4 +28,6 @@ steps:
       method: "GET"
       headers:
         accept: "application/json"
+    expect:
+      status: 200
     exports: null
