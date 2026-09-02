@@ -10,7 +10,6 @@ import java.util.ArrayList;
 import java.util.List;
 
 public final class DefaultResponseValidator implements ResponseValidator {
-
     private static final String SUCCESS_STATUS_RANGE = "200-299";
     private final StatusValidator statusValidator;
     private final BodyValidator bodyValidator;

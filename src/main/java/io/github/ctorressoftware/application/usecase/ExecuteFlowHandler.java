@@ -16,9 +16,7 @@ public class ExecuteFlowHandler implements ExecuteFlowUseCase {
 
     @Override
     public ExecuteFlowResult execute(ExecuteFlowCommand command) {
-
         FlowExecutionSummary resume = executor.execute(command.flow());
-
         return new ExecuteFlowResult(resume);
     }
 }
