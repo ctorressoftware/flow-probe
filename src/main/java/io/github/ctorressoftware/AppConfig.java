@@ -12,6 +12,14 @@ import io.github.ctorressoftware.application.usecase.CreateImpedimentTicketHandl
 import io.github.ctorressoftware.application.usecase.ExecuteFlowHandler;
 import io.github.ctorressoftware.application.usecase.ReadFileHandler;
 import io.github.ctorressoftware.application.usecase.flowexecution.*;
+import io.github.ctorressoftware.application.usecase.flowexecution.validation.BodyValidator;
+import io.github.ctorressoftware.application.usecase.flowexecution.validation.DefaultResponseValidator;
+import io.github.ctorressoftware.application.usecase.flowexecution.validation.ResponseValidator;
+import io.github.ctorressoftware.application.usecase.flowexecution.validation.StatusValidator;
+import io.github.ctorressoftware.application.usecase.flowexecution.validation.evaluator.EqualsExpectationEvaluator;
+import io.github.ctorressoftware.application.usecase.flowexecution.validation.evaluator.ExpectationEvaluator;
+import io.github.ctorressoftware.application.usecase.flowexecution.validation.evaluator.ExpectationEvaluatorRegistry;
+import io.github.ctorressoftware.application.usecase.flowexecution.validation.evaluator.NotEqualsExpectationEvaluator;
 import io.github.ctorressoftware.application.usecase.provider.configure.ConfigureProviderHandler;
 import io.github.ctorressoftware.domain.model.Context;
 import io.github.ctorressoftware.infrastructure.callservice.RequestMapper;
@@ -30,6 +38,7 @@ import io.github.ctorressoftware.infrastructure.ticket.azuredevops.AzureDevOpsWo
 
 import java.io.PrintStream;
 import java.net.http.HttpClient;
+import java.util.List;
 import java.util.Map;
 import java.util.Scanner;
 
@@ -48,7 +57,16 @@ public final class AppConfig {
     private final PlaceholderResolver placeholderResolver = new PlaceholderResolver(jsonProcessor);
     private final ContextManager contextManager = new ContextManager(context, jsonProcessor);
     private final ServiceCaller serviceCaller = new RestServiceCaller(httpClient, requestMapper);
-    private final Executor executor = new FlowExecutor(contextManager, serviceCaller, placeholderResolver);
+    private final ExpectationEvaluator equalsExpectationEvaluator = new EqualsExpectationEvaluator();
+    private final ExpectationEvaluator notEqualsExpectationEvaluator = new NotEqualsExpectationEvaluator();
+    private final ExpectationEvaluatorRegistry registry = new ExpectationEvaluatorRegistry(List.of(
+            equalsExpectationEvaluator,
+            notEqualsExpectationEvaluator
+    ));
+    private final StatusValidator statusValidator = new StatusValidator(registry);
+    private final BodyValidator bodyValidator = new BodyValidator(jsonProcessor, registry);
+    private final ResponseValidator responseValidator = new DefaultResponseValidator(statusValidator, bodyValidator);
+    private final Executor executor = new FlowExecutor(contextManager, serviceCaller, placeholderResolver, responseValidator);
     private final ExecuteFlowUseCase executeFlowUseCase = new ExecuteFlowHandler(executor);
     private final AzureDevOpsWorkItemClient azureDevOpsWorkItemClient = new AzureDevOpsWorkItemClient(httpClient);
     private final CredentialsStorageManager credentialsStorageManager = new KeystoreCredentialsStorageManager(keyringFactory);
