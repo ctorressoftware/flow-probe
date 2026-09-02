@@ -10,7 +10,7 @@ steps:
     expect:
       status: 200
     exports:
-      pokemonName: "results.0.name"
+      pokemonName: "/results/0/name"
 
   - name: "get-pokemon"
     request:
@@ -21,7 +21,7 @@ steps:
     expect:
       status: 200
       body:
-        path: "results.0.name"
-        operator: "equals"
-        value: "bulbasaur"
+        - path: "/name"
+          operator: "equals"
+          value: "bulbasaur"
     exports: null
