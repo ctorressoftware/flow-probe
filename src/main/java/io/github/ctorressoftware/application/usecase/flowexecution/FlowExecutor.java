@@ -2,11 +2,13 @@ package io.github.ctorressoftware.application.usecase.flowexecution;
 
 import io.github.ctorressoftware.application.port.out.Executor;
 import io.github.ctorressoftware.application.port.out.ServiceCaller;
-import io.github.ctorressoftware.domain.constant.HttpStatusCode;
+import io.github.ctorressoftware.application.usecase.flowexecution.validation.ResponseValidator;
+import io.github.ctorressoftware.application.usecase.flowexecution.validation.result.ResponseValidationResult;
 import io.github.ctorressoftware.domain.exception.NoDefinedFlowException;
 import io.github.ctorressoftware.domain.model.*;
 
 import java.time.Duration;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 
@@ -14,14 +16,17 @@ public class FlowExecutor implements Executor {
     private final ContextManager contextManager;
     private final ServiceCaller serviceCaller;
     private final PlaceholderResolver placeholderResolver;
+    private final ResponseValidator responseValidator;
 
     public FlowExecutor(
             ContextManager contextManager,
             ServiceCaller serviceCaller,
-            PlaceholderResolver placeholderResolver) {
+            PlaceholderResolver placeholderResolver,
+            ResponseValidator responseValidator) {
         this.contextManager = Objects.requireNonNull(contextManager);
         this.serviceCaller = Objects.requireNonNull(serviceCaller);
         this.placeholderResolver = Objects.requireNonNull(placeholderResolver);
+        this.responseValidator = responseValidator;
     }
 
     public FlowExecutionSummary execute(Flow flow) {
@@ -36,9 +41,16 @@ public class FlowExecutor implements Executor {
     }
 
     private List<FlowExecutionSummaryDetail> executeTasks(List<FlowStep> flowSteps) {
-        return flowSteps.stream()
-                .map(this::executeStep)
-                .toList();
+
+        List<FlowExecutionSummaryDetail> results = new ArrayList<>();
+
+        for (FlowStep step : flowSteps) {
+            FlowExecutionSummaryDetail result = executeStep(step);
+            results.add(result);
+            if (!result.successful()) break;
+        }
+
+        return List.copyOf(results);
     }
 
     private FlowExecutionSummaryDetail executeStep(FlowStep step) {
@@ -48,13 +60,22 @@ public class FlowExecutor implements Executor {
 
         CallResult response = serviceCaller.call(normalizedCall);
 
-        boolean successfulExecution = HttpStatusCode.isSuccess(response.statusCode());
+        ResponseValidationResult validationResult =
+                responseValidator.validate(response, step.expectedResponse());
+
+        if (!validationResult.successful()) {
+            return FlowExecutionSummaryDetail.failure(
+                    step.stepName(),
+                    normalizedCall,
+                    Duration.ZERO,
+                    response.responseBody()
+            );
+        }
 
         contextManager.exportVariables(response.responseBody(), step.exports());
 
-        return new FlowExecutionSummaryDetail(
+        return FlowExecutionSummaryDetail.success(
                 step.stepName(),
-                successfulExecution,
                 normalizedCall,
                 Duration.ZERO,
                 response.responseBody()
