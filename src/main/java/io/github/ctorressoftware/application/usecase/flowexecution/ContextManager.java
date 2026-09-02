@@ -25,15 +25,11 @@ public class ContextManager {
         }
 
         toExport.forEach((key, value) ->
-                context.putVariable(key, jsonProcessor.extractValue(data, resolveValuePath(value)))
+                context.putVariable(key, jsonProcessor.extractValue(data, value))
         );
     }
 
     public List<ContextVariable> getVariables() {
         return context.variables();
-    }
-
-    private String resolveValuePath(String key) {
-        return "/" + key.replace(".", "/");
     }
 }
