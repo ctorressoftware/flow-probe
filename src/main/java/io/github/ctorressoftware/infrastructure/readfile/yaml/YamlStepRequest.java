@@ -9,8 +9,7 @@ public class YamlStepRequest {
     private Map<String, String> headers;
     private Object body;
 
-    public YamlStepRequest() {
-    }
+    public YamlStepRequest() {}
 
     public String getUrl() {
         return url;

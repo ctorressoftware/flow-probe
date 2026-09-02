@@ -5,6 +5,8 @@ public class YamlBodyExpectation {
     private String operator;
     private Object value;
 
+    public YamlBodyExpectation() {}
+
     public String getPath() {
         return path;
     }

@@ -7,6 +7,8 @@ public class YamlExpectations {
     private Integer status;
     private List<YamlBodyExpectation> body;
 
+    public YamlExpectations() {}
+
     public Integer getStatus() {
         return status;
     }
