@@ -2,6 +2,7 @@ package io.github.ctorressoftware.infrastructure.callservice;
 
 import io.github.ctorressoftware.domain.constant.HttpMethod;
 import io.github.ctorressoftware.domain.exception.HttpServiceCallException;
+import io.github.ctorressoftware.domain.model.CallResult;
 import io.github.ctorressoftware.domain.model.ServiceCall;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -33,6 +34,50 @@ class RestServiceCallerTest {
     @BeforeEach
     void init() {
         this.restServiceCaller = new RestServiceCaller(client, requestMapper);
+    }
+
+    @Test
+    void shouldReturnSuccessfulCallResult()
+            throws IOException, InterruptedException {
+
+        ServiceCall serviceCall = new ServiceCall(
+                "https://pokeapi.co/api/v2/pokemon/1",
+                HttpMethod.GET,
+                Map.of(),
+                null
+        );
+
+        HttpRequest httpRequest = HttpRequest.newBuilder()
+                .uri(URI.create(serviceCall.url()))
+                .GET()
+                .build();
+
+        HttpResponse<String> response = Mockito.mock();
+
+        Mockito
+                .when(requestMapper.map(serviceCall))
+                .thenReturn(httpRequest);
+
+        Mockito
+                .when(response.statusCode())
+                .thenReturn(200);
+
+        Mockito
+                .when(response.body())
+                .thenReturn("{\"name\":\"bulbasaur\"}");
+
+        Mockito
+                .when(client.send(Mockito.same(httpRequest), Mockito.<HttpResponse.BodyHandler<String>>any()))
+                .thenReturn(response);
+
+        CallResult result = restServiceCaller.call(serviceCall);
+
+        assertEquals(200, result.statusCode());
+        assertEquals("{\"name\":\"bulbasaur\"}", result.responseBody());
+        Mockito.verify(requestMapper).map(serviceCall);
+        Mockito.verify(client).send(Mockito.same(httpRequest), Mockito.<HttpResponse.BodyHandler<String>>any());
+        Mockito.verify(response).statusCode();
+        Mockito.verify(response).body();
     }
 
     @Test
