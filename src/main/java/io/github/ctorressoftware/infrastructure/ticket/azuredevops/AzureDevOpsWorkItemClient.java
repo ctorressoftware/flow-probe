@@ -53,7 +53,7 @@ public class AzureDevOpsWorkItemClient {
             HttpResponse<String> response = client.send(httpRequest, BodyHandlers.ofString());
 
             if (response.statusCode() < HttpStatusCode.OK || response.statusCode() >= HttpStatusCode.MULTIPLE_CHOICES) {
-                throw new RuntimeException(
+                throw new RuntimeException( // TODO: Create custom exception
                         "Error when trying to create an impediment ticket in Azure. " +
                                 "Status: " + response.statusCode() + ". Body: " + response.body()
                 );
@@ -63,7 +63,7 @@ public class AzureDevOpsWorkItemClient {
 
         } catch (IOException | InterruptedException e) {
             Thread.currentThread().interrupt();
-            throw new RuntimeException("Error calling Azure DevOps API", e); // TODO: create a custom one
+            throw new RuntimeException("Error calling Azure DevOps API", e); // TODO: Create custom exception
         }
     }
 }
