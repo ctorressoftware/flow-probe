@@ -1,9 +1,11 @@
 package io.github.ctorressoftware.infrastructure.callservice;
 
 import io.github.ctorressoftware.domain.constant.HttpMethod;
+import io.github.ctorressoftware.domain.constant.HttpStatusCode;
 import io.github.ctorressoftware.domain.exception.HttpServiceCallException;
 import io.github.ctorressoftware.domain.model.CallResult;
 import io.github.ctorressoftware.domain.model.ServiceCall;
+import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -72,8 +74,8 @@ class RestServiceCallerTest {
 
         CallResult result = restServiceCaller.call(serviceCall);
 
-        assertEquals(200, result.statusCode());
-        assertEquals("{\"name\":\"bulbasaur\"}", result.responseBody());
+        Assertions.assertEquals(200, result.statusCode());
+        Assertions.assertEquals("{\"name\":\"bulbasaur\"}", result.responseBody());
         Mockito.verify(requestMapper).map(serviceCall);
         Mockito.verify(client).send(Mockito.same(httpRequest), Mockito.<HttpResponse.BodyHandler<String>>any());
         Mockito.verify(response).statusCode();
@@ -96,11 +98,11 @@ class RestServiceCallerTest {
                 .GET()
                 .build();
 
-        Mockito.when(requestMapper.map(serviceCall))
+        Mockito
+                .when(requestMapper.map(serviceCall))
                 .thenReturn(httpRequest);
 
-        IOException cause =
-                new IOException("Simulated connection failure");
+        IOException cause = new IOException("Simulated connection failure");
 
         Mockito.when(client.send(
                         Mockito.same(httpRequest),
@@ -113,15 +115,40 @@ class RestServiceCallerTest {
                 () -> restServiceCaller.call(serviceCall)
         );
 
-        assertSame(cause, exception.getCause());
+        Assertions.assertSame(cause, exception.getCause());
+        Mockito.verify(requestMapper).map(serviceCall);
+        Mockito.verify(client).send(Mockito.same(httpRequest), Mockito.<HttpResponse.BodyHandler<String>>any());
+    }
 
-        Mockito.verify(requestMapper)
-                .map(serviceCall);
+    @Test
+    void shouldReturnInternalErrorCallResultIfServiceResponseIsNull()
+            throws IOException, InterruptedException {
 
-        Mockito.verify(client)
-                .send(
-                        Mockito.same(httpRequest),
-                        Mockito.<HttpResponse.BodyHandler<String>>any()
-                );
+        ServiceCall serviceCall = new ServiceCall(
+                "https://pokeapi.co/api/v2/pokemon/1",
+                HttpMethod.GET,
+                Map.of(),
+                null
+        );
+
+        HttpRequest httpRequest = HttpRequest.newBuilder()
+                .uri(URI.create(serviceCall.url()))
+                .GET()
+                .build();
+
+        Mockito
+                .when(requestMapper.map(serviceCall))
+                .thenReturn(httpRequest);
+
+        Mockito
+                .when(client.send(Mockito.same(httpRequest), Mockito.<HttpResponse.BodyHandler<String>>any()))
+                .thenReturn(null);
+
+        CallResult result = restServiceCaller.call(serviceCall);
+
+        Assertions.assertEquals(HttpStatusCode.INTERNAL_SERVER_ERROR, result.statusCode());
+        Assertions.assertNull(result.responseBody());
+        Mockito.verify(requestMapper).map(serviceCall);
+        Mockito.verify(client).send(Mockito.same(httpRequest), Mockito.<HttpResponse.BodyHandler<String>>any());
     }
 }
