@@ -87,6 +87,35 @@ class YamlReaderTest {
     }
 
     @Test
+    void parsesResponseExpectations() {
+
+        Flow flow = reader.read(
+                new FilePath(BASE_PATH + "fully-valid-flow.yaml")
+        );
+
+        ExpectedResponse expectedResponse = flow.steps().getFirst().expectedResponse();
+
+        Assertions.assertEquals(200, expectedResponse.status()
+        );
+
+        Assertions.assertEquals(
+                List.of(
+                        new BodyExpectation(
+                                "/results/0/name",
+                                ExpectationOperator.EQUALS,
+                                "bulbasaur"
+                        ),
+                        new BodyExpectation(
+                                "/count",
+                                ExpectationOperator.NOT_EQUALS,
+                                "0"
+                        )
+                ),
+                expectedResponse.bodyExpectations()
+        );
+    }
+
+    @Test
     void rejectsEmptyFlowFile() {
         FilePath filePath = new FilePath(BASE_PATH + "empty-flow.yaml");
 
