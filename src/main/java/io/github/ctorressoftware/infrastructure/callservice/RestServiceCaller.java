@@ -35,6 +35,14 @@ public class RestServiceCaller implements ServiceCaller {
             throw new HttpServiceCallException("Service call was interrupted: " + serviceCall.url(), e);
         }
 
+        /*
+            TODO: Reconsider handling a null HttpClient.send() response as HTTP 500.
+            HttpClient.send() should return an HttpResponse, so null would represent
+            an unexpected internal condition rather than an actual server response.
+            Consider throwing HttpServiceCallException instead of returning
+            INTERNAL_SERVER_ERROR to avoid implying that the remote service responded with 500.
+        */
+
         if (response == null) {
             return new CallResult(HttpStatusCode.INTERNAL_SERVER_ERROR, null);
         }
