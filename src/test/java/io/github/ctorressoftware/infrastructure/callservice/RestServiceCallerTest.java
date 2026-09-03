@@ -122,6 +122,58 @@ class RestServiceCallerTest {
     }
 
     @Test
+    void shouldWrapInterruptedExceptionAsHttpServiceCallException()
+            throws IOException, InterruptedException {
+
+        ServiceCall serviceCall = new ServiceCall(
+                "https://pokeapi.co/api/v2/pokemon/1",
+                HttpMethod.GET,
+                Map.of(),
+                null
+        );
+
+        HttpRequest httpRequest = HttpRequest.newBuilder()
+                .uri(URI.create(serviceCall.url()))
+                .GET()
+                .build();
+
+        Mockito
+                .when(requestMapper.map(serviceCall))
+                .thenReturn(httpRequest);
+
+        InterruptedException cause = new InterruptedException("Simulated interruption");
+
+        Mockito
+                .when(client.send(Mockito.same(httpRequest), Mockito.<HttpResponse.BodyHandler<String>>any()))
+                .thenThrow(cause);
+
+        try {
+            HttpServiceCallException exception = assertThrows(
+                    HttpServiceCallException.class,
+                    () -> restServiceCaller.call(serviceCall)
+            );
+
+            Assertions.assertSame(cause, exception.getCause());
+            Assertions.assertTrue(Thread.currentThread().isInterrupted());
+            Assertions.assertEquals(
+                    "Service call was interrupted: " + serviceCall.url(),
+                    exception.getMessage()
+            );
+
+            Mockito.verify(requestMapper).map(serviceCall);
+
+            Mockito.verify(client).send(
+                    Mockito.same(httpRequest),
+                    Mockito.<HttpResponse.BodyHandler<String>>any()
+            );
+
+        } finally {
+            //noinspection ResultOfMethodCallIgnored
+            Thread.interrupted();
+        }
+    }
+
+    @Test
     void shouldReturnInternalErrorCallResultIfServiceResponseIsNull()
             throws IOException, InterruptedException {
 
