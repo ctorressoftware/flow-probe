@@ -185,4 +185,31 @@ class JacksonJsonProcessorTest {
                 exception.getMessage()
         );
     }
+
+    @Test
+    void shouldThrowJsonExtractionExceptionIfJsonNodeIsMissing() {
+
+        objectMapper = new ObjectMapper();
+        jacksonJsonProcessor = new JacksonJsonProcessor(objectMapper);
+
+        String json = """
+            {
+              "user": {
+                "name": "John"
+              }
+            }
+            """;
+
+        String missingPath = "/user/email";
+
+        JsonExtractionException exception = Assertions.assertThrows(
+                JsonExtractionException.class,
+                () -> jacksonJsonProcessor.extractValue(json, missingPath)
+        );
+
+        Assertions.assertEquals(
+                "JSON path does not exist: " + missingPath,
+                exception.getMessage()
+        );
+    }
 }
