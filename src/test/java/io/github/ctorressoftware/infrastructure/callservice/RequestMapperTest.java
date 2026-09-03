@@ -76,7 +76,7 @@ class RequestMapperTest {
         );
 
         Assertions.assertEquals("Could not serialize request body to JSON", exception.getMessage());
-        Mockito.verify(jsonProcessor, Mockito.times(1)).serialize(Mockito.anyString());
+        Mockito.verify(jsonProcessor, Mockito.times(1)).serialize(Mockito.any());
         Mockito.verifyNoMoreInteractions(jsonProcessor);
 
     }
