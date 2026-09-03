@@ -115,6 +115,7 @@ class RestServiceCallerTest {
                 () -> restServiceCaller.call(serviceCall)
         );
 
+        Assertions.assertEquals("Failed to call service: " + serviceCall.url(), exception.getMessage());
         Assertions.assertSame(cause, exception.getCause());
         Mockito.verify(requestMapper).map(serviceCall);
         Mockito.verify(client).send(Mockito.same(httpRequest), Mockito.<HttpResponse.BodyHandler<String>>any());
