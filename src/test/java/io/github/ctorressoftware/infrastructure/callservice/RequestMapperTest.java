@@ -1,14 +1,15 @@
 package io.github.ctorressoftware.infrastructure.callservice;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import io.github.ctorressoftware.application.exception.JsonSerializationException;
 import io.github.ctorressoftware.application.port.out.JsonProcessor;
 import io.github.ctorressoftware.domain.constant.HttpMethod;
 import io.github.ctorressoftware.domain.exception.HttpServiceCallException;
 import io.github.ctorressoftware.domain.model.ServiceCall;
-import org.junit.jupiter.api.BeforeEach;
+import io.github.ctorressoftware.infrastructure.json.jackson.JacksonJsonProcessor;
+import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
-import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.junit.jupiter.MockitoExtension;
 
@@ -21,18 +22,14 @@ import java.util.Map;
 @ExtendWith(MockitoExtension.class)
 class RequestMapperTest {
 
-    @Mock // TODO: refactor this to use a real JsonProcessor
     private JsonProcessor jsonProcessor;
-
     private RequestMapper requestMapper;
-
-    @BeforeEach
-    void init() {
-        this.requestMapper = new RequestMapper(jsonProcessor);
-    }
 
     @Test
     void shouldReturnHttpRequestForServiceCallWithGetMethod() {
+
+        jsonProcessor = new JacksonJsonProcessor(new ObjectMapper());
+        requestMapper = new RequestMapper(jsonProcessor);
 
         ServiceCall serviceCall = new ServiceCall(
                 "https://pokeapi.co/api/v2/pokemon?offset=0&limit=1350",
@@ -47,7 +44,7 @@ class RequestMapperTest {
                 .method(serviceCall.method(), HttpRequest.BodyPublishers.noBody())
                 .build();
 
-        assertEquals(
+        Assertions.assertEquals(
                 httpRequest,
                 requestMapper.map(serviceCall)
         );
@@ -55,6 +52,9 @@ class RequestMapperTest {
 
     @Test
     void shouldWrapJsonProcessingExceptionAsHttpServiceCallException() {
+
+        jsonProcessor = Mockito.mock(JacksonJsonProcessor.class);
+        requestMapper = new RequestMapper(jsonProcessor);
 
         ServiceCall request = new ServiceCall(
                 "https://pokeapi.co/api/v2/pokemon?offset=0&limit=1350",
@@ -75,9 +75,9 @@ class RequestMapperTest {
                 () -> requestMapper.map(request)
         );
 
-        assertEquals(
-                "Could not serialize request body to JSON",
-                exception.getMessage()
-        );
+        Assertions.assertEquals("Could not serialize request body to JSON", exception.getMessage());
+        Mockito.verify(jsonProcessor, Mockito.times(1)).serialize(Mockito.anyString());
+        Mockito.verifyNoMoreInteractions(jsonProcessor);
+
     }
 }
