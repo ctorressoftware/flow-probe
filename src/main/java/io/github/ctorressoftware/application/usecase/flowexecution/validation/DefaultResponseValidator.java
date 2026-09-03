@@ -56,7 +56,7 @@ public final class DefaultResponseValidator implements ResponseValidator {
             ExpectedResponse expectedResponse,
             List<ExpectationResult> results
     ) {
-        if (expectedResponse.bodyExpectations().isEmpty()) {
+        if (expectedResponse.bodyExpectations() == null || expectedResponse.bodyExpectations().isEmpty()) {
             return;
         }
 
