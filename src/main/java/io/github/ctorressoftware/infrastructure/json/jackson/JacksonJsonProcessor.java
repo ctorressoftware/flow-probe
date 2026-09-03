@@ -37,10 +37,9 @@ public class JacksonJsonProcessor implements JsonProcessor {
             JsonNode node = root.at(valuePath);
 
             if (node.isMissingNode()) {
-                throw new JsonExtractionException(
-                        "JSON path does not exist: " + valuePath
-                );
+                throw new JsonExtractionException("JSON path does not exist: " + valuePath);
             }
+
             return node.asText();
         } catch (JsonProcessingException e) {
             throw new JsonExtractionException(
