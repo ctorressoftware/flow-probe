@@ -42,28 +42,4 @@ public class YamlStep {
     public void setExports(Map<String, String> exports) {
         this.exports = exports;
     }
-
-    @Override
-    public boolean equals(Object o) {
-        if (!(o instanceof YamlStep yamlStep)) return false;
-        return Objects.equals(name, yamlStep.name)
-                && Objects.equals(request, yamlStep.request)
-                && Objects.equals(expect, yamlStep.expect)
-                && Objects.equals(exports, yamlStep.exports);
-    }
-
-    @Override
-    public int hashCode() {
-        return Objects.hash(name, request, expect, exports);
-    }
-
-    @Override
-    public String toString() {
-        return "YamlStep{" +
-                "name='" + name + '\'' +
-                ", request=" + request +
-                ", expect=" + expect +
-                ", exports=" + exports +
-                '}';
-    }
 }

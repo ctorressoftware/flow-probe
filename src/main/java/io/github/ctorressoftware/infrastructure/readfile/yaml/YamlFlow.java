@@ -24,23 +24,4 @@ public class YamlFlow {
     public void setSteps(List<YamlStep> steps) {
         this.steps = steps;
     }
-
-    @Override
-    public boolean equals(Object o) {
-        if (!(o instanceof YamlFlow yamlFlow)) return false;
-        return Objects.equals(name, yamlFlow.name) && Objects.equals(steps, yamlFlow.steps);
-    }
-
-    @Override
-    public int hashCode() {
-        return Objects.hash(name, steps);
-    }
-
-    @Override
-    public String toString() {
-        return "YamlFlow{" +
-                "name='" + name + '\'' +
-                ", steps=" + steps +
-                '}';
-    }
 }

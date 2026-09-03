@@ -42,25 +42,4 @@ public class YamlStepRequest {
     public void setBody(Object body) {
         this.body = body;
     }
-
-    @Override
-    public boolean equals(Object o) {
-        if (!(o instanceof YamlStepRequest that)) return false;
-        return Objects.equals(url, that.url) && Objects.equals(method, that.method) && Objects.equals(headers, that.headers) && Objects.equals(body, that.body);
-    }
-
-    @Override
-    public int hashCode() {
-        return Objects.hash(url, method, headers, body);
-    }
-
-    @Override
-    public String toString() {
-        return "YamlStepRequest{" +
-                "url='" + url + '\'' +
-                ", method='" + method + '\'' +
-                ", headers=" + headers +
-                ", body=" + body +
-                '}';
-    }
 }
