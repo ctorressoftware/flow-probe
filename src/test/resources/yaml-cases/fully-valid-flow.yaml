@@ -8,22 +8,36 @@ steps:
       headers:
         accept: "application/json"
       body: null
+    expect:
+      status: 200
+      body:
+        - path: "/results/0/name"
+          operator: "equals"
+          value: "bulbasaur"
+        - path: "/count"
+          operator: "notEquals"
+          value: "0"
     exports:
       pokemonName: "/results/0/name"
 
   - name: "get-pokemon"
-    exports: null
     request:
       url: "https://pokeapi.co/api/v2/pokemon/${pokemonName}"
       method: "GET"
       headers:
         accept: "application/json"
-      body: null
+    expect:
+      status: 200
+      body:
+        - path: "/name"
+          operator: "equals"
+          value: "bulbasaur"
 
   - name: "get-pikachu"
-    exports: null
     request:
       url: "https://pokeapi.co/api/v2/pokemon/pikachu"
       method: "GET"
       headers:
         accept: "application/json"
+    expect:
+      status: 200

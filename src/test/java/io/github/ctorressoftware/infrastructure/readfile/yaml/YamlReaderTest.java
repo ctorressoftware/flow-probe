@@ -1,9 +1,6 @@
 package io.github.ctorressoftware.infrastructure.readfile.yaml;
 
-import io.github.ctorressoftware.domain.model.FilePath;
-import io.github.ctorressoftware.domain.model.Flow;
-import io.github.ctorressoftware.domain.model.FlowStep;
-import io.github.ctorressoftware.domain.model.ServiceCall;
+import io.github.ctorressoftware.domain.model.*;
 import io.github.ctorressoftware.infrastructure.readfile.exception.*;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
@@ -30,7 +27,21 @@ class YamlReaderTest {
                                         Map.of("accept", "application/json"),
                                         null
                                 ),
-                                null,
+                                new ExpectedResponse(
+                                        200,
+                                        List.of(
+                                                new BodyExpectation(
+                                                        "/results/0/name",
+                                                        ExpectationOperator.EQUALS,
+                                                        "bulbasaur"
+                                                ),
+                                                new BodyExpectation(
+                                                        "/count",
+                                                        ExpectationOperator.NOT_EQUALS,
+                                                        "0"
+                                                )
+                                        )
+                                ),
                                 Map.of("pokemonName", "/results/0/name")
                         ),
                         FlowStep.create(
@@ -42,7 +53,16 @@ class YamlReaderTest {
                                         Map.of("accept", "application/json"),
                                         null
                                 ),
-                                null,
+                                new ExpectedResponse(
+                                        200,
+                                        List.of(
+                                                new BodyExpectation(
+                                                        "/name",
+                                                        ExpectationOperator.EQUALS,
+                                                        "bulbasaur"
+                                                )
+                                        )
+                                ),
                                 null
                         ),
                         FlowStep.create(
@@ -54,7 +74,7 @@ class YamlReaderTest {
                                         Map.of("accept", "application/json"),
                                         null
                                 ),
-                                null,
+                                new ExpectedResponse(200, List.of()),
                                 null
                         )
                 )
