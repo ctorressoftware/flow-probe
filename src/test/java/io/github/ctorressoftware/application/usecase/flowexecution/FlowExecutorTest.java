@@ -69,13 +69,25 @@ class FlowExecutorTest {
                 null
         );
 
-        List<FlowStep> steps = List.of(
-                FlowStep.create("flow", "first", serviceCall, null, null),
-                FlowStep.create("flow", "second", serviceCall, null, null),
-                FlowStep.create("flow", "third", serviceCall, null, null)
+        ExpectedResponse expected = new ExpectedResponse(
+                200,
+                List.of(new BodyExpectation(
+                        "/results/0/name",
+                        ExpectationOperator.NOT_EQUALS,
+                        "Charizard"
+                ))
         );
 
-        CallResult result = new CallResult(HttpStatusCode.OK, null);
+        List<FlowStep> steps = List.of(
+                FlowStep.create("flow", "first", serviceCall, expected, null),
+                FlowStep.create("flow", "second", serviceCall, expected, null),
+                FlowStep.create("flow", "third", serviceCall, expected, null)
+        );
+
+        CallResult result = new CallResult(
+                HttpStatusCode.OK,
+                "{\"results\":[{\"name\":\"Pikachu\"}]}"
+        );
 
         Mockito
                 .when(serviceCaller.call(Mockito.any(ServiceCall.class)))
@@ -146,19 +158,37 @@ class FlowExecutorTest {
                 null
         );
 
+        ExpectedResponse getAllExpectedResponse = new ExpectedResponse(
+                200,
+                List.of(new BodyExpectation(
+                        "/results/0/name",
+                        ExpectationOperator.EQUALS,
+                        "Pikachu"
+                ))
+        );
+
+        ExpectedResponse getPikachuExpectedResponse = new ExpectedResponse(
+                200,
+                List.of(new BodyExpectation(
+                        "/name",
+                        ExpectationOperator.EQUALS,
+                        "Pikachu"
+                ))
+        );
+
         Flow flow = Flow.create("Flow", List.of(
                 FlowStep.create(
                         "Flow",
                         "get-all-pokemon",
                         getAll,
-                        null,
+                        getAllExpectedResponse,
                         Map.of("pokemonName", "/results/0/name")
                 ),
                 FlowStep.create(
                         "Flow",
                         "get-pikachu",
                         getPikachuUnresolved,
-                        null,
+                        getPikachuExpectedResponse,
                         null
                 )
         ));
