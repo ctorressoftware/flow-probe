@@ -10,6 +10,7 @@ import java.io.IOException;
 import java.net.http.HttpClient;
 import java.net.http.HttpRequest;
 import java.net.http.HttpResponse;
+import java.net.http.HttpTimeoutException;
 import java.util.Objects;
 
 public class RestServiceCaller implements ServiceCaller {
@@ -28,6 +29,8 @@ public class RestServiceCaller implements ServiceCaller {
 
         try {
             response = client.send(request, HttpResponse.BodyHandlers.ofString());
+        } catch (HttpTimeoutException e) {
+            throw new HttpServiceCallException("Service call timed out: " + serviceCall.url(), e);
         } catch (IOException e) {
             throw new HttpServiceCallException("Failed to call service: " + serviceCall.url(), e);
         } catch (InterruptedException e) {

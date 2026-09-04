@@ -7,6 +7,7 @@ import java.net.http.HttpRequest;
 import java.net.http.HttpRequest.BodyPublishers;
 import java.net.http.HttpResponse;
 import java.net.http.HttpResponse.BodyHandlers;
+import java.net.http.HttpTimeoutException;
 import java.nio.charset.StandardCharsets;
 import java.time.Duration;
 import java.util.Base64;
@@ -15,6 +16,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.SerializationFeature;
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 import io.github.ctorressoftware.domain.constant.HttpStatusCode;
+import io.github.ctorressoftware.domain.exception.HttpServiceCallException;
 
 public class AzureDevOpsWorkItemClient {
 
@@ -65,6 +67,8 @@ public class AzureDevOpsWorkItemClient {
 
             return mapper.readValue(response.body(), AzureDevOpsWorkItemResponse.class);
 
+        } catch (HttpTimeoutException e) {
+            throw new HttpServiceCallException("Azure DevOps service call timed out", e);
         } catch (IOException | InterruptedException e) {
             Thread.currentThread().interrupt();
             throw new RuntimeException("Error calling Azure DevOps API", e); // TODO: Create custom exception
