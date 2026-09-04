@@ -104,7 +104,9 @@ public class RunCommand implements Callable<Integer> {
             out.println("Impediment ticket created. ID = " + impedimentTicket.id());
         }
 
-        return ExitCode.SUCCESS.code();
+        return resume.successfulExecution() ?
+                ExitCode.SUCCESS.code() :
+                ExitCode.EXECUTION_ERROR.code();
     }
 
     private void renderReproducibleRequests(FlowExecutionSummary resume) {
