@@ -5,6 +5,10 @@ plugins {
     id("jacoco")
 }
 
+java {
+    toolchain { languageVersion.set(JavaLanguageVersion.of(21)) }
+}
+
 group = "io.github.ctorressoftware"
 version = "0.1.0"
 
