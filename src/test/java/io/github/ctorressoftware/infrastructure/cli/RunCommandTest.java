@@ -376,7 +376,7 @@ class RunCommandTest {
                 "src/test/resources/flow-failure.yaml"
         );
 
-        Assertions.assertEquals(ExitCode.SUCCESS.code(), exitCode);
+        Assertions.assertEquals(ExitCode.EXECUTION_ERROR.code(), exitCode);
 
         ArgumentCaptor<ReadFileCommand> readCaptor =
                 ArgumentCaptor.forClass(ReadFileCommand.class);
