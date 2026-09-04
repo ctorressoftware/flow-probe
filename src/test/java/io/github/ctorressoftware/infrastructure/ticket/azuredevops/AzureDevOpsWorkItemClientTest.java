@@ -14,6 +14,7 @@ import java.io.IOException;
 import java.net.http.HttpClient;
 import java.net.http.HttpRequest;
 import java.net.http.HttpResponse;
+import java.time.Duration;
 
 @ExtendWith(MockitoExtension.class)
 class AzureDevOpsWorkItemClientTest {
@@ -25,7 +26,7 @@ class AzureDevOpsWorkItemClientTest {
 
     @BeforeEach
     void init() {
-        this.azureDevOpsClient = new AzureDevOpsWorkItemClient(httpClient);
+        this.azureDevOpsClient = new AzureDevOpsWorkItemClient(httpClient, Duration.ofSeconds(30));
     }
 
     @Test
