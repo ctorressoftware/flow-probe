@@ -15,7 +15,6 @@ public final class FlowProbeApplication {
 
         commandLine.addSubcommand("run", new RunCommand(
                 config.out(),
-                config.scanner(),
                 config.requestRenderer(),
                 config.readFileUseCase(),
                 config.executeFlowUseCase(),
