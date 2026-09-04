@@ -31,7 +31,7 @@ public class JacksonJsonProcessor implements JsonProcessor {
     }
 
     @Override
-    public String extractValue(String data, String valuePath) {
+    public Object extractValue(String data, String valuePath) {
         try {
             JsonNode root = objectMapper.readTree(data);
             JsonNode node = root.at(valuePath);
@@ -40,12 +40,10 @@ public class JacksonJsonProcessor implements JsonProcessor {
                 throw new JsonExtractionException("JSON path does not exist: " + valuePath);
             }
 
-            return node.asText();
+            return objectMapper.treeToValue(node, Object.class);
+
         } catch (JsonProcessingException e) {
-            throw new JsonExtractionException(
-                    "Could not extract data from JSON",
-                    e
-            );
+            throw new JsonExtractionException("Could not extract data from JSON", e);
         }
     }
 

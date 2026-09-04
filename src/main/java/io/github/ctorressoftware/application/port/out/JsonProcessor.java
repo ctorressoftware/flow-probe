@@ -4,6 +4,6 @@ import java.util.Map;
 
 public interface JsonProcessor {
     String serialize(Object value);
-    String extractValue(String json, String path);
+    Object extractValue(String json, String path);
     Map<String, String> readStringMap(String json);
 }
