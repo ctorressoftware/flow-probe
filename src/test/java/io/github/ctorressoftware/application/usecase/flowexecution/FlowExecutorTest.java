@@ -54,7 +54,7 @@ class FlowExecutorTest {
         this.flowExecutor = new FlowExecutor(
                 contextManager,
                 serviceCaller,
-                new PlaceholderResolver(jsonProcessor),
+                new PlaceholderResolver(),
                 responseValidator
         );
     }
