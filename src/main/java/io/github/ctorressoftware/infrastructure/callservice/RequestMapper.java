@@ -8,6 +8,7 @@ import io.github.ctorressoftware.domain.model.ServiceCall;
 
 import java.net.URI;
 import java.net.http.HttpRequest;
+import java.time.Duration;
 import java.util.Map;
 import java.util.Objects;
 import java.util.stream.Stream;
@@ -15,9 +16,11 @@ import java.util.stream.Stream;
 public class RequestMapper {
 
     private final JsonProcessor jsonProcessor;
+    private final Duration requestTimeout;
 
-    public RequestMapper(JsonProcessor jsonProcessor) {
+    public RequestMapper(JsonProcessor jsonProcessor, Duration requestTimeout) {
         this.jsonProcessor = Objects.requireNonNull(jsonProcessor);
+        this.requestTimeout = Objects.requireNonNull(requestTimeout);
     }
 
     public HttpRequest map(ServiceCall request) {
@@ -39,6 +42,7 @@ public class RequestMapper {
                 .uri(URI.create(request.url()))
                 .headers(headersArray)
                 .method(request.method(), body)
+                .timeout(requestTimeout)
                 .build();
     }
 
