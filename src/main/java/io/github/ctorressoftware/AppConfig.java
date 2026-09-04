@@ -53,8 +53,8 @@ public final class AppConfig {
     private final RequestMapper requestMapper = new RequestMapper(jsonProcessor);
     private final RequestRenderer requestRenderer = new CurlRequestRenderer(jsonProcessor);
     private final FlowFileReader flowFileReader = new YamlReader();
+    private final PlaceholderResolver placeholderResolver = new PlaceholderResolver();
     private final ReadFileUseCase readFileUseCase = new ReadFileHandler(flowFileReader);
-    private final PlaceholderResolver placeholderResolver = new PlaceholderResolver(jsonProcessor);
     private final ContextManager contextManager = new ContextManager(context, jsonProcessor);
     private final ServiceCaller serviceCaller = new RestServiceCaller(httpClient, requestMapper);
     private final ExpectationEvaluator equalsExpectationEvaluator = new EqualsExpectationEvaluator();
