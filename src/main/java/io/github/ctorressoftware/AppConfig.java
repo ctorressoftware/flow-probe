@@ -38,6 +38,7 @@ import io.github.ctorressoftware.infrastructure.ticket.azuredevops.AzureDevOpsWo
 
 import java.io.PrintStream;
 import java.net.http.HttpClient;
+import java.time.Duration;
 import java.util.List;
 import java.util.Map;
 import java.util.Scanner;
@@ -49,7 +50,9 @@ public final class AppConfig {
     private final ObjectMapper objectMapper = new ObjectMapper();
     private final KeyringFactory keyringFactory = Keyring::create;
     private final JsonProcessor jsonProcessor = new JacksonJsonProcessor(objectMapper);
-    private final HttpClient httpClient = HttpClient.newHttpClient();
+    private final HttpClient httpClient = HttpClient.newBuilder()
+            .connectTimeout(Duration.ofSeconds(10))
+            .build();
     private final RequestMapper requestMapper = new RequestMapper(jsonProcessor);
     private final RequestRenderer requestRenderer = new CurlRequestRenderer(jsonProcessor);
     private final FlowFileReader flowFileReader = new YamlReader();
