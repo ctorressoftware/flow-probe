@@ -73,8 +73,8 @@ public final class AppConfig {
     private final ResponseValidator responseValidator = new DefaultResponseValidator(statusValidator, bodyValidator);
     private final Executor executor = new FlowExecutor(contextManager, serviceCaller, placeholderResolver, responseValidator);
     private final ExecuteFlowUseCase executeFlowUseCase = new ExecuteFlowHandler(executor);
-    private final AzureDevOpsWorkItemClient azureDevOpsWorkItemClient = new AzureDevOpsWorkItemClient(httpClient);
     private final CredentialsStorageManager credentialsStorageManager = new KeystoreCredentialsStorageManager(keyringFactory);
+    private final AzureDevOpsWorkItemClient azureDevOpsWorkItemClient = new AzureDevOpsWorkItemClient(httpClient, HTTP_REQUEST_TIMEOUT);
     private final ProviderConfigRepository providerConfigRepository = new KeystoreProviderConfigRepositoryAdapter(jsonProcessor, credentialsStorageManager);
     private final AzureDevOpsWorkItemTicketCreator azureDevOpsWorkItemTicketCreator = new AzureDevOpsWorkItemTicketCreator(azureDevOpsWorkItemClient, providerConfigRepository);
     private final ImpedimentTicketCreator impedimentTicketCreator = new AzureDevOpsImpedimentTicketCreatorAdapter(azureDevOpsWorkItemTicketCreator);
