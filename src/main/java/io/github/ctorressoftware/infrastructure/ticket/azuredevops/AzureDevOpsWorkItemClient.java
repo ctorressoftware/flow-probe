@@ -8,6 +8,7 @@ import java.net.http.HttpRequest.BodyPublishers;
 import java.net.http.HttpResponse;
 import java.net.http.HttpResponse.BodyHandlers;
 import java.nio.charset.StandardCharsets;
+import java.time.Duration;
 import java.util.Base64;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -18,9 +19,11 @@ import io.github.ctorressoftware.domain.constant.HttpStatusCode;
 public class AzureDevOpsWorkItemClient {
 
     private final HttpClient client;
+    private final Duration requestTimeout;
 
-    public AzureDevOpsWorkItemClient(HttpClient client) {
+    public AzureDevOpsWorkItemClient(HttpClient client, Duration requestTimeout) {
         this.client = client;
+        this.requestTimeout = requestTimeout;
     }
 
     public AzureDevOpsWorkItemResponse createWorkItem(
@@ -48,6 +51,7 @@ public class AzureDevOpsWorkItemClient {
                     .POST(BodyPublishers.ofString(jsonBody))
                     .header("Content-Type", "application/json-patch+json")
                     .header("Authorization", "Basic " + base64Credentials)
+                    .timeout(requestTimeout)
                     .build();
 
             HttpResponse<String> response = client.send(httpRequest, BodyHandlers.ofString());
