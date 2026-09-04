@@ -15,15 +15,15 @@ import java.util.Objects;
 public class RestServiceCaller implements ServiceCaller {
 
     private final HttpClient client;
-    private final RequestMapper mapper;
+    private final RequestMapper requestMapper;
 
-    public RestServiceCaller(HttpClient client, RequestMapper mapper) {
+    public RestServiceCaller(HttpClient client, RequestMapper requestMapper) {
         this.client = Objects.requireNonNull(client);
-        this.mapper = Objects.requireNonNull(mapper);
+        this.requestMapper = Objects.requireNonNull(requestMapper);
     }
 
     public CallResult call(ServiceCall serviceCall) {
-        HttpRequest request = mapper.map(serviceCall);
+        HttpRequest request = requestMapper.map(serviceCall);
         HttpResponse<String> response = null;
 
         try {
