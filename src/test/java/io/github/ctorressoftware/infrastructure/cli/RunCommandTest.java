@@ -35,9 +35,6 @@ class RunCommandTest {
     private PrintStream out;
 
     @Mock
-    private Scanner scanner;
-
-    @Mock
     private RequestRenderer requestRenderer;
 
     @Mock
@@ -55,7 +52,6 @@ class RunCommandTest {
     void init() {
         this.runCommand = new RunCommand(
                 out,
-                scanner,
                 requestRenderer,
                 readFileUseCase,
                 executeFlowUseCase,
@@ -359,10 +355,6 @@ class RunCommandTest {
                 .thenReturn(new ExecuteFlowResult(resume));
 
         Mockito
-                .when(scanner.next())
-                .thenReturn("Y");
-
-        Mockito
                 .when(createImpedimentTicketUseCase.createTicket(Mockito.any(CreateImpedimentTicketCommand.class)))
                 .thenReturn(new CreateImpedimentTicketResult(ticket));
 
@@ -373,7 +365,8 @@ class RunCommandTest {
         int exitCode = cmd.execute(
                 "run",
                 "--file",
-                "src/test/resources/flow-failure.yaml"
+                "src/test/resources/flow-failure.yaml",
+                "--create-impediment"
         );
 
         Assertions.assertEquals(ExitCode.EXECUTION_ERROR.code(), exitCode);
