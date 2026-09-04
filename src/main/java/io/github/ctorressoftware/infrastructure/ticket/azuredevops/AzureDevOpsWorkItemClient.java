@@ -36,8 +36,9 @@ public class AzureDevOpsWorkItemClient {
                 .registerModule(new JavaTimeModule())
                 .disable(SerializationFeature.WRITE_DATES_AS_TIMESTAMPS);
 
+        // TODO: Previous API version: 7.2-preview.3. Remove this note after testing impediment creation with 7.1.
         String endpoint = configuration.azureOrganization() + "/" + configuration.azureProject()
-                + "/_apis/wit/workitems/$" + configuration.azureWorkItemType() + "?api-version=7.2-preview.3";
+                + "/_apis/wit/workitems/$" + configuration.azureWorkItemType() + "?api-version=7.1";
 
         try {
             URI uri = URI.create(AzureDevOpsConfiguration.AZURE_BASE_URL + endpoint);
