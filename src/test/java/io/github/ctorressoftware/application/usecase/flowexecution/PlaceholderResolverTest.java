@@ -1,10 +1,7 @@
 package io.github.ctorressoftware.application.usecase.flowexecution;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
-import io.github.ctorressoftware.application.port.out.JsonProcessor;
 import io.github.ctorressoftware.domain.model.ContextVariable;
 import io.github.ctorressoftware.domain.model.ServiceCall;
-import io.github.ctorressoftware.infrastructure.json.jackson.JacksonJsonProcessor;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 
@@ -15,8 +12,7 @@ import java.util.Map;
 
 class PlaceholderResolverTest {
 
-    private final JsonProcessor jsonProcessor = new JacksonJsonProcessor(new ObjectMapper());
-    private final PlaceholderResolver placeholderResolver = new PlaceholderResolver(jsonProcessor);
+    private final PlaceholderResolver placeholderResolver = new PlaceholderResolver();
 
     @Test
     void shouldResolveServiceCallPlaceholders() {
@@ -45,10 +41,7 @@ class PlaceholderResolverTest {
                 resolved.url()
         );
 
-        Assertions.assertEquals(
-                "GET",
-                resolved.method()
-        );
+        Assertions.assertEquals("GET", resolved.method());
 
         Assertions.assertEquals(
                 Map.of(
@@ -82,10 +75,10 @@ class PlaceholderResolverTest {
 
         ServiceCall resolved = placeholderResolver.resolve(variables, serviceCall);
 
-        Assertions.assertEquals(
-                "{\"name\":\"Pikachu\",\"level\":\"25\"}",
-                resolved.body()
-        );
+        Map<String, Object> expected = new LinkedHashMap<>();
+        expected.put("name", "Pikachu");
+        expected.put("level", 25);
+        Assertions.assertEquals(expected, resolved.body());
     }
 
     @Test
@@ -104,7 +97,7 @@ class PlaceholderResolverTest {
     }
 
     @Test
-    void shouldPreserveNullServiceCallValues() {
+    void shouldResolveServiceCallWithNullOptionalValues() {
 
         ServiceCall serviceCall =
                 new ServiceCall(null, null, null, null);
@@ -113,7 +106,7 @@ class PlaceholderResolverTest {
 
         Assertions.assertNull(resolved.url());
         Assertions.assertNull(resolved.method());
-        Assertions.assertNull(resolved.headers());
+        Assertions.assertTrue(resolved.headers().isEmpty());
         Assertions.assertNull(resolved.body());
     }
 
@@ -164,16 +157,41 @@ class PlaceholderResolverTest {
         ServiceCall resolved = placeholderResolver.resolve(variables, serviceCall);
 
         Assertions.assertEquals(
-                "https://pokeapi.co/api/v2/pokemon/",
+                "https://pokeapi.co/api/v2/pokemon/null",
                 resolved.url()
         );
 
         Assertions.assertEquals(
-                Map.of("X-Pokemon", ""),
+                Map.of("X-Pokemon", "null"),
                 resolved.headers()
         );
 
         Assertions.assertNull(resolved.body());
+    }
+
+    @Test
+    void shouldPreserveNullTypeWhenBodyValueIsExactPlaceholder() {
+
+        List<ContextVariable> variables = List.of(
+                new ContextVariable("pokemonName", null)
+        );
+
+        Map<String, Object> body = new LinkedHashMap<>();
+        body.put("name", "${pokemonName}");
+
+        ServiceCall serviceCall = new ServiceCall(
+                "https://pokeapi.co",
+                "POST",
+                Map.of(),
+                body
+        );
+
+        ServiceCall resolved = placeholderResolver.resolve(variables, serviceCall);
+
+        Map<?, ?> resolvedBody = (Map<?, ?>) resolved.body();
+
+        Assertions.assertTrue(resolvedBody.containsKey("name"));
+        Assertions.assertNull(resolvedBody.get("name"));
     }
 
     @Test
