@@ -26,20 +26,18 @@ class ExpectationEvaluatorRegistryTest {
     @Test
     void shouldThrowWhenNoEvaluatorIsRegisteredForOperator() {
 
-        ExpectationEvaluatorRegistry registry = new ExpectationEvaluatorRegistry(List.of(
-                new EqualsExpectationEvaluator(),
-                new NotEqualsExpectationEvaluator()
-        ));
+        ExpectationEvaluatorRegistry registry =
+                new ExpectationEvaluatorRegistry(List.of(new EqualsExpectationEvaluator()));
 
         IllegalArgumentException exception = Assertions.assertThrows(
                 IllegalArgumentException.class,
                 () -> registry.get(
-                        ExpectationOperator.CONTAINS
+                        ExpectationOperator.NOT_EQUALS
                 )
         );
 
         Assertions.assertEquals(
-                "No evaluator registered for operator: CONTAINS",
+                "No evaluator registered for operator: NOT_EQUALS",
                 exception.getMessage()
         );
     }
