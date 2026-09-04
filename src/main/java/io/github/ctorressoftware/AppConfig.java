@@ -44,28 +44,30 @@ import java.util.Map;
 import java.util.Scanner;
 
 public final class AppConfig {
+    private static final Duration HTTP_CONNECT_TIMEOUT = Duration.ofSeconds(10);
+    private static final Duration HTTP_REQUEST_TIMEOUT = Duration.ofSeconds(30);
     private final PrintStream out = System.out;
     private final Context context = new Context(); // TODO: check if could be a bug
     private final Scanner scanner = new Scanner(System.in);
     private final ObjectMapper objectMapper = new ObjectMapper();
     private final KeyringFactory keyringFactory = Keyring::create;
     private final JsonProcessor jsonProcessor = new JacksonJsonProcessor(objectMapper);
-    private final HttpClient httpClient = HttpClient.newBuilder()
-            .connectTimeout(Duration.ofSeconds(10))
-            .build();
-    private final RequestMapper requestMapper = new RequestMapper(jsonProcessor);
     private final RequestRenderer requestRenderer = new CurlRequestRenderer(jsonProcessor);
     private final FlowFileReader flowFileReader = new YamlReader();
     private final PlaceholderResolver placeholderResolver = new PlaceholderResolver();
     private final ReadFileUseCase readFileUseCase = new ReadFileHandler(flowFileReader);
     private final ContextManager contextManager = new ContextManager(context, jsonProcessor);
-    private final ServiceCaller serviceCaller = new RestServiceCaller(httpClient, requestMapper);
     private final ExpectationEvaluator equalsExpectationEvaluator = new EqualsExpectationEvaluator();
+    private final RequestMapper requestMapper = new RequestMapper(jsonProcessor, HTTP_REQUEST_TIMEOUT);
     private final ExpectationEvaluator notEqualsExpectationEvaluator = new NotEqualsExpectationEvaluator();
     private final ExpectationEvaluatorRegistry registry = new ExpectationEvaluatorRegistry(List.of(
             equalsExpectationEvaluator,
             notEqualsExpectationEvaluator
     ));
+    private final HttpClient httpClient = HttpClient.newBuilder()
+            .connectTimeout(HTTP_CONNECT_TIMEOUT)
+            .build();
+    private final ServiceCaller serviceCaller = new RestServiceCaller(httpClient, requestMapper);
     private final StatusValidator statusValidator = new StatusValidator(registry);
     private final BodyValidator bodyValidator = new BodyValidator(jsonProcessor, registry);
     private final ResponseValidator responseValidator = new DefaultResponseValidator(statusValidator, bodyValidator);
