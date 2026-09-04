@@ -17,6 +17,7 @@ import static org.junit.jupiter.api.Assertions.*;
 
 import java.net.URI;
 import java.net.http.HttpRequest;
+import java.time.Duration;
 import java.util.Map;
 
 @ExtendWith(MockitoExtension.class)
@@ -29,7 +30,7 @@ class RequestMapperTest {
     void shouldReturnHttpRequestForServiceCallWithGetMethod() {
 
         jsonProcessor = new JacksonJsonProcessor(new ObjectMapper());
-        requestMapper = new RequestMapper(jsonProcessor);
+        requestMapper = new RequestMapper(jsonProcessor, Duration.ofSeconds(30));
 
         ServiceCall serviceCall = new ServiceCall(
                 "https://pokeapi.co/api/v2/pokemon?offset=0&limit=1350",
@@ -54,7 +55,7 @@ class RequestMapperTest {
     void shouldWrapJsonProcessingExceptionAsHttpServiceCallException() {
 
         jsonProcessor = Mockito.mock(JacksonJsonProcessor.class);
-        requestMapper = new RequestMapper(jsonProcessor);
+        requestMapper = new RequestMapper(jsonProcessor, Duration.ofSeconds(30));
 
         ServiceCall request = new ServiceCall(
                 "https://pokeapi.co/api/v2/pokemon?offset=0&limit=1350",
@@ -78,6 +79,5 @@ class RequestMapperTest {
         Assertions.assertEquals("Could not serialize request body to JSON", exception.getMessage());
         Mockito.verify(jsonProcessor, Mockito.times(1)).serialize(Mockito.any());
         Mockito.verifyNoMoreInteractions(jsonProcessor);
-
     }
 }
