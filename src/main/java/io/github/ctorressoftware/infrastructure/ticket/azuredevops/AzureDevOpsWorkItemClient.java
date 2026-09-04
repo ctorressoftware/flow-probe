@@ -69,9 +69,11 @@ public class AzureDevOpsWorkItemClient {
 
         } catch (HttpTimeoutException e) {
             throw new HttpServiceCallException("Azure DevOps service call timed out", e);
-        } catch (IOException | InterruptedException e) {
-            Thread.currentThread().interrupt();
+        } catch (IOException e) {
             throw new RuntimeException("Error calling Azure DevOps API", e); // TODO: Create custom exception
+        } catch (InterruptedException e) {
+            Thread.currentThread().interrupt();
+            throw new RuntimeException("Azure DevOps Service call was interrupted: ", e); // TODO: Create custom exception
         }
     }
 }
