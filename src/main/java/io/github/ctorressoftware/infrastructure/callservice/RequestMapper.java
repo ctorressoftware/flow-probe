@@ -25,7 +25,7 @@ public class RequestMapper {
 
     public HttpRequest map(ServiceCall request) {
 
-        HttpRequest.BodyPublisher body = request.body() == null || request.method().equals(HttpMethod.GET) ?
+        HttpRequest.BodyPublisher body = request.body() == null ?
                 HttpRequest.BodyPublishers.noBody() :
                 HttpRequest.BodyPublishers.ofString(serializeBody(request.body()));
 
