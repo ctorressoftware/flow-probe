@@ -41,7 +41,7 @@ public class RunCommand implements Callable<Integer> {
             names = {"--create-impediment"},
             description = "Create an impediment when the flow fails"
     )
-    private Boolean impedimentCreation;
+    private boolean impedimentCreation;
 
     public RunCommand(
             PrintStream out,
