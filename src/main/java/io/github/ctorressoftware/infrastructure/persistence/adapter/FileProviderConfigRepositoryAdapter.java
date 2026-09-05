@@ -5,6 +5,10 @@ import io.github.ctorressoftware.application.port.out.CredentialsStorageManager;
 import io.github.ctorressoftware.application.port.out.ProviderConfigRepository;
 import java.util.Map;
 
+/*
+    TODO: Implement file-backed provider configuration persistence
+    before wiring this adapter into the application.
+*/
 public class FileProviderConfigRepositoryAdapter implements ProviderConfigRepository {
 
     private final ObjectMapper objectMapper;
