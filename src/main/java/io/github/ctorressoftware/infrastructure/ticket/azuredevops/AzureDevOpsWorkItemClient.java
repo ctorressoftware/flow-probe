@@ -32,11 +32,14 @@ public class AzureDevOpsWorkItemClient {
             AzureDevOpsCreateWorkItemRequest request,
             AzureDevOpsConfiguration configuration) {
 
+        // TODO: Replace the local ObjectMapper with JsonProcessor and centralize
+        // Jackson configuration/module registration in the shared ObjectMapper setup.
         ObjectMapper mapper = new ObjectMapper()
                 .registerModule(new JavaTimeModule())
                 .disable(SerializationFeature.WRITE_DATES_AS_TIMESTAMPS);
 
         // TODO: Previous API version: 7.2-preview.3. Remove this note after testing impediment creation with 7.1.
+        // TODO: Percent-encode dynamic Azure DevOps URI path segments (organization, project and work item type) before building the request URI.
         String endpoint = configuration.azureOrganization() + "/" + configuration.azureProject()
                 + "/_apis/wit/workitems/$" + configuration.azureWorkItemType() + "?api-version=7.1";
 
