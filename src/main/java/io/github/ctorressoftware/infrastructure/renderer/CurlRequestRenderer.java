@@ -7,12 +7,25 @@ import io.github.ctorressoftware.domain.model.ReproducibleRequest;
 import io.github.ctorressoftware.domain.model.RequestFormat;
 import io.github.ctorressoftware.infrastructure.renderer.exception.InvalidCurlBodyException;
 
+import java.util.Locale;
 import java.util.Map;
 import java.util.Objects;
+import java.util.Set;
 
 public class CurlRequestRenderer implements RequestRenderer {
 
     private final JsonProcessor jsonProcessor;
+
+    private static final Set<String> SENSITIVE_HEADERS = Set.of(
+            "authorization",
+            "proxy-authorization",
+            "cookie",
+            "x-api-key",
+            "api-key",
+            "x-auth-token",
+            "x-access-token",
+            "x-amz-security-token"
+    );
 
     public CurlRequestRenderer(JsonProcessor jsonProcessor) {
         this.jsonProcessor = Objects.requireNonNull(jsonProcessor);
@@ -40,7 +53,7 @@ public class CurlRequestRenderer implements RequestRenderer {
 
         headers.forEach((name, value) -> curl
                 .append(" -H ")
-                .append(singleQuote(name + ": " + value))
+                .append(singleQuote(name + ": " + sanitizeHeaderValue(name, value)))
         );
     }
 
@@ -56,5 +69,11 @@ public class CurlRequestRenderer implements RequestRenderer {
 
     private String singleQuote(String value) {
         return "'" + value.replace("'", "'\"'\"'") + "'";
+    }
+
+    private String sanitizeHeaderValue(String name, String value) {
+        return SENSITIVE_HEADERS.contains(name.toLowerCase(Locale.ROOT))
+                ? "<redacted>"
+                : value;
     }
 }
