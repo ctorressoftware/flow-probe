@@ -4,15 +4,15 @@ import io.github.ctorressoftware.application.exception.JsonDeserializationExcept
 import io.github.ctorressoftware.application.exception.JsonSerializationException;
 import io.github.ctorressoftware.application.port.out.CredentialsStorageManager;
 import io.github.ctorressoftware.application.port.out.JsonProcessor;
+import io.github.ctorressoftware.application.port.out.ProviderConfig;
 import io.github.ctorressoftware.application.port.out.ProviderConfigRepository;
 import io.github.ctorressoftware.infrastructure.persistence.exception.CredentialsSavingException;
 import io.github.ctorressoftware.infrastructure.persistence.exception.InvalidStoredCredentialsException;
-import io.github.ctorressoftware.infrastructure.ticket.azuredevops.AzureDevOpsConfiguration;
-
-import java.util.Map;
 
 public class KeystoreProviderConfigRepositoryAdapter implements ProviderConfigRepository {
 
+    private final static String AZURE_DOMAIN = "flowprobe";
+    private final static String AZURE_ACCOUNT = "azure";
     private final JsonProcessor jsonProcessor;
     private final CredentialsStorageManager credentialsStorageManager;
 
@@ -25,25 +25,25 @@ public class KeystoreProviderConfigRepositoryAdapter implements ProviderConfigRe
     }
 
     @Override
-    public void save(Map<String, String> credentials) {
+    public void save(ProviderConfig credentials) {
         try {
             String jsonCredentials = jsonProcessor.serialize(credentials);
-            credentialsStorageManager.store(
-                    AzureDevOpsConfiguration.AZURE_DOMAIN,
-                    AzureDevOpsConfiguration.AZURE_ACCOUNT,
-                    jsonCredentials
-            ); // TODO: return Credentials.CONFIGURED or a boolean to validate;
+            credentialsStorageManager.store(AZURE_DOMAIN, AZURE_ACCOUNT, jsonCredentials);
         } catch (JsonSerializationException e) {
             throw new CredentialsSavingException("Could not prepare credentials for storage", e);
         }
     }
 
     @Override
-    public Map<String, String> findByDomainAndAccount(String domain, String account) {
+    public <T extends ProviderConfig> T findByDomainAndAccount(
+            String domain,
+            String account,
+            Class<T> configType
+    ) {
         String jsonSecret = credentialsStorageManager.find(domain, account);
 
         try {
-            return jsonProcessor.readStringMap(jsonSecret);
+            return jsonProcessor.deserialize(jsonSecret, configType);
         } catch (JsonDeserializationException e) {
             throw new InvalidStoredCredentialsException(
                     "Stored credentials contain invalid JSON for domain '%s' and account '%s'"
@@ -55,18 +55,12 @@ public class KeystoreProviderConfigRepositoryAdapter implements ProviderConfigRe
 
     @Override
     public void remove() {
-        credentialsStorageManager.delete(
-                AzureDevOpsConfiguration.AZURE_DOMAIN,
-                AzureDevOpsConfiguration.AZURE_ACCOUNT
-        );
+        credentialsStorageManager.delete(AZURE_DOMAIN, AZURE_ACCOUNT);
     }
 
     @Override
     public boolean exists() {
-        String jsonSecret = credentialsStorageManager.find(
-                AzureDevOpsConfiguration.AZURE_DOMAIN,
-                AzureDevOpsConfiguration.AZURE_ACCOUNT
-        );
+        String jsonSecret = credentialsStorageManager.find(AZURE_DOMAIN, AZURE_ACCOUNT);
         return !jsonSecret.isBlank();
     }
 }
