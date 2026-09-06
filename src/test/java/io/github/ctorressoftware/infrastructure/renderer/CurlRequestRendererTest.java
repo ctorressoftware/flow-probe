@@ -6,6 +6,7 @@ import io.github.ctorressoftware.domain.constant.HttpMethod;
 import io.github.ctorressoftware.domain.model.ReproducibleRequest;
 import io.github.ctorressoftware.domain.model.RequestFormat;
 import io.github.ctorressoftware.infrastructure.renderer.exception.InvalidCurlBodyException;
+import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -46,7 +47,30 @@ class CurlRequestRendererTest {
                 "'https://pokeapi.co/api/v2/pokemon?offset=0&limit=1350'";
 
         String curl = renderer.render(request);
-        assertEquals(expected, curl);
+        Assertions.assertEquals(expected, curl);
+    }
+
+    @Test
+    void shouldRedactSensitiveHeaders() {
+
+        ReproducibleRequest request = new ReproducibleRequest(
+                "https://example.com",
+                HttpMethod.GET,
+                Map.of(
+                        "Authorization", "Bearer super-secret",
+                        "X-API-Key", "secret-key",
+                        "Accept", "application/json"
+                ),
+                null
+        );
+
+        String curl = renderer.render(request);
+
+        Assertions.assertFalse(curl.contains("super-secret"));
+        Assertions.assertFalse(curl.contains("secret-key"));
+        Assertions.assertTrue(curl.contains("Authorization: <redacted>"));
+        Assertions.assertTrue(curl.contains("X-API-Key: <redacted>"));
+        Assertions.assertTrue(curl.contains("Accept: application/json"));
     }
 
     @Test
@@ -63,7 +87,7 @@ class CurlRequestRendererTest {
                 "'https://pokeapi.co/api/v2/pokemon?offset=0&limit=1350'";
 
         String curl = renderer.render(request);
-        assertEquals(expected, curl);
+        Assertions.assertEquals(expected, curl);
     }
 
     @Test
@@ -80,7 +104,7 @@ class CurlRequestRendererTest {
                 "'https://pokeapi.co/api/v2/pokemon?offset=0&limit=1350'";
 
         String curl = renderer.render(request);
-        assertEquals(expected, curl);
+        Assertions.assertEquals(expected, curl);
     }
 
     @Test
@@ -111,8 +135,8 @@ class CurlRequestRendererTest {
                 .thenReturn( "{\"option\":\"1\",\"topic\":\"example\"}");
 
         String curl = renderer.render(request);
-        
-        assertEquals(expected, curl);
+
+        Assertions.assertEquals(expected, curl);
     }
 
     @Test
@@ -138,18 +162,18 @@ class CurlRequestRendererTest {
                 () -> renderer.render(request)
         );
 
-        assertSame(cause, exception.getCause());
+        Assertions.assertSame(cause, exception.getCause());
 
         Mockito.verify(jsonProcessor).serialize(body);
     }
 
     @Test
     void shouldReturnTrueIfRequestFormatIsCurl() {
-        assertTrue(renderer.supports(RequestFormat.CURL));
+        Assertions.assertTrue(renderer.supports(RequestFormat.CURL));
     }
 
     @Test
     void shouldReturnFalseIfRequestFormatIsNotCurl() {
-        assertFalse(renderer.supports(RequestFormat.HTTP_RAW));
+        Assertions.assertFalse(renderer.supports(RequestFormat.HTTP_RAW));
     }
 }
