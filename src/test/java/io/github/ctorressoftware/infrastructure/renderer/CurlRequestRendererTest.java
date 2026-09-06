@@ -140,8 +140,7 @@ class CurlRequestRendererTest {
 
         assertSame(cause, exception.getCause());
 
-        Mockito.verify(jsonProcessor)
-                .serialize(body);
+        Mockito.verify(jsonProcessor).serialize(body);
     }
 
     @Test
