@@ -2,6 +2,7 @@ package io.github.ctorressoftware.infrastructure.persistence.adapter;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import io.github.ctorressoftware.application.port.out.CredentialsStorageManager;
+import io.github.ctorressoftware.application.port.out.ProviderConfig;
 import io.github.ctorressoftware.application.port.out.ProviderConfigRepository;
 import java.util.Map;
 
@@ -23,13 +24,12 @@ public class FileProviderConfigRepositoryAdapter implements ProviderConfigReposi
     }
 
     @Override
-    public void save(Map<String, String> credentials) {
+    public void save(ProviderConfig credentials) {
         // TODO: complete this method
     }
 
     @Override
-    public Map<String, String> findByDomainAndAccount(String domain, String account) {
-        // TODO: complete this method
+    public <T extends ProviderConfig> T findByDomainAndAccount(String domain, String account, Class<T> configType) {
         return null;
     }
 
