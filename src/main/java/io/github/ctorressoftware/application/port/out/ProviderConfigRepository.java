@@ -1,10 +1,8 @@
 package io.github.ctorressoftware.application.port.out;
 
-import java.util.Map;
-
-public interface ProviderConfigRepository { // TODO: ProviderCredentialsRepository could be better
-    void save(Map<String, String> credentials);
-    Map<String, String> findByDomainAndAccount(String domain, String account);
+public interface ProviderConfigRepository {
+    void save(ProviderConfig credentials);
+    <T extends ProviderConfig> T findByDomainAndAccount(String domain, String account, Class<T> configType);
     void remove();
     boolean exists();
 }

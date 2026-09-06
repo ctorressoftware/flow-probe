@@ -4,6 +4,7 @@ import io.github.ctorressoftware.application.port.in.provider.configure.Configur
 import io.github.ctorressoftware.application.port.in.provider.configure.ConfigureProviderResult;
 import io.github.ctorressoftware.application.port.in.provider.configure.ConfigureProviderUseCase;
 import io.github.ctorressoftware.application.port.in.provider.configure.Provider;
+import io.github.ctorressoftware.application.port.out.ProviderConfig;
 import io.github.ctorressoftware.application.port.out.ProviderConfigurator;
 import io.github.ctorressoftware.application.port.out.ProviderPrompt;
 import io.github.ctorressoftware.domain.exception.UnsupportedProviderException;
@@ -30,7 +31,7 @@ public class ConfigureProviderHandler implements ConfigureProviderUseCase {
         ProviderPrompt prompt = getRequired(prompts, provider);
         ProviderConfigurator configurator = getRequired(configurators, provider);
 
-        Map<String, String> credentials = prompt.prompt();
+        ProviderConfig credentials = prompt.prompt();
         configurator.configure(credentials);
 
         return new ConfigureProviderResult(true);

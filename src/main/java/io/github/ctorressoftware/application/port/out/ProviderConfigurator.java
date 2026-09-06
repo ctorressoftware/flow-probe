@@ -5,7 +5,7 @@ import io.github.ctorressoftware.application.port.in.provider.configure.Provider
 import java.util.Map;
 
 public interface ProviderConfigurator {
-    void configure(Map<String, String> credentials);
+    void configure(ProviderConfig config);
     void remove();
     ProviderStatus status();
 }
