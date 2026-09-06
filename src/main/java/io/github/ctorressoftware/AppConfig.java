@@ -1,6 +1,8 @@
 package io.github.ctorressoftware;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.SerializationFeature;
+import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 import com.github.javakeyring.Keyring;
 import io.github.ctorressoftware.application.port.in.createticket.CreateImpedimentTicketUseCase;
 import io.github.ctorressoftware.application.port.in.flowexecution.ExecuteFlowUseCase;
@@ -49,7 +51,9 @@ public final class AppConfig {
     private final PrintStream out = System.out;
     private final Context context = new Context(); // TODO: check if could be a bug
     private final Scanner scanner = new Scanner(System.in);
-    private final ObjectMapper objectMapper = new ObjectMapper();
+    private final ObjectMapper objectMapper = new ObjectMapper()
+            .registerModule(new JavaTimeModule())
+            .disable(SerializationFeature.WRITE_DATES_AS_TIMESTAMPS);
     private final KeyringFactory keyringFactory = Keyring::create;
     private final JsonProcessor jsonProcessor = new JacksonJsonProcessor(objectMapper);
     private final RequestRenderer requestRenderer = new CurlRequestRenderer(jsonProcessor);
@@ -74,7 +78,7 @@ public final class AppConfig {
     private final Executor executor = new FlowExecutor(contextManager, serviceCaller, placeholderResolver, responseValidator);
     private final ExecuteFlowUseCase executeFlowUseCase = new ExecuteFlowHandler(executor);
     private final CredentialsStorageManager credentialsStorageManager = new KeystoreCredentialsStorageManager(keyringFactory);
-    private final AzureDevOpsWorkItemClient azureDevOpsWorkItemClient = new AzureDevOpsWorkItemClient(httpClient, HTTP_REQUEST_TIMEOUT);
+    private final AzureDevOpsWorkItemClient azureDevOpsWorkItemClient = new AzureDevOpsWorkItemClient(jsonProcessor, httpClient, HTTP_REQUEST_TIMEOUT);
     private final ProviderConfigRepository providerConfigRepository = new KeystoreProviderConfigRepositoryAdapter(jsonProcessor, credentialsStorageManager);
     private final AzureDevOpsWorkItemTicketCreator azureDevOpsWorkItemTicketCreator = new AzureDevOpsWorkItemTicketCreator(azureDevOpsWorkItemClient, providerConfigRepository);
     private final ImpedimentTicketCreator impedimentTicketCreator = new AzureDevOpsImpedimentTicketCreatorAdapter(azureDevOpsWorkItemTicketCreator);
