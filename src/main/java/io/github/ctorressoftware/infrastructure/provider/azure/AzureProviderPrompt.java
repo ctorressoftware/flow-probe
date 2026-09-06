@@ -1,10 +1,11 @@
 package io.github.ctorressoftware.infrastructure.provider.azure;
 
+import io.github.ctorressoftware.application.port.out.ProviderConfig;
 import io.github.ctorressoftware.application.port.out.ProviderPrompt;
+import io.github.ctorressoftware.infrastructure.ticket.azuredevops.AzureDevOpsConfig;
 
 import java.io.Console;
 import java.io.PrintStream;
-import java.util.Map;
 import java.util.Scanner;
 
 public class AzureProviderPrompt implements ProviderPrompt {
@@ -20,18 +21,18 @@ public class AzureProviderPrompt implements ProviderPrompt {
     }
 
     @Override
-    public Map<String, String> prompt() { // TODO: change Map<String, String> to AzureProviderConfiguration record
+    public ProviderConfig prompt() {
 
         String organization = askFor("Write your Azure DevOps Organization: ");
         String project = askFor("Write your Azure DevOps project: ");
         String workItemType = askFor("Write your Azure DevOps Work Item Type: ");
         String pat = askForSecret("Write your Azure DevOps Personal Access Token (PAT): ");
 
-        return Map.of(
-                "organization", organization,
-                "project", project,
-                "workItemType", workItemType,
-                "pat", pat
+        return new AzureDevOpsConfig(
+                organization,
+                project,
+                workItemType,
+                pat
         );
     }
 
