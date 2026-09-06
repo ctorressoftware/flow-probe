@@ -1,0 +1,10 @@
+name: "basic-example"
+
+steps:
+  - name: "get-pikachu"
+    request:
+      url: "https://pokeapi.co/api/v2/pokemon/pikachu"
+      method: "GET"
+
+    expect:
+      status: 200

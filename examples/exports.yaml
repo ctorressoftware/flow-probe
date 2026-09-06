@@ -1,0 +1,25 @@
+name: "exports-example"
+
+steps:
+  - name: "get-pokemon-list"
+    request:
+      url: "https://pokeapi.co/api/v2/pokemon?limit=1"
+      method: "GET"
+
+    expect:
+      status: 200
+
+    exports:
+      pokemonName: "/results/0/name"
+
+  - name: "get-exported-pokemon"
+    request:
+      url: "https://pokeapi.co/api/v2/pokemon/${pokemonName}"
+      method: "GET"
+
+    expect:
+      status: 200
+      body:
+        - path: "/name"
+          operator: "equals"
+          value: "${pokemonName}"

@@ -1,0 +1,16 @@
+name: "expectations-example"
+
+steps:
+  - name: "validate-pikachu"
+    request:
+      url: "https://pokeapi.co/api/v2/pokemon/pikachu"
+      method: "GET"
+      headers:
+        accept: "application/json"
+
+    expect:
+      status: 200
+      body:
+        - path: "/name"
+          operator: "equals"
+          value: "pikachu"
