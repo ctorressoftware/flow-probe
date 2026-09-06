@@ -5,7 +5,7 @@ import io.github.ctorressoftware.application.port.out.CredentialsStorageManager;
 import io.github.ctorressoftware.application.port.out.JsonProcessor;
 import io.github.ctorressoftware.infrastructure.json.jackson.JacksonJsonProcessor;
 import io.github.ctorressoftware.infrastructure.persistence.exception.CredentialsSavingException;
-import io.github.ctorressoftware.infrastructure.ticket.azuredevops.AzureDevOpsConfiguration;
+import io.github.ctorressoftware.infrastructure.ticket.azuredevops.AzureDevOpsConfig;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -18,10 +18,11 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 
 import static org.junit.jupiter.api.Assertions.assertSame;
 
-import java.util.Map;
-
 @ExtendWith(MockitoExtension.class)
 class KeystoreProviderConfigRepositoryAdapterTest {
+
+    private final static String AZURE_DOMAIN = "flowprobe";
+    private final static String AZURE_ACCOUNT = "azure";
 
     @Mock
     private CredentialsStorageManager credentialsStorageManager;
@@ -44,65 +45,78 @@ class KeystoreProviderConfigRepositoryAdapterTest {
     @Test
     void shouldSaveCredentialsSuccessfully() {
 
-        Map<String, String> credentials = Map.of("username", "password");
+        AzureDevOpsConfig config = new AzureDevOpsConfig(
+                "azure",
+                "my-project",
+                "impediment",
+                "1234567890"
+        );
 
-        String serializedCredentials = "{\"username\":\"password\"}";
+        String serialized =
+                "{\"organization\":\"azure\",\"project\":\"my-project\",\"workItemType\":\"impediment\",\"pat\":\"1234567890\"}";
 
         Assertions.assertDoesNotThrow(
-                () -> configurator.save(credentials));
+                () -> configurator.save(config));
 
-        Mockito.verify(credentialsStorageManager).store(
-                AzureDevOpsConfiguration.AZURE_DOMAIN,
-                AzureDevOpsConfiguration.AZURE_ACCOUNT,
-                serializedCredentials);
+        Mockito.verify(credentialsStorageManager).store(AZURE_DOMAIN, AZURE_ACCOUNT, serialized);
     }
 
     @Test
     void shouldFindCredentialsByDomainAndAccountSuccessfully() {
 
-        String domain = "flowprobe";
-        String account = "azure";
-
-        Map<String, String> expected = Map.of("username", "password");
+        AzureDevOpsConfig expected = new AzureDevOpsConfig(
+                "azure",
+                "my-project",
+                "impediment",
+                "1234567890"
+        );
 
         Mockito
-                .when(credentialsStorageManager.find(domain, account))
-                .thenReturn("{\"username\":\"password\"}");
+                .when(credentialsStorageManager.find(AZURE_DOMAIN, AZURE_ACCOUNT))
+                .thenReturn("""
+                    {
+                      "organization": "azure",
+                      "project": "my-project",
+                      "workItemType": "impediment",
+                      "pat": "1234567890"
+                    }
+                    """);
 
-        Map<String, String> credentials = configurator.findByDomainAndAccount(domain, account);
+        AzureDevOpsConfig azureConfig = configurator
+                .findByDomainAndAccount(AZURE_DOMAIN, AZURE_ACCOUNT, AzureDevOpsConfig.class);
 
-        Assertions.assertEquals(expected, credentials);
-        Mockito.verify(credentialsStorageManager).find(domain, account);
+        Assertions.assertEquals(expected, azureConfig);
+        Mockito.verify(credentialsStorageManager).find(AZURE_DOMAIN, AZURE_ACCOUNT);
         Mockito.verifyNoMoreInteractions(credentialsStorageManager);
     }
 
     @Test
     void shouldRemoveStoredCredentialsSuccessfully() {
 
-        String domain = "flowprobe";
-        String account = "azure";
-
-        Assertions
-                .assertDoesNotThrow(() -> configurator.remove());
-
-        Mockito.verify(credentialsStorageManager).delete(domain, account);
+        Assertions.assertDoesNotThrow(() -> configurator.remove());
+        Mockito.verify(credentialsStorageManager).delete(AZURE_DOMAIN, AZURE_ACCOUNT);
         Mockito.verifyNoMoreInteractions(credentialsStorageManager);
     }
 
     @Test
     void shouldReturnTrueIfProviderCredentialsAreStored() {
 
-        String domain = "flowprobe";
-        String account = "azure";
-        String serializedCredentials = "{\"username\":\"password\"}";
+        String serialized = """
+                    {
+                      "organization": "azure",
+                      "project": "my-project",
+                      "workItemType": "impediment",
+                      "pat": "1234567890"
+                    }
+                    """;
 
         Mockito
-                .when(credentialsStorageManager.find(domain, account))
-                .thenReturn(serializedCredentials);
+                .when(credentialsStorageManager.find(AZURE_DOMAIN, AZURE_ACCOUNT))
+                .thenReturn(serialized);
 
         Assertions.assertTrue(configurator.exists());
 
-        Mockito.verify(credentialsStorageManager).find(domain, account);
+        Mockito.verify(credentialsStorageManager).find(AZURE_DOMAIN, AZURE_ACCOUNT);
         Mockito.verifyNoMoreInteractions(credentialsStorageManager);
     }
 
@@ -135,15 +149,20 @@ class KeystoreProviderConfigRepositoryAdapterTest {
         JsonSerializationException cause =
                 Mockito.mock(JsonSerializationException.class);
 
-        Map<String, String> data = Map.of("username", "password");
+        AzureDevOpsConfig config = new AzureDevOpsConfig(
+                "azure",
+                "my-project",
+                "impediment",
+                "1234567890"
+        );
 
         Mockito
-            .when(jacksonJsonProcessor.serialize(data))
+            .when(jacksonJsonProcessor.serialize(config))
             .thenThrow(cause);
 
         CredentialsSavingException exception = Assertions.assertThrows(
             CredentialsSavingException.class,
-            () -> configurator.save(data)
+            () -> configurator.save(config)
         );
 
         Assertions.assertEquals(

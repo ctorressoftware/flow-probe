@@ -1,7 +1,12 @@
 package io.github.ctorressoftware.infrastructure.ticket.azuredevops;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.SerializationFeature;
+import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
+import io.github.ctorressoftware.application.port.out.JsonProcessor;
 import io.github.ctorressoftware.domain.constant.HttpStatusCode;
 import io.github.ctorressoftware.domain.model.ImpedimentTicket;
+import io.github.ctorressoftware.infrastructure.json.jackson.JacksonJsonProcessor;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -26,7 +31,12 @@ class AzureDevOpsWorkItemClientTest {
 
     @BeforeEach
     void init() {
-        this.azureDevOpsClient = new AzureDevOpsWorkItemClient(httpClient, Duration.ofSeconds(30));
+        Duration timeout = Duration.ofSeconds(30);
+        ObjectMapper objectMapper = new ObjectMapper()
+                .registerModule(new JavaTimeModule())
+                .disable(SerializationFeature.WRITE_DATES_AS_TIMESTAMPS);
+        JsonProcessor jsonProcessor = new JacksonJsonProcessor(objectMapper);
+        this.azureDevOpsClient = new AzureDevOpsWorkItemClient(jsonProcessor, httpClient, timeout);
     }
 
     @Test
@@ -37,7 +47,7 @@ class AzureDevOpsWorkItemClientTest {
 
         AzureDevOpsCreateWorkItemRequest request = AzureDevOpsCreateWorkItemRequest.from(ticket);
 
-        AzureDevOpsConfiguration configuration = new AzureDevOpsConfiguration(
+        AzureDevOpsConfig configuration = new AzureDevOpsConfig(
                 "Impediment",
                 "Organization",
                 "Project",

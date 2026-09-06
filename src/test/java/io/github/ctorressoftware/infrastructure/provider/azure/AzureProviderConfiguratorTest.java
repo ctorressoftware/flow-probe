@@ -1,7 +1,6 @@
 package io.github.ctorressoftware.infrastructure.provider.azure;
 
-import java.util.Map;
-
+import io.github.ctorressoftware.infrastructure.ticket.azuredevops.AzureDevOpsConfig;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -29,16 +28,16 @@ class AzureProviderConfiguratorTest {
     @Test
     void shouldConfigureCredentialsSuccessfully() {
 
-        Map<String, String> credentials = Map.of(
-                "organization", "azure",
-                "project", "my-project",
-                "workItemType", "Impediment",
-                "pat", "1234567890"
+        AzureDevOpsConfig config = new AzureDevOpsConfig(
+                "azure",
+                "my-project",
+                "impediment",
+                "1234567890"
         );
 
-        azureProviderConfigurator.configure(credentials);
+        azureProviderConfigurator.configure(config);
 
-        Mockito.verify(providerConfigRepository).save(credentials);
+        Mockito.verify(providerConfigRepository).save(config);
     }
 
     @Test

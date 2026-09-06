@@ -27,11 +27,11 @@ class AzureDevOpsWorkItemTicketCreatorTest {
         ImpedimentTicket ticket =
                 ImpedimentTicket.create("Title", "Description");
 
-        Map<String, String> credentials = Map.of(
-                "organization", "Organization",
-                "project", "Project",
-                "workItemType", "Impediment",
-                "pat", "123456789"
+        AzureDevOpsConfig config = new AzureDevOpsConfig(
+                "azure",
+                "my-project",
+                "impediment",
+                "1234567890"
         );
 
         AzureDevOpsWorkItemResponse expectedResponse =
@@ -39,15 +39,16 @@ class AzureDevOpsWorkItemTicketCreatorTest {
 
         Mockito
                 .when(providerConfigRepository.findByDomainAndAccount(
-                        AzureDevOpsConfiguration.AZURE_DOMAIN,
-                        AzureDevOpsConfiguration.AZURE_ACCOUNT
+                        "flowprobe",
+                        "azure",
+                        AzureDevOpsConfig.class
                 ))
-                .thenReturn(credentials);
+                .thenReturn(config);
 
         Mockito
                 .when(azureDevOpsWorkItemClient.createWorkItem(
                         Mockito.any(AzureDevOpsCreateWorkItemRequest.class),
-                        Mockito.any(AzureDevOpsConfiguration.class)
+                        Mockito.any(AzureDevOpsConfig.class)
                 ))
                 .thenReturn(expectedResponse);
 
@@ -63,51 +64,26 @@ class AzureDevOpsWorkItemTicketCreatorTest {
         Assertions.assertSame(expectedResponse, actualResponse);
 
         Mockito.verify(providerConfigRepository)
-                .findByDomainAndAccount(
-                        AzureDevOpsConfiguration.AZURE_DOMAIN,
-                        AzureDevOpsConfiguration.AZURE_ACCOUNT
-                );
+                .findByDomainAndAccount("flowprobe", "azure", AzureDevOpsConfig.class);
 
         ArgumentCaptor<AzureDevOpsCreateWorkItemRequest> requestCaptor =
                 ArgumentCaptor.forClass(AzureDevOpsCreateWorkItemRequest.class);
 
-        ArgumentCaptor<AzureDevOpsConfiguration> configurationCaptor =
-                ArgumentCaptor.forClass(AzureDevOpsConfiguration.class);
+        ArgumentCaptor<AzureDevOpsConfig> configurationCaptor =
+                ArgumentCaptor.forClass(AzureDevOpsConfig.class);
 
         Mockito.verify(azureDevOpsWorkItemClient)
-                .createWorkItem(
-                        requestCaptor.capture(),
-                        configurationCaptor.capture()
-                );
+                .createWorkItem(requestCaptor.capture(), configurationCaptor.capture());
 
-        AzureDevOpsConfiguration actualConfiguration =
-                configurationCaptor.getValue();
+        AzureDevOpsConfig actualConfiguration = configurationCaptor.getValue();
 
-        Assertions.assertEquals(
-                "Impediment",
-                actualConfiguration.azureWorkItemType()
-        );
+        Assertions.assertEquals("azure", actualConfiguration.organization());
+        Assertions.assertEquals("my-project", actualConfiguration.project());
+        Assertions.assertEquals("impediment", actualConfiguration.workItemType());
+        Assertions.assertEquals("1234567890", actualConfiguration.pat());
 
-        Assertions.assertEquals(
-                "Organization",
-                actualConfiguration.azureOrganization()
-        );
-
-        Assertions.assertEquals(
-                "Project",
-                actualConfiguration.azureProject()
-        );
-
-        Assertions.assertEquals(
-                "123456789",
-                actualConfiguration.azurePat()
-        );
-
-        AzureDevOpsCreateWorkItemRequest actualRequest =
-                requestCaptor.getValue();
-
+        AzureDevOpsCreateWorkItemRequest actualRequest = requestCaptor.getValue();
         Assertions.assertNotNull(actualRequest);
-
         Mockito.verifyNoMoreInteractions(
                 providerConfigRepository,
                 azureDevOpsWorkItemClient

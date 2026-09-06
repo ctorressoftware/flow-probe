@@ -9,6 +9,7 @@ import io.github.ctorressoftware.application.port.out.ProviderPrompt;
 import io.github.ctorressoftware.domain.exception.UnsupportedProviderException;
 import io.github.ctorressoftware.infrastructure.provider.azure.AzureProviderConfigurator;
 import io.github.ctorressoftware.infrastructure.provider.azure.AzureProviderPrompt;
+import io.github.ctorressoftware.infrastructure.ticket.azuredevops.AzureDevOpsConfig;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -38,21 +39,21 @@ class ConfigureProviderHandlerTest {
 
         configureProviderHandler = new ConfigureProviderHandler(configurators, prompts);
 
-        Map<String, String> credentials = Map.of(
-                "organization", "organization",
-                "project", "project",
-                "workItemType", "itemType",
-                "pat", "1234567890987654321"
+        AzureDevOpsConfig config = new AzureDevOpsConfig(
+                "azure",
+                "my-project",
+                "impediment",
+                "1234567890"
         );
 
         Mockito
                 .when(mockAzureProviderPrompt.prompt())
-                .thenReturn(credentials);
+                .thenReturn(config);
 
         Mockito
                 .doNothing()
                 .when(mockAzureProviderConfigurator)
-                .configure(credentials);
+                .configure(config);
 
         ConfigureProviderResult result = configureProviderHandler
                 .configure(new ConfigureProviderCommand(provider));

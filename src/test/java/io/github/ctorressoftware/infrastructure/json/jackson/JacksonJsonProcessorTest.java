@@ -1,19 +1,16 @@
 package io.github.ctorressoftware.infrastructure.json.jackson;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import io.github.ctorressoftware.application.exception.JsonDeserializationException;
 import io.github.ctorressoftware.application.exception.JsonExtractionException;
 import io.github.ctorressoftware.application.exception.JsonSerializationException;
+import io.github.ctorressoftware.infrastructure.ticket.azuredevops.AzureDevOpsConfig;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
-import org.mockito.ArgumentMatchers;
 import org.mockito.Mockito;
 import org.mockito.junit.jupiter.MockitoExtension;
-
-import java.util.Map;
 
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
@@ -134,16 +131,29 @@ class JacksonJsonProcessorTest {
     }
 
     @Test
-    void shouldReturnMapFromJsonString() {
+    void shouldDeserializeJsonString() {
 
         objectMapper = new ObjectMapper();
         jacksonJsonProcessor = new JacksonJsonProcessor(objectMapper);
 
-        Map<String, String> expected = Map.of("username", "password");
+        AzureDevOpsConfig expected = new AzureDevOpsConfig(
+                "azure",
+                "my-project",
+                "impediment",
+                "1234567890"
+        );
 
-        Map<String, String> result = jacksonJsonProcessor.readStringMap("""
-                {"username": "password"}
-                """.stripTrailing());
+        AzureDevOpsConfig result = jacksonJsonProcessor.deserialize(
+                """
+                {
+                  "organization": "azure",
+                  "project": "my-project",
+                  "workItemType": "impediment",
+                  "pat": "1234567890"
+                }
+                """,
+                AzureDevOpsConfig.class
+        );
 
         Assertions.assertEquals(expected, result);
     }
@@ -158,32 +168,37 @@ class JacksonJsonProcessorTest {
         JsonProcessingException cause =
                 Mockito.mock(JsonProcessingException.class);
 
-        String json = "{\"username\":\"password\"}";
+        String json = "{\"username\":\"user\",\"password\":\"password\"}";
+
+        record TestCredentials(
+                String username,
+                String password
+        ) {}
 
         Mockito
                 .when(objectMapper.readValue(
-                        Mockito.eq(json),
-                        ArgumentMatchers.<TypeReference<Map<String, String>>>any()
+                        json,
+                        TestCredentials.class
                 ))
                 .thenThrow(cause);
 
         JsonDeserializationException exception = assertThrows(
                 JsonDeserializationException.class,
-                () -> jacksonJsonProcessor.readStringMap(json)
+                () -> jacksonJsonProcessor.deserialize(
+                        json,
+                        TestCredentials.class
+                )
         );
 
         Assertions.assertSame(cause, exception.getCause());
 
-        Mockito.verify(objectMapper, Mockito.times(1))
-                .readValue(
-                        Mockito.eq(json),
-                        ArgumentMatchers.<TypeReference<Map<String, String>>>any()
-                );
-
         Assertions.assertEquals(
-                "Could not read deserialize data from JSON",
+                "Could not deserialize data from JSON",
                 exception.getMessage()
         );
+
+        Mockito.verify(objectMapper)
+                .readValue(json, TestCredentials.class);
     }
 
     @Test

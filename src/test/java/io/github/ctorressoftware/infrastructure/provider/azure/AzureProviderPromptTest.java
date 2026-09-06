@@ -1,5 +1,7 @@
 package io.github.ctorressoftware.infrastructure.provider.azure;
 
+import io.github.ctorressoftware.application.port.out.ProviderConfig;
+import io.github.ctorressoftware.infrastructure.ticket.azuredevops.AzureDevOpsConfig;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -34,18 +36,18 @@ class AzureProviderPromptTest {
 
         azureProviderPrompt = new AzureProviderPrompt(out, scanner, null);
 
-        Map<String, String> azureTestData = Map.of(
-                "organization", "test",
-                "project", "test",
-                "workItemType", "test",
-                "pat", "test"
+        AzureDevOpsConfig expected = new AzureDevOpsConfig(
+                "test",
+                "test",
+                "test",
+                "test"
         );
 
         Mockito.when(scanner.nextLine()).thenReturn("test");
 
-        Map<String, String> data = azureProviderPrompt.prompt();
+        ProviderConfig azureConfig = azureProviderPrompt.prompt();
 
-        Assertions.assertEquals(azureTestData, data);
+        Assertions.assertEquals(expected, azureConfig);
 
         Mockito.verify(scanner, Mockito.times(4)).nextLine();
         Mockito.verifyNoInteractions(console);
@@ -56,11 +58,11 @@ class AzureProviderPromptTest {
 
         azureProviderPrompt = new AzureProviderPrompt(out, scanner, console);
 
-        Map<String, String> azureTestData = Map.of(
-                "organization", "test",
-                "project", "test",
-                "workItemType", "test",
-                "pat", "test"
+        AzureDevOpsConfig expected = new AzureDevOpsConfig(
+                "test",
+                "test",
+                "test",
+                "test"
         );
 
         Mockito.when(scanner.nextLine()).thenReturn("test");
@@ -69,9 +71,9 @@ class AzureProviderPromptTest {
                 .when(console.readPassword(PAT_PROMPT))
                 .thenReturn("test".toCharArray());
 
-        Map<String, String> data = azureProviderPrompt.prompt();
+        ProviderConfig azureConfig = azureProviderPrompt.prompt();
 
-        Assertions.assertEquals(azureTestData, data);
+        Assertions.assertEquals(expected, azureConfig);
 
         Mockito.verify(scanner, Mockito.times(3)).nextLine();
         Mockito.verify(console, Mockito.times(1)).readPassword(PAT_PROMPT);
