@@ -19,18 +19,18 @@ class JacksonJsonProcessorTest {
 
     private ObjectMapper objectMapper;
 
-    private JacksonJsonProcessor jacksonJsonProcessor;
+    private JacksonJsonProcessor jsonProcessor;
 
     @Test
     void shouldReturnSerializedText() {
         objectMapper = new ObjectMapper();
-        jacksonJsonProcessor = new JacksonJsonProcessor(objectMapper);
+        jsonProcessor = new JacksonJsonProcessor(objectMapper);
 
         String expected = """
                 "{\\n  \\"user_id\\": 84920,\\n  \\"username\\": \\"johndoe\\",\\n  \\"is_active\\": true,\\n  \\"balance\\": 145.50,\\n  \\"profile\\": {\\n    \\"first_name\\": \\"John\\",\\n    \\"last_name\\": \\"Doe\\",\\n    \\"email\\": \\"john.doe@example.com\\",\\n    \\"phone\\": \\"+1-555-0198\\"\\n  },\\n  \\"preferences\\": {\\n    \\"theme\\": \\"dark\\",\\n    \\"notifications\\": {\\n      \\"email\\": true,\\n      \\"sms\\": false\\n    },\\n    \\"language\\": \\"en-US\\"\\n  },\\n  \\"recent_orders\\": [\\n    {\\n      \\"order_id\\": \\"ORD-9381\\",\\n      \\"total\\": 49.99\\n    }\\n  ],\\n  \\"metadata\\": null\\n}"
                 """.stripTrailing();
 
-        String serialized = jacksonJsonProcessor.serialize("""
+        String serialized = jsonProcessor.serialize("""
                 {
                   "user_id": 84920,
                   "username": "johndoe",
@@ -64,11 +64,31 @@ class JacksonJsonProcessorTest {
     }
 
     @Test
+    void shouldPreserveExtractedJsonValueTypes() {
+
+        jsonProcessor = new JacksonJsonProcessor(new ObjectMapper());
+
+        String json = """
+            {
+              "name": "Pikachu",
+              "level": 25,
+              "enabled": true,
+              "nullable": null
+            }
+            """;
+
+        Assertions.assertEquals("Pikachu", jsonProcessor.extractValue(json, "/name"));
+        Assertions.assertEquals(25, jsonProcessor.extractValue(json, "/level"));
+        Assertions.assertEquals(true, jsonProcessor.extractValue(json, "/enabled"));
+        Assertions.assertNull(jsonProcessor.extractValue(json, "/nullable"));
+    }
+
+    @Test
     void shouldWrapJsonProcessingExceptionAsJsonSerializationException()
             throws JsonProcessingException {
 
         objectMapper = Mockito.mock(ObjectMapper.class);
-        jacksonJsonProcessor = new JacksonJsonProcessor(objectMapper);
+        jsonProcessor = new JacksonJsonProcessor(objectMapper);
 
         JsonProcessingException cause =
                 Mockito.mock(JsonProcessingException.class);
@@ -79,7 +99,7 @@ class JacksonJsonProcessorTest {
 
         JsonSerializationException exception = assertThrows(
                 JsonSerializationException.class,
-                () -> jacksonJsonProcessor.serialize(Mockito.anyString())
+                () -> jsonProcessor.serialize(Mockito.anyString())
         );
 
         Assertions.assertSame(cause, exception.getCause());
@@ -98,7 +118,7 @@ class JacksonJsonProcessorTest {
             throws JsonProcessingException {
 
         objectMapper = Mockito.mock(ObjectMapper.class);
-        jacksonJsonProcessor = new JacksonJsonProcessor(objectMapper);
+        jsonProcessor = new JacksonJsonProcessor(objectMapper);
 
         JsonProcessingException cause =
                 Mockito.mock(JsonProcessingException.class);
@@ -113,7 +133,7 @@ class JacksonJsonProcessorTest {
 
         JsonExtractionException exception = assertThrows(
                 JsonExtractionException.class,
-                () -> jacksonJsonProcessor.extractValue(
+                () -> jsonProcessor.extractValue(
                         json,
                         "username"
                 )
@@ -134,7 +154,7 @@ class JacksonJsonProcessorTest {
     void shouldDeserializeJsonString() {
 
         objectMapper = new ObjectMapper();
-        jacksonJsonProcessor = new JacksonJsonProcessor(objectMapper);
+        jsonProcessor = new JacksonJsonProcessor(objectMapper);
 
         AzureDevOpsConfig expected = new AzureDevOpsConfig(
                 "azure",
@@ -143,7 +163,7 @@ class JacksonJsonProcessorTest {
                 "1234567890"
         );
 
-        AzureDevOpsConfig result = jacksonJsonProcessor.deserialize(
+        AzureDevOpsConfig result = jsonProcessor.deserialize(
                 """
                 {
                   "organization": "azure",
@@ -163,7 +183,7 @@ class JacksonJsonProcessorTest {
             throws JsonProcessingException {
 
         objectMapper = Mockito.mock(ObjectMapper.class);
-        jacksonJsonProcessor = new JacksonJsonProcessor(objectMapper);
+        jsonProcessor = new JacksonJsonProcessor(objectMapper);
 
         JsonProcessingException cause =
                 Mockito.mock(JsonProcessingException.class);
@@ -184,7 +204,7 @@ class JacksonJsonProcessorTest {
 
         JsonDeserializationException exception = assertThrows(
                 JsonDeserializationException.class,
-                () -> jacksonJsonProcessor.deserialize(
+                () -> jsonProcessor.deserialize(
                         json,
                         TestCredentials.class
                 )
@@ -205,7 +225,7 @@ class JacksonJsonProcessorTest {
     void shouldThrowJsonExtractionExceptionIfJsonNodeIsMissing() {
 
         objectMapper = new ObjectMapper();
-        jacksonJsonProcessor = new JacksonJsonProcessor(objectMapper);
+        jsonProcessor = new JacksonJsonProcessor(objectMapper);
 
         String json = """
             {
@@ -219,7 +239,7 @@ class JacksonJsonProcessorTest {
 
         JsonExtractionException exception = Assertions.assertThrows(
                 JsonExtractionException.class,
-                () -> jacksonJsonProcessor.extractValue(json, missingPath)
+                () -> jsonProcessor.extractValue(json, missingPath)
         );
 
         Assertions.assertEquals(
