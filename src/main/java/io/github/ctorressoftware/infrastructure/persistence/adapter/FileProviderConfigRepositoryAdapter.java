@@ -4,7 +4,6 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import io.github.ctorressoftware.application.port.out.CredentialsStorageManager;
 import io.github.ctorressoftware.application.port.out.ProviderConfig;
 import io.github.ctorressoftware.application.port.out.ProviderConfigRepository;
-import java.util.Map;
 
 /*
     TODO: Implement file-backed provider configuration persistence
@@ -21,6 +20,7 @@ public class FileProviderConfigRepositoryAdapter implements ProviderConfigReposi
     ) {
         this.objectMapper = objectMapper;
         this.credentialsStorageManager = credentialsStorageManager;
+        throw new UnsupportedOperationException("Unsupported operation yet");
     }
 
     @Override
