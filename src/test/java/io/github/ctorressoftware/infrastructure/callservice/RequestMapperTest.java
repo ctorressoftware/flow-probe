@@ -80,4 +80,44 @@ class RequestMapperTest {
         Mockito.verify(jsonProcessor, Mockito.times(1)).serialize(Mockito.any());
         Mockito.verifyNoMoreInteractions(jsonProcessor);
     }
+
+    @Test
+    void shouldMapRequestWithNullHeaders() {
+
+        requestMapper = new RequestMapper(
+                new JacksonJsonProcessor(new ObjectMapper()),
+                Duration.ofSeconds(30)
+        );
+
+        ServiceCall serviceCall = new ServiceCall(
+                "https://example.com",
+                HttpMethod.GET,
+                null,
+                null
+        );
+
+        HttpRequest request = requestMapper.map(serviceCall);
+
+        Assertions.assertTrue(request.headers().map().isEmpty());
+    }
+
+    @Test
+    void shouldMapRequestWithEmptyHeaders() {
+
+        requestMapper = new RequestMapper(
+                new JacksonJsonProcessor(new ObjectMapper()),
+                Duration.ofSeconds(30)
+        );
+
+        ServiceCall serviceCall = new ServiceCall(
+                "https://example.com",
+                HttpMethod.GET,
+                Map.of(),
+                null
+        );
+
+        HttpRequest request = requestMapper.map(serviceCall);
+
+        Assertions.assertTrue(request.headers().map().isEmpty());
+    }
 }
