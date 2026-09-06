@@ -23,10 +23,16 @@ public class JacksonJsonProcessor implements JsonProcessor {
         try {
             return objectMapper.writeValueAsString(data);
         } catch (JsonProcessingException e) {
-            throw new JsonSerializationException(
-                    "Could not serialize data to JSON",
-                    e
-            );
+            throw new JsonSerializationException("Could not serialize data to JSON", e);
+        }
+    }
+
+    @Override
+    public <T> T deserialize(String serializedJson, Class<T> dataType) {
+        try {
+            return objectMapper.readValue(serializedJson, dataType);
+        } catch (JsonProcessingException e) {
+            throw new JsonDeserializationException("Could not deserialize data from JSON", e);
         }
     }
 
@@ -44,18 +50,6 @@ public class JacksonJsonProcessor implements JsonProcessor {
 
         } catch (JsonProcessingException e) {
             throw new JsonExtractionException("Could not extract data from JSON", e);
-        }
-    }
-
-    @Override
-    public Map<String, String> readStringMap(String json) {
-        try {
-            return objectMapper.readValue(json, new TypeReference<>() {});
-        } catch (JsonProcessingException e) {
-            throw new JsonDeserializationException(
-                    "Could not read deserialize data from JSON",
-                    e
-            );
         }
     }
 }
