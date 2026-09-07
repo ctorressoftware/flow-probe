@@ -2,6 +2,7 @@ package io.github.ctorressoftware.infrastructure.ticket.azuredevops;
 
 import java.io.IOException;
 import java.net.URI;
+import java.net.URLEncoder;
 import java.net.http.HttpClient;
 import java.net.http.HttpRequest;
 import java.net.http.HttpRequest.BodyPublishers;
@@ -19,6 +20,7 @@ import io.github.ctorressoftware.domain.exception.HttpServiceCallException;
 public class AzureDevOpsWorkItemClient {
 
     private final static String AZURE_BASE_URL = "https://dev.azure.com/";
+    private final static String AZURE_API_VERSION = "7.1";
     private final JsonProcessor jsonProcessor;
     private final HttpClient client;
     private final Duration requestTimeout;
@@ -38,9 +40,13 @@ public class AzureDevOpsWorkItemClient {
             AzureDevOpsConfig config
     ) {
         // TODO: Previous API version: 7.2-preview.3. Remove this note after testing impediment creation with 7.1.
-        // TODO: Percent-encode dynamic Azure DevOps URI path segments (organization, project and work item type) before building the request URI.
-        String endpoint = config.organization() + "/" + config.project()
-                + "/_apis/wit/workitems/$" + config.workItemType() + "?api-version=7.1";
+        String endpoint = "%s/%s/_apis/wit/workitems/$%s?api-version=%s"
+                .formatted(
+                        encodePathSegment(config.organization()),
+                        encodePathSegment(config.project()),
+                        encodePathSegment(config.workItemType()),
+                        encodeQueryParam(AZURE_API_VERSION)
+                );
 
         try {
             URI uri = URI.create(AZURE_BASE_URL + endpoint);
@@ -78,5 +84,14 @@ public class AzureDevOpsWorkItemClient {
             Thread.currentThread().interrupt();
             throw new RuntimeException("Azure DevOps Service call was interrupted: ", e); // TODO: Create custom exception
         }
+    }
+
+    private String encodePathSegment(String value) {
+        return URLEncoder.encode(value, StandardCharsets.UTF_8)
+                .replace("+", "%20");
+    }
+
+    private String encodeQueryParam(String value) {
+        return URLEncoder.encode(value, StandardCharsets.UTF_8);
     }
 }
