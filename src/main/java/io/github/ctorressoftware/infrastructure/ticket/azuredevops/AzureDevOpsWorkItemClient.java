@@ -12,15 +12,17 @@ import java.net.http.HttpTimeoutException;
 import java.nio.charset.StandardCharsets;
 import java.time.Duration;
 import java.util.Base64;
+import java.util.Objects;
 
 import io.github.ctorressoftware.application.port.out.JsonProcessor;
 import io.github.ctorressoftware.domain.constant.HttpStatusCode;
-import io.github.ctorressoftware.domain.exception.HttpServiceCallException;
+import io.github.ctorressoftware.infrastructure.ticket.azuredevops.exception.AzureDevOpsApiException;
+import io.github.ctorressoftware.infrastructure.ticket.azuredevops.exception.AzureDevOpsException;
 
 public class AzureDevOpsWorkItemClient {
 
-    private final static String AZURE_BASE_URL = "https://dev.azure.com/";
-    private final static String AZURE_API_VERSION = "7.1";
+    private static final String AZURE_BASE_URL = "https://dev.azure.com/";
+    private static final String AZURE_API_VERSION = "7.1";
     private final JsonProcessor jsonProcessor;
     private final HttpClient client;
     private final Duration requestTimeout;
@@ -30,9 +32,9 @@ public class AzureDevOpsWorkItemClient {
             HttpClient client,
             Duration requestTimeout
     ) {
-        this.jsonProcessor = jsonProcessor;
-        this.client = client;
-        this.requestTimeout = requestTimeout;
+        this.jsonProcessor = Objects.requireNonNull(jsonProcessor);
+        this.client = Objects.requireNonNull(client);
+        this.requestTimeout = Objects.requireNonNull(requestTimeout);
     }
 
     public AzureDevOpsWorkItemResponse createWorkItem(
@@ -45,7 +47,7 @@ public class AzureDevOpsWorkItemClient {
                         encodePathSegment(config.organization()),
                         encodePathSegment(config.project()),
                         encodePathSegment(config.workItemType()),
-                        encodeQueryParam(AZURE_API_VERSION)
+                        AZURE_API_VERSION
                 );
 
         try {
@@ -68,30 +70,27 @@ public class AzureDevOpsWorkItemClient {
             HttpResponse<String> response = client.send(httpRequest, BodyHandlers.ofString());
 
             if (response.statusCode() < HttpStatusCode.OK || response.statusCode() >= HttpStatusCode.MULTIPLE_CHOICES) {
-                throw new RuntimeException( // TODO: Create custom exception
-                        "Error when trying to create an impediment ticket in Azure. " +
-                                "Status: " + response.statusCode() + ". Body: " + response.body()
+                throw new AzureDevOpsApiException(
+                        "Azure DevOps returned an unsuccessful response while creating the ticket. " +
+                                "Status: " + response.statusCode() + ". " +
+                                "Body: " + response.body()
                 );
             }
 
             return jsonProcessor.deserialize(response.body(), AzureDevOpsWorkItemResponse.class);
 
         } catch (HttpTimeoutException e) {
-            throw new HttpServiceCallException("Azure DevOps service call timed out", e);
+            throw new AzureDevOpsException("Azure DevOps service call timed out", e);
         } catch (IOException e) {
-            throw new RuntimeException("Error calling Azure DevOps API", e); // TODO: Create custom exception
+            throw new AzureDevOpsException("Error calling Azure DevOps API", e);
         } catch (InterruptedException e) {
             Thread.currentThread().interrupt();
-            throw new RuntimeException("Azure DevOps Service call was interrupted: ", e); // TODO: Create custom exception
+            throw new AzureDevOpsException("Azure DevOps service call was interrupted", e);
         }
     }
 
     private String encodePathSegment(String value) {
         return URLEncoder.encode(value, StandardCharsets.UTF_8)
                 .replace("+", "%20");
-    }
-
-    private String encodeQueryParam(String value) {
-        return URLEncoder.encode(value, StandardCharsets.UTF_8);
     }
 }
