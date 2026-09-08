@@ -36,7 +36,10 @@ jacoco {
 }
 
 tasks.test {
-    useJUnitPlatform()
+    useJUnitPlatform{
+        excludeTags("os-keystore")
+    }
+
     finalizedBy(tasks.jacocoTestReport)
 }
 
@@ -122,6 +125,15 @@ tasks.register<JavaExec>("runWithNativeAgent") {
     args = providers.gradleProperty("appArgs")
         .map { it.split(" ") }
         .getOrElse(listOf("--help"))
+}
+
+tasks.register<Test>("osKeystoreTest") {
+    group = "verification"
+    description = "Runs integration tests against the operating system keystore."
+
+    useJUnitPlatform {
+        includeTags("os-keystore")
+    }
 }
 
 application {
