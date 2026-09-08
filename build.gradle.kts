@@ -1,7 +1,7 @@
 plugins {
     id("java")
     id("application")
-    id("org.graalvm.buildtools.native") version "0.10.6"
+    id("org.graalvm.buildtools.native") version "1.1.9"
     id("jacoco")
 }
 
@@ -21,8 +21,9 @@ dependencies {
     annotationProcessor("info.picocli:picocli-codegen:4.7.7")
     implementation("org.yaml:snakeyaml:2.6")
     implementation("com.github.javakeyring:java-keyring:1.0.4")
-    implementation("com.fasterxml.jackson.core:jackson-databind:2.22.0")
-    implementation("com.fasterxml.jackson.datatype:jackson-datatype-jsr310:2.22.0")
+    implementation(platform("com.fasterxml.jackson:jackson-bom:2.22.2"))
+    implementation("com.fasterxml.jackson.core:jackson-databind")
+    implementation("com.fasterxml.jackson.datatype:jackson-datatype-jsr310")
     testImplementation("org.mockito:mockito-core:5.23.0")
     testImplementation(platform("org.junit:junit-bom:5.13.4"))
     testImplementation("org.junit.jupiter:junit-jupiter")
@@ -31,7 +32,7 @@ dependencies {
 }
 
 jacoco {
-    toolVersion = "0.8.14"
+    toolVersion = "0.8.15"
 }
 
 tasks.test {
