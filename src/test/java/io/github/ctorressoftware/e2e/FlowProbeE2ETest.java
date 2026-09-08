@@ -1,4 +1,4 @@
-package io.github.ctorressoftware;
+package io.github.ctorressoftware.e2e;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
