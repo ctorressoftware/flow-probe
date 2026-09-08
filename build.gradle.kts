@@ -131,6 +131,9 @@ tasks.register<Test>("osKeystoreTest") {
     group = "verification"
     description = "Runs integration tests against the operating system keystore."
 
+    testClassesDirs = sourceSets["test"].output.classesDirs
+    classpath = sourceSets["test"].runtimeClasspath
+
     useJUnitPlatform {
         includeTags("os-keystore")
     }
