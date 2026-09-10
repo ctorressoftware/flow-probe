@@ -6,7 +6,7 @@ import picocli.CommandLine;
         name = "flowprobe",
         mixinStandardHelpOptions = true,
         description = "CLI tool to execute and verify HTTP flows",
-        version = "flowprobe 0.1.0"
+        version = "flowprobe 0.1.0-rc.1"
 )
 public class FlowProbeCommand implements Runnable {
 
