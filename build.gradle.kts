@@ -126,7 +126,7 @@ application {
 
 graalvmNative {
     metadataRepository {
-        version.set("0.11.5")
+        enabled.set(false)
     }
 
     binaries {
