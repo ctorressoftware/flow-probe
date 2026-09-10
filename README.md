@@ -521,7 +521,7 @@ Run it:
 
 Native executables are platform-specific.
 
-The current release verification workflow builds FlowProbe on macOS x64 and verifies that the native executable:
+The current release verification workflow builds and verifies FlowProbe natively on both macOS x64 (Intel) and macOS arm64 (Apple Silicon). For each architecture, the native executable:
 
 - starts successfully;
 - reports its version and help output;
@@ -618,7 +618,7 @@ It requires an environment with a supported operating-system credential store. T
 - cURL is the only request renderer currently exposed.
 - Body expectations currently support only `equals` and `notEquals`.
 - Explicit `value: null` body expectations are not yet supported.
-- Release-oriented native verification currently covers macOS x64; additional architectures and operating systems are not yet published.
+- Release-oriented native verification currently covers macOS x64 (Intel) and macOS arm64 (Apple Silicon); other operating systems are not yet published.
 - Placeholder interpolation in URLs is textual; FlowProbe does not automatically URL-encode user-provided placeholder values.
 - Execution summaries do not yet expose full expectation-level failure details.
 - Step execution duration is not yet measured.
@@ -631,7 +631,7 @@ It requires an environment with a supported operating-system credential store. T
 The immediate release path is:
 
 - publish the `v0.1.0-rc.1` release candidate;
-- distribute the macOS build through GitHub Releases and Homebrew;
+- distribute the macOS x64 and arm64 builds through GitHub Releases and Homebrew;
 - validate installation and real-world usage;
 - fix release-blocking issues found during the RC;
 - publish the first stable `v0.1.0` release.

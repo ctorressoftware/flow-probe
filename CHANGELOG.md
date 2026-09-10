@@ -29,7 +29,7 @@ First public release candidate.
 - Percent-encoding of dynamic Azure DevOps URI path segments.
 - GraalVM Native Image support.
 - Native Image reachability metadata for FlowProbe, SnakeYAML mapping, and macOS `java-keyring` integration.
-- macOS x64 native verification workflow covering JVM checks, a temporary Keychain integration test, Native Image compilation, CLI startup, and a real local HTTP flow smoke test.
+- macOS x64 (Intel) and arm64 (Apple Silicon) native verification through a GitHub Actions matrix covering JVM checks, a temporary Keychain integration test, Native Image compilation, CLI startup, and a real local HTTP flow smoke test.
 - Local HTTP end-to-end tests covering typed exports, request-body serialization, expectations, and fail-fast execution.
 - Example flows under `examples/`.
 - Apache License 2.0, contribution guidelines, and security reporting documentation.
