@@ -108,25 +108,6 @@ tasks.jar {
     }
 }
 
-tasks.register<JavaExec>("runWithNativeAgent") {
-    group = "native"
-    description = "Runs FlowProbe with GraalVM native-image agent"
-
-    mainClass.set("io.github.ctorressoftware.Main")
-    classpath = sourceSets["main"].runtimeClasspath
-    standardInput = System.`in`
-
-    doNotTrackState("Native image tracing must execute on every invocation")
-
-    jvmArgs(
-        "-agentlib:native-image-agent=config-merge-dir=src/main/resources/META-INF/native-image/io.github.ctorressoftware/flow-probe"
-    )
-
-    args = providers.gradleProperty("appArgs")
-        .map { it.split(" ") }
-        .getOrElse(listOf("--help"))
-}
-
 tasks.register<Test>("osKeystoreTest") {
     group = "verification"
     description = "Runs integration tests against the operating system keystore."
@@ -149,5 +130,20 @@ graalvmNative {
             imageName.set("flowprobe")
             mainClass.set("io.github.ctorressoftware.Main")
         }
+    }
+
+    agent {
+        enabled.set(true)
+        defaultMode.set("standard")
+        builtinCallerFilter.set(true)
+        builtinHeuristicFilter.set(true)
+        callerFilterFiles.from(
+            layout.projectDirectory.file(
+                "native-image/filters/caller-filter.json"
+            )
+        )
+        enableExperimentalPredefinedClasses.set(false)
+        enableExperimentalUnsafeAllocationTracing.set(false)
+        trackReflectionMetadata.set(true)
     }
 }

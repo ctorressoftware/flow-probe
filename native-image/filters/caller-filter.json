@@ -1,0 +1,28 @@
+{
+  "rules": [
+    {
+      "includeClasses": "**"
+    },
+    {
+      "excludeClasses": "org.junit.**"
+    },
+    {
+      "excludeClasses": "org.mockito.**"
+    },
+    {
+      "excludeClasses": "org.opentest4j.**"
+    },
+    {
+      "excludeClasses": "org.apiguardian.**"
+    },
+    {
+      "excludeClasses": "org.gradle.**"
+    },
+    {
+      "excludeClasses": "worker.org.gradle.**"
+    },
+    {
+      "excludeClasses": "net.bytebuddy.**"
+    }
+  ]
+}
