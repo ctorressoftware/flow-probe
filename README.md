@@ -8,7 +8,7 @@
 
 A flow can call an endpoint, validate its response, export values from the returned JSON, reuse those values in later requests, and stop immediately when a step fails. When a failure occurs, FlowProbe can render reproducible cURL commands and optionally create an Azure DevOps work item with the failure context.
 
-> **Project status:** pre-release. FlowProbe is approaching its first public release, but the CLI and YAML contract may still evolve before `v0.1.0`.
+> **Project status:** `v0.1.0-rc.1` release candidate. Core behavior is feature-frozen for the first public release; the remaining work is focused on release validation, packaging, distribution, and blocking bug fixes before `v0.1.0`.
 
 ---
 
@@ -69,9 +69,9 @@ FlowProbe keeps that workflow in a portable YAML file that can be executed local
 
 ## Installation status
 
-FlowProbe does not yet have an official binary release or package-manager installation.
+The `v0.1.0-rc.1` release candidate is being prepared for public distribution. An official GitHub Release and Homebrew installation are not available yet.
 
-For now, build and run it from source.
+For now, build and run FlowProbe from source.
 
 ### Requirements
 
@@ -519,30 +519,33 @@ Run it:
 ./build/native/nativeCompile/flowprobe --help
 ```
 
-Native executables are platform-specific. Native behavior has primarily been verified on macOS during development.
+Native executables are platform-specific.
+
+The current release verification workflow builds FlowProbe on macOS x64 and verifies that the native executable:
+
+- starts successfully;
+- reports its version and help output;
+- reads and executes a YAML flow;
+- performs a real HTTP request against a temporary local server;
+- validates the response and exits successfully.
+
+The workflow also runs a separate integration test against a temporary macOS Keychain to exercise the operating-system credential-store integration.
 
 ### Native Image metadata
 
-Reachability metadata is stored under:
+Reachability metadata required by the native executable is committed under:
 
 ```text
 src/main/resources/META-INF/native-image/
 ```
 
-When code paths involving reflection, serialization, JNI, proxies, or native integrations change, regenerate/merge metadata by exercising the affected behavior with the Native Image tracing agent.
+Native Image agent filters used for metadata maintenance are kept under:
 
-Example:
-
-```bash
-./gradlew runWithNativeAgent \
-  -PappArgs="configure azure"
+```text
+native-image/filters/
 ```
 
-Then rebuild the native image:
-
-```bash
-./gradlew clean nativeCompile
-```
+Changes involving reflection, serialization, JNI, proxies, SnakeYAML mapping, or native integrations should be validated with `nativeCompile` and a representative native smoke test. Tracing-agent output should be reviewed before being merged into the committed metadata.
 
 ---
 
@@ -584,19 +587,27 @@ The main boundaries are:
 
 ## Testing
 
-Run unit and integration tests:
+Run the standard test suite:
 
 ```bash
 ./gradlew test
 ```
 
-Run the full verification suite, including JaCoCo coverage verification:
+Run the full JVM verification suite, including JaCoCo coverage verification:
 
 ```bash
 ./gradlew clean check
 ```
 
 The project includes local HTTP end-to-end tests using the JDK `HttpServer`. These tests verify multi-step execution, typed exports, real request-body serialization, expectations, and fail-fast behavior without depending on an external service.
+
+The operating-system credential-store integration test is isolated from the standard test task:
+
+```bash
+./gradlew osKeystoreTest
+```
+
+It requires an environment with a supported operating-system credential store. The macOS Native Verification GitHub Actions workflow creates a temporary Keychain, runs this integration test, builds the Native Image executable, and executes native smoke tests.
 
 ---
 
@@ -607,8 +618,8 @@ The project includes local HTTP end-to-end tests using the JDK `HttpServer`. The
 - cURL is the only request renderer currently exposed.
 - Body expectations currently support only `equals` and `notEquals`.
 - Explicit `value: null` body expectations are not yet supported.
-- Native Image behavior has primarily been verified on macOS.
-- Azure DevOps dynamic URI path segments still need complete percent-encoding support for values containing URI-sensitive characters.
+- Release-oriented native verification currently covers macOS x64; additional architectures and operating systems are not yet published.
+- Placeholder interpolation in URLs is textual; FlowProbe does not automatically URL-encode user-provided placeholder values.
 - Execution summaries do not yet expose full expectation-level failure details.
 - Step execution duration is not yet measured.
 - Retry policies are not implemented.
@@ -617,23 +628,30 @@ The project includes local HTTP end-to-end tests using the JDK `HttpServer`. The
 
 ## Roadmap
 
-The immediate goal is the first public release:
+The immediate release path is:
 
-- GitHub Actions CI.
-- Native Image build and smoke test.
-- `v0.1.0-rc.1` release candidate.
-- Homebrew distribution.
-- First stable `v0.1.0` release.
+- publish the `v0.1.0-rc.1` release candidate;
+- distribute the macOS build through GitHub Releases and Homebrew;
+- validate installation and real-world usage;
+- fix release-blocking issues found during the RC;
+- publish the first stable `v0.1.0` release.
 
 Possible later improvements include:
 
 - Additional expectation operators.
+- Environment and initial-context variables.
 - More ticket providers.
 - Additional request renderers.
-- Structured execution reports.
-- Better failure diagnostics.
-- Multi-flow and directory execution.
-- Additional operating-system builds.
+- Structured execution reports and richer failure diagnostics.
+- Multi-flow, directory, and suite execution.
+- Additional operating-system and architecture builds.
+- Native Image metadata drift detection for dependency and native-sensitive changes.
+
+---
+
+## Changelog
+
+See [CHANGELOG.md](CHANGELOG.md) for notable changes by release.
 
 ---
 
