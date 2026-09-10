@@ -142,6 +142,11 @@ graalvmNative {
                 "native-image/filters/caller-filter.json"
             )
         )
+        accessFilterFiles.from(
+            layout.projectDirectory.file(
+                "native-image/filters/access-filter.json"
+            )
+        )
         enableExperimentalPredefinedClasses.set(false)
         enableExperimentalUnsafeAllocationTracing.set(false)
         trackReflectionMetadata.set(true)
