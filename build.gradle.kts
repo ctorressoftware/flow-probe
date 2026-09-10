@@ -125,6 +125,10 @@ application {
 }
 
 graalvmNative {
+    metadataRepository {
+        version.set("0.11.5")
+    }
+
     binaries {
         named("main") {
             imageName.set("flowprobe")
