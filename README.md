@@ -8,7 +8,7 @@
 
 A flow can call an endpoint, validate its response, export values from the returned JSON, reuse those values in later requests, and stop immediately when a step fails. When a failure occurs, FlowProbe can render reproducible cURL commands and optionally create an Azure DevOps work item with the failure context.
 
-> **Project status:** `v0.1.0-rc.1` release candidate. Core behavior is feature-frozen for the first public release; the remaining work is focused on release validation, packaging, distribution, and blocking bug fixes before `v0.1.0`.
+> **Project status:** `v0.1.0-rc.1` is publicly available as the first release candidate. Core behavior is feature-frozen for the first stable release; current work is focused on fixing release-blocking issues, strengthening native-runtime validation, and preparing the next release candidate.
 
 ---
 
@@ -67,11 +67,33 @@ FlowProbe keeps that workflow in a portable YAML file that can be executed local
 
 ---
 
-## Installation status
+## Installation
 
-The `v0.1.0-rc.1` release candidate is being prepared for public distribution. An official GitHub Release and Homebrew installation are not available yet.
+### Homebrew
 
-For now, build and run FlowProbe from source.
+FlowProbe is currently available as a release candidate for macOS on both Intel and Apple Silicon.
+
+```bash
+brew install ctorressoftware/tap/flowprobe
+```
+
+Verify the installation:
+
+```bash
+flowprobe --version
+```
+
+Current release candidate:
+
+```text
+flowprobe 0.1.0-rc.1
+```
+
+### Known issue in v0.1.0-rc.1
+
+The native `configure azure` command currently fails while serializing the Azure DevOps configuration because required Native Image reflection metadata is missing.
+
+This issue affects the `v0.1.0-rc.1` native binaries and will be addressed in the next release candidate.
 
 ### Requirements
 
@@ -117,22 +139,28 @@ Show the current version:
 
 ## Quick start
 
-Run the basic example:
+If you cloned the repository, you can run the included examples with the installed FlowProbe binary:
 
 ```bash
-./gradlew run --args="run --file examples/basic.yaml"
+flowprobe run --file examples/basic.yaml
 ```
 
 Run an example with response expectations:
 
 ```bash
-./gradlew run --args="run --file examples/expectations.yaml"
+flowprobe run --file examples/expectations.yaml
 ```
 
 Run a multi-step flow that exports a value and reuses it in the next request:
 
 ```bash
-./gradlew run --args="run --file examples/exports.yaml"
+flowprobe run --file examples/exports.yaml
+```
+
+If you are developing FlowProbe from source, the same examples can be executed through Gradle:
+
+```bash
+./gradlew run --args="run --file examples/basic.yaml"
 ```
 
 The examples currently use the public PokéAPI and therefore require network access.
@@ -613,7 +641,7 @@ It requires an environment with a supported operating-system credential store. T
 
 ## Current limitations
 
-- No official binary release or Homebrew formula is available yet.
+- Official pre-release binaries are currently available only for macOS x64 (Intel) and macOS arm64 (Apple Silicon).
 - Azure DevOps is the only implemented ticket provider.
 - cURL is the only request renderer currently exposed.
 - Body expectations currently support only `equals` and `notEquals`.
@@ -630,10 +658,10 @@ It requires an environment with a supported operating-system credential store. T
 
 The immediate release path is:
 
-- publish the `v0.1.0-rc.1` release candidate;
-- distribute the macOS x64 and arm64 builds through GitHub Releases and Homebrew;
-- validate installation and real-world usage;
-- fix release-blocking issues found during the RC;
+- fix release-blocking issues discovered in `v0.1.0-rc.1`;
+- strengthen Native Image metadata coverage using representative real application flows;
+- publish `v0.1.0-rc.2`;
+- continue validating installation and real-world usage;
 - publish the first stable `v0.1.0` release.
 
 Possible later improvements include:
