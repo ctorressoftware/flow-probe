@@ -5,6 +5,8 @@ plugins {
     id("jacoco")
 }
 
+val mockitoAgent = configurations.create("mockitoAgent")
+
 java {
     toolchain { languageVersion.set(JavaLanguageVersion.of(21)) }
 }
@@ -29,6 +31,11 @@ dependencies {
     testImplementation("org.junit.jupiter:junit-jupiter")
     testImplementation("org.mockito:mockito-junit-jupiter:5.23.0")
     testRuntimeOnly("org.junit.platform:junit-platform-launcher")
+    mockitoAgent("org.mockito:mockito-core:5.23.0") { isTransitive = false }
+}
+
+tasks.withType<Test>().configureEach {
+    jvmArgs("-javaagent:${mockitoAgent.asPath}")
 }
 
 jacoco {
@@ -137,7 +144,6 @@ graalvmNative {
     }
 
     agent {
-        enabled.set(true)
         defaultMode.set("standard")
         builtinCallerFilter.set(true)
         builtinHeuristicFilter.set(true)
