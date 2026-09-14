@@ -24,23 +24,32 @@ public final class PlaceholderResolver {
                 resolveText(variables, serviceCall.url()),
                 resolveText(variables, serviceCall.method()),
                 resolveHeaders(variables, serviceCall.headers()),
-                resolveBodyValue(variables, serviceCall.body())
+                resolveValue(variables, serviceCall.body())
         );
     }
 
-    private Object resolveBodyValue(List<ContextVariable> variables, Object value) {
+    public Object resolve(List<ContextVariable> variables, Object object) {
+
+        if (object == null) {
+            throw new IllegalArgumentException("object cannot be null");
+        }
+
+        return resolveValue(variables, object);
+    }
+
+    private Object resolveValue(List<ContextVariable> variables, Object value) {
         return switch (value) {
             case null -> null;
-            case String stringValue -> resolveBodyString(variables, stringValue);
-            case Map<?, ?> map -> resolveBodyMap(variables, map);
+            case String stringValue -> resolveStringValue(variables, stringValue);
+            case Map<?, ?> map -> resolveMap(variables, map);
             case List<?> list -> list.stream()
-                    .map(item -> resolveBodyValue(variables, item))
+                    .map(item -> resolveValue(variables, item))
                     .toList();
             default -> value;
         };
     }
 
-    private Object resolveBodyString(List<ContextVariable> variables, String value) {
+    private Object resolveStringValue(List<ContextVariable> variables, String value) {
 
         Matcher matcher = PLACEHOLDER_PATTERN.matcher(value);
 
@@ -52,21 +61,18 @@ public final class PlaceholderResolver {
         return resolveText(variables, value);
     }
 
-    private Map<String, Object> resolveBodyMap(List<ContextVariable> variables, Map<?, ?> body) {
+    private Map<String, Object> resolveMap(List<ContextVariable> variables, Map<?, ?> body) {
         Map<String, Object> resolved = new LinkedHashMap<>();
 
         for (Map.Entry<?, ?> entry : body.entrySet()) {
 
             if (!(entry.getKey() instanceof String key)) {
-                throw new IllegalArgumentException("Request body object keys must be strings");
+                throw new IllegalArgumentException("Object keys must be strings");
             }
 
             resolved.put(
                     resolveText(variables, key),
-                    resolveBodyValue(
-                            variables,
-                            entry.getValue()
-                    )
+                    resolveValue(variables, entry.getValue())
             );
         }
 
