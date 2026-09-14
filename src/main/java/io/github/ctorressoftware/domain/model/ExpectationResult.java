@@ -1,4 +1,4 @@
-package io.github.ctorressoftware.application.usecase.flowexecution.validation.result;
+package io.github.ctorressoftware.domain.model;
 
 public record ExpectationResult(
         boolean successful,

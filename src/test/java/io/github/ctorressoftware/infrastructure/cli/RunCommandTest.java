@@ -98,18 +98,18 @@ class RunCommandTest {
                 "flow",
                 true,
                 List.of(
-                        new FlowExecutionSummaryDetail(
+                        FlowExecutionSummaryDetail.success(
                                 "first",
-                                true,
                                 getAll,
                                 Duration.ZERO,
+                                new ResponseValidationResult(true, List.of()),
                                 "{}"
                         ),
-                        new FlowExecutionSummaryDetail(
+                        FlowExecutionSummaryDetail.success(
                                 "second",
-                                true,
                                 getPikachu,
                                 Duration.ZERO,
+                                new ResponseValidationResult(true, List.of()),
                                 "{}"
                         )
                 )
@@ -326,18 +326,18 @@ class RunCommandTest {
                 "flow",
                 false,
                 List.of(
-                        new FlowExecutionSummaryDetail(
+                        FlowExecutionSummaryDetail.success(
                                 "first",
-                                true,
                                 getAll,
                                 Duration.ZERO,
-                                "{}"
+                                new ResponseValidationResult(true, List.of()),
+                                ""
                         ),
-                        new FlowExecutionSummaryDetail(
+                        FlowExecutionSummaryDetail.failure(
                                 "second",
-                                false,
                                 getPikachu,
                                 Duration.ZERO,
+                                new ResponseValidationResult(false, List.of()),
                                 "{}"
                         )
                 )

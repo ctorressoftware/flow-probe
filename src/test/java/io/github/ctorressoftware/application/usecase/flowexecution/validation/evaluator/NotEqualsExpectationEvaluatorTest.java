@@ -1,6 +1,6 @@
 package io.github.ctorressoftware.application.usecase.flowexecution.validation.evaluator;
 
-import io.github.ctorressoftware.application.usecase.flowexecution.validation.result.ExpectationResult;
+import io.github.ctorressoftware.domain.model.ExpectationResult;
 import io.github.ctorressoftware.domain.model.ExpectationOperator;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;

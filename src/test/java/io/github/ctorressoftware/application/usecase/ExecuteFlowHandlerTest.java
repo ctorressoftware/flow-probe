@@ -4,6 +4,7 @@ import java.time.Duration;
 import java.util.List;
 import java.util.Map;
 
+import io.github.ctorressoftware.domain.model.*;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -16,11 +17,6 @@ import io.github.ctorressoftware.application.port.in.flowexecution.ExecuteFlowCo
 import io.github.ctorressoftware.application.port.in.flowexecution.ExecuteFlowResult;
 import io.github.ctorressoftware.application.port.out.Executor;
 import io.github.ctorressoftware.domain.constant.HttpMethod;
-import io.github.ctorressoftware.domain.model.Flow;
-import io.github.ctorressoftware.domain.model.FlowExecutionSummary;
-import io.github.ctorressoftware.domain.model.FlowExecutionSummaryDetail;
-import io.github.ctorressoftware.domain.model.FlowStep;
-import io.github.ctorressoftware.domain.model.ServiceCall;
 
 @ExtendWith(MockitoExtension.class)
 class ExecuteFlowHandlerTest {
@@ -56,9 +52,27 @@ class ExecuteFlowHandlerTest {
                 "flow", 
                 true, 
                 List.of(
-                    new FlowExecutionSummaryDetail("first", true, serviceCall, Duration.ZERO, ""),
-                    new FlowExecutionSummaryDetail("second", true, serviceCall, Duration.ZERO, ""),
-                    new FlowExecutionSummaryDetail("third", true, serviceCall, Duration.ZERO, "")
+                    FlowExecutionSummaryDetail.success(
+                            "first",
+                            serviceCall,
+                            Duration.ZERO,
+                            new ResponseValidationResult(true, List.of()),
+                            ""
+                    ),
+                        FlowExecutionSummaryDetail.success(
+                            "second",
+                            serviceCall,
+                            Duration.ZERO,
+                            new ResponseValidationResult(true, List.of()),
+                            ""
+                    ),
+                        FlowExecutionSummaryDetail.success(
+                            "third",
+                            serviceCall,
+                            Duration.ZERO,
+                            new ResponseValidationResult(true, List.of()),
+                            ""
+                    )
                 )
             )
         );

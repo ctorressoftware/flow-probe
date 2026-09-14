@@ -1,11 +1,9 @@
 package io.github.ctorressoftware.domain.model;
 
-import io.github.ctorressoftware.application.usecase.flowexecution.validation.result.ResponseValidationResult;
-
 import java.time.Duration;
+import java.util.Objects;
 
 // TODO: Consider adding startedAt and finishedAt fields in the future
-// TODO: add validations
 
 public record FlowExecutionSummaryDetail(
     String stepName,
@@ -15,6 +13,12 @@ public record FlowExecutionSummaryDetail(
     ResponseValidationResult validationResult,
     String rawResponse
 ) {
+    public FlowExecutionSummaryDetail {
+        Objects.requireNonNull(stepName);
+        Objects.requireNonNull(executed);
+        Objects.requireNonNull(executionDuration);
+        Objects.requireNonNull(validationResult);
+    }
 
     public static FlowExecutionSummaryDetail success(
             String stepName,

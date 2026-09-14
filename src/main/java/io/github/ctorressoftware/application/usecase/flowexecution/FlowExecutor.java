@@ -3,7 +3,7 @@ package io.github.ctorressoftware.application.usecase.flowexecution;
 import io.github.ctorressoftware.application.port.out.Executor;
 import io.github.ctorressoftware.application.port.out.ServiceCaller;
 import io.github.ctorressoftware.application.usecase.flowexecution.validation.ResponseValidator;
-import io.github.ctorressoftware.application.usecase.flowexecution.validation.result.ResponseValidationResult;
+import io.github.ctorressoftware.domain.model.ResponseValidationResult;
 import io.github.ctorressoftware.domain.exception.NoDefinedFlowException;
 import io.github.ctorressoftware.domain.model.*;
 

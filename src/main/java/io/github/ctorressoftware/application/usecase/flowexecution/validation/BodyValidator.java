@@ -3,7 +3,7 @@ package io.github.ctorressoftware.application.usecase.flowexecution.validation;
 import io.github.ctorressoftware.application.port.out.JsonProcessor;
 import io.github.ctorressoftware.application.usecase.flowexecution.validation.evaluator.ExpectationEvaluator;
 import io.github.ctorressoftware.application.usecase.flowexecution.validation.evaluator.ExpectationEvaluatorRegistry;
-import io.github.ctorressoftware.application.usecase.flowexecution.validation.result.ExpectationResult;
+import io.github.ctorressoftware.domain.model.ExpectationResult;
 import io.github.ctorressoftware.domain.model.BodyExpectation;
 
 import java.util.List;
