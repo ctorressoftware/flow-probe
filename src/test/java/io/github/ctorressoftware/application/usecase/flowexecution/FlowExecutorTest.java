@@ -12,6 +12,7 @@ import io.github.ctorressoftware.application.usecase.flowexecution.validation.ev
 import io.github.ctorressoftware.application.usecase.flowexecution.validation.evaluator.NotEqualsExpectationEvaluator;
 import io.github.ctorressoftware.domain.constant.HttpMethod;
 import io.github.ctorressoftware.domain.constant.HttpStatusCode;
+import io.github.ctorressoftware.domain.exception.MissingVariableException;
 import io.github.ctorressoftware.domain.exception.NoDefinedFlowException;
 import io.github.ctorressoftware.domain.model.*;
 import io.github.ctorressoftware.infrastructure.json.jackson.JacksonJsonProcessor;
@@ -218,5 +219,258 @@ class FlowExecutorTest {
                 NoDefinedFlowException.class,
                 () -> flowExecutor.execute(null)
         );
+    }
+
+    @Test
+    void shouldResolveExactPlaceholderInBodyExpectation() {
+
+        ServiceCall exportCall = new ServiceCall(
+                "https://example.test/export",
+                HttpMethod.GET,
+                Map.of(),
+                null
+        );
+
+        ServiceCall validationCall = new ServiceCall(
+                "https://example.test/validate",
+                HttpMethod.GET,
+                Map.of(),
+                null
+        );
+
+        ExpectedResponse validationExpectation = new ExpectedResponse(
+                HttpStatusCode.OK,
+                List.of(new BodyExpectation(
+                        "/name",
+                        ExpectationOperator.EQUALS,
+                        "${pokemonName}"
+                ))
+        );
+
+        Flow flow = Flow.create("flow", List.of(
+                FlowStep.create(
+                        "flow",
+                        "export-pokemon",
+                        exportCall,
+                        new ExpectedResponse(200, List.of()),
+                        Map.of("pokemonName", "/name")
+                ),
+                FlowStep.create(
+                        "flow",
+                        "validate-pokemon",
+                        validationCall,
+                        validationExpectation,
+                        null
+                )
+        ));
+
+        Mockito.when(serviceCaller.call(exportCall))
+                .thenReturn(new CallResult(
+                        HttpStatusCode.OK,
+                        "{\"name\":\"bulbasaur\"}"
+                ));
+
+        Mockito.when(serviceCaller.call(validationCall))
+                .thenReturn(new CallResult(
+                        HttpStatusCode.OK,
+                        "{\"name\":\"bulbasaur\"}"
+                ));
+
+        FlowExecutionSummary summary = flowExecutor.execute(flow);
+
+        Assertions.assertTrue(summary.successfulExecution());
+        Assertions.assertEquals(2, summary.stepsResults().size());
+
+        Mockito.verify(serviceCaller).call(exportCall);
+        Mockito.verify(serviceCaller).call(validationCall);
+    }
+
+    @Test
+    void shouldPreserveTypeWhenResolvingExactPlaceholderInBodyExpectation() {
+
+        ServiceCall exportCall = new ServiceCall(
+                "https://example.test/export",
+                HttpMethod.GET,
+                Map.of(),
+                null
+        );
+
+        ServiceCall validationCall = new ServiceCall(
+                "https://example.test/validate",
+                HttpMethod.GET,
+                Map.of(),
+                null
+        );
+
+        ExpectedResponse validationExpectation = new ExpectedResponse(
+                HttpStatusCode.OK,
+                List.of(new BodyExpectation(
+                        "/id",
+                        ExpectationOperator.EQUALS,
+                        "${pokemonId}"
+                ))
+        );
+
+        Flow flow = Flow.create("flow", List.of(
+                FlowStep.create(
+                        "flow",
+                        "export-id",
+                        exportCall,
+                        new ExpectedResponse(HttpStatusCode.OK, List.of()),
+                        Map.of("pokemonId", "/id")
+                ),
+                FlowStep.create(
+                        "flow",
+                        "validate-id",
+                        validationCall,
+                        validationExpectation,
+                        null
+                )
+        ));
+
+        Mockito
+                .when(serviceCaller.call(exportCall))
+                .thenReturn(new CallResult(HttpStatusCode.OK, "{\"id\":1}"));
+
+        Mockito
+                .when(serviceCaller.call(validationCall))
+                .thenReturn(new CallResult(HttpStatusCode.OK, "{\"id\":1}"));
+
+        FlowExecutionSummary summary = flowExecutor.execute(flow);
+
+        Assertions.assertTrue(summary.successfulExecution());
+        Assertions.assertEquals(2, summary.stepsResults().size());
+        Mockito.verify(serviceCaller).call(exportCall);
+        Mockito.verify(serviceCaller).call(validationCall);
+    }
+
+    @Test
+    void shouldResolveInlinePlaceholderInBodyExpectation() {
+
+        ServiceCall exportCall = new ServiceCall(
+                "https://example.test/export",
+                HttpMethod.GET,
+                Map.of(),
+                null
+        );
+
+        ServiceCall validationCall = new ServiceCall(
+                "https://example.test/validate",
+                HttpMethod.GET,
+                Map.of(),
+                null
+        );
+
+        ExpectedResponse validationExpectation = new ExpectedResponse(
+                HttpStatusCode.OK,
+                List.of(new BodyExpectation(
+                        "/label",
+                        ExpectationOperator.EQUALS,
+                        "pokemon-${pokemonName}"
+                ))
+        );
+
+        Flow flow = Flow.create("flow", List.of(
+                FlowStep.create(
+                        "flow",
+                        "export-pokemon",
+                        exportCall,
+                        new ExpectedResponse(HttpStatusCode.OK, List.of()),
+                        Map.of("pokemonName", "/name")
+                ),
+                FlowStep.create(
+                        "flow",
+                        "validate-label",
+                        validationCall,
+                        validationExpectation,
+                        null
+                )
+        ));
+
+        Mockito.when(serviceCaller.call(exportCall))
+                .thenReturn(new CallResult(
+                        HttpStatusCode.OK,
+                        "{\"name\":\"bulbasaur\"}"
+                ));
+
+        Mockito.when(serviceCaller.call(validationCall))
+                .thenReturn(new CallResult(
+                        HttpStatusCode.OK,
+                        "{\"label\":\"pokemon-bulbasaur\"}"
+                ));
+
+        FlowExecutionSummary summary = flowExecutor.execute(flow);
+
+        Assertions.assertTrue(summary.successfulExecution());
+        Assertions.assertEquals(2, summary.stepsResults().size());
+    }
+
+    @Test
+    void shouldNotCallServiceWhenExpectationContainsMissingVariable() {
+
+        ServiceCall serviceCall = new ServiceCall(
+                "https://example.test/pokemon",
+                HttpMethod.GET,
+                Map.of(),
+                null
+        );
+
+        ExpectedResponse expectedResponse = new ExpectedResponse(
+                HttpStatusCode.OK,
+                List.of(new BodyExpectation(
+                        "/name",
+                        ExpectationOperator.EQUALS,
+                        "${missingPokemon}"
+                ))
+        );
+
+        Flow flow = Flow.create(
+                "flow",
+                List.of(FlowStep.create(
+                        "flow",
+                        "validate-pokemon",
+                        serviceCall,
+                        expectedResponse,
+                        null
+                ))
+        );
+
+        Assertions.assertThrows(
+                MissingVariableException.class,
+                () -> flowExecutor.execute(flow)
+        );
+
+        Mockito.verifyNoInteractions(serviceCaller);
+    }
+
+    @Test
+    void shouldAcceptSuccessfulStatusWhenExpectedResponseIsNotDefined() {
+
+        ServiceCall serviceCall = new ServiceCall(
+                "https://example.test/resource",
+                HttpMethod.GET,
+                Map.of(),
+                null
+        );
+
+        Flow flow = Flow.create("flow",
+                List.of(FlowStep.create(
+                        "flow",
+                        "request-without-expectation",
+                        serviceCall,
+                        null,
+                        null
+                ))
+        );
+
+        Mockito
+                .when(serviceCaller.call(serviceCall))
+                .thenReturn(new CallResult(HttpStatusCode.CREATED, ""));
+
+        FlowExecutionSummary summary = flowExecutor.execute(flow);
+
+        Assertions.assertTrue(summary.successfulExecution());
+        Assertions.assertEquals(1, summary.stepsResults().size());
+        Mockito.verify(serviceCaller).call(serviceCall);
     }
 }
