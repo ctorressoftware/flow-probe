@@ -90,12 +90,63 @@ public class RunCommand implements Callable<Integer> {
     }
 
     private void renderReproducibleRequests(FlowExecutionSummary resume) {
-        resume.stepsResults().forEach(detail -> {
+
+        out.println();
+        out.println("FlowProbe · " + resume.flowName());
+        out.println();
+
+        for (FlowExecutionSummaryDetail detail : resume.stepsResults()) {
+
+            String resultSymbol = detail.successful() ? "✓" : "✗";
+
+            out.println(resultSymbol + " " + detail.stepName());
+
             ServiceCall call = detail.executed();
-            ReproducibleRequest reproducibleRequest = ReproducibleRequest.fromServiceCall(call);
-            String request = requestRenderer.render(reproducibleRequest);
-            out.println(request);
-        });
+
+            out.println("  " + call.method() + " " + call.url());
+
+            ResponseValidationResult validationResult = detail.validationResult();
+
+            out.println(
+                    "  Validation  " +
+                            (validationResult.successful() ? "passed" : "failed")
+            );
+
+            if (!detail.successful()) {
+                ReproducibleRequest reproducibleRequest =
+                        ReproducibleRequest.fromServiceCall(call);
+
+                String request =
+                        requestRenderer.render(reproducibleRequest);
+
+                out.println();
+                out.println("  Reproduce");
+                out.println("    " + request);
+            }
+
+            out.println();
+        }
+
+        long successfulSteps = resume.stepsResults()
+                .stream()
+                .filter(FlowExecutionSummaryDetail::successful)
+                .count();
+
+        int executedSteps = resume.stepsResults().size();
+
+        if (resume.successfulExecution()) {
+            out.println(
+                    "Flow passed · " +
+                            successfulSteps + "/" + executedSteps +
+                            " steps"
+            );
+        } else {
+            out.println(
+                    "Flow failed · " +
+                            successfulSteps + "/" + executedSteps +
+                            " steps passed"
+            );
+        }
     }
 
     private ImpedimentTicket createTicketFromResume(FlowExecutionSummary resume) {
