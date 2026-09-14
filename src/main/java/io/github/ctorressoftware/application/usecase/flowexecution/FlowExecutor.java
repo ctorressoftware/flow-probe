@@ -95,6 +95,7 @@ public class FlowExecutor implements Executor {
                     step.stepName(),
                     normalizedCall,
                     Duration.ZERO,
+                    validationResult,
                     response.responseBody()
             );
         }
@@ -105,6 +106,7 @@ public class FlowExecutor implements Executor {
                 step.stepName(),
                 normalizedCall,
                 Duration.ZERO,
+                validationResult,
                 response.responseBody()
         );
     }

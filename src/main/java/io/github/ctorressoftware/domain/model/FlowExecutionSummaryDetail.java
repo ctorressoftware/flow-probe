@@ -1,16 +1,18 @@
 package io.github.ctorressoftware.domain.model;
 
+import io.github.ctorressoftware.application.usecase.flowexecution.validation.result.ResponseValidationResult;
+
 import java.time.Duration;
 
 // TODO: Consider adding startedAt and finishedAt fields in the future
 // TODO: add validations
-// TODO: Include expectation validation results in the execution summary
 
 public record FlowExecutionSummaryDetail(
     String stepName,
     boolean successful,
     ServiceCall executed,
     Duration executionDuration,
+    ResponseValidationResult validationResult,
     String rawResponse
 ) {
 
@@ -18,6 +20,7 @@ public record FlowExecutionSummaryDetail(
             String stepName,
             ServiceCall executed,
             Duration executionDuration,
+            ResponseValidationResult validationResult,
             String rawResponse
     ) {
         return new FlowExecutionSummaryDetail(
@@ -25,6 +28,7 @@ public record FlowExecutionSummaryDetail(
                 true,
                 executed,
                 executionDuration,
+                validationResult,
                 rawResponse
         );
     }
@@ -33,6 +37,7 @@ public record FlowExecutionSummaryDetail(
             String stepName,
             ServiceCall executed,
             Duration executionDuration,
+            ResponseValidationResult validationResult,
             String rawResponse
     ) {
         return new FlowExecutionSummaryDetail(
@@ -40,8 +45,8 @@ public record FlowExecutionSummaryDetail(
                 false,
                 executed,
                 executionDuration,
+                validationResult,
                 rawResponse
         );
     }
-
 }
