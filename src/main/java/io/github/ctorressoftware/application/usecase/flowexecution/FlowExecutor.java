@@ -26,7 +26,7 @@ public class FlowExecutor implements Executor {
         this.contextManager = Objects.requireNonNull(contextManager);
         this.serviceCaller = Objects.requireNonNull(serviceCaller);
         this.placeholderResolver = Objects.requireNonNull(placeholderResolver);
-        this.responseValidator = responseValidator;
+        this.responseValidator = Objects.requireNonNull(responseValidator);
     }
 
     public FlowExecutionSummary execute(Flow flow) {
@@ -53,15 +53,42 @@ public class FlowExecutor implements Executor {
         return List.copyOf(results);
     }
 
+    private ExpectedResponse resolveExpectedResponse(FlowStep step) {
+        ExpectedResponse expectedResponse = step.expectedResponse();
+
+        if (expectedResponse == null) {
+            return null;
+        }
+
+        List<BodyExpectation> bodyExpectations = expectedResponse.bodyExpectations()
+                .stream()
+                .map(expectation -> new BodyExpectation(
+                        expectation.path(),
+                        expectation.operator(),
+                        placeholderResolver.resolve(
+                                contextManager.getVariables(),
+                                expectation.expectedValue()
+                        )
+                ))
+                .toList();
+
+        return new ExpectedResponse(
+                expectedResponse.status(),
+                bodyExpectations
+        );
+    }
+
     private FlowExecutionSummaryDetail executeStep(FlowStep step) {
 
         ServiceCall normalizedCall = placeholderResolver
                 .resolve(contextManager.getVariables(), step.serviceCall());
 
+        ExpectedResponse expectedResponse = resolveExpectedResponse(step);
+
         CallResult response = serviceCaller.call(normalizedCall);
 
         ResponseValidationResult validationResult =
-                responseValidator.validate(response, step.expectedResponse());
+                responseValidator.validate(response, expectedResponse);
 
         if (!validationResult.successful()) {
             return FlowExecutionSummaryDetail.failure(
