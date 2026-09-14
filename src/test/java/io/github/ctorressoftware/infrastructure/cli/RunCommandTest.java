@@ -26,7 +26,6 @@ import java.io.PrintStream;
 import java.time.Duration;
 import java.util.List;
 import java.util.Map;
-import java.util.Scanner;
 
 @ExtendWith(MockitoExtension.class)
 class RunCommandTest {
