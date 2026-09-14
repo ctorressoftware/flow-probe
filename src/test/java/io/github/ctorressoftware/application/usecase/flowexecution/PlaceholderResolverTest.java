@@ -241,4 +241,40 @@ class PlaceholderResolverTest {
                 exception.getMessage()
         );
     }
+
+    @Test
+    void shouldPreserveOriginalTypeWhenResolvingExactPlaceholder() {
+
+        List<ContextVariable> variables = List.of(
+                new ContextVariable("pokemonId", 1)
+        );
+
+        Object result = placeholderResolver.resolve(variables, "${pokemonId}");
+
+        Assertions.assertEquals(1, result);
+        Assertions.assertInstanceOf(Integer.class, result);
+    }
+
+    @Test
+    void shouldResolveInlinePlaceholderAsString() {
+        List<ContextVariable> variables = List.of(
+                new ContextVariable("pokemonName", "bulbasaur")
+        );
+
+        Object result = placeholderResolver.resolve(
+                variables,
+                "pokemon-${pokemonName}"
+        );
+
+        Assertions.assertEquals("pokemon-bulbasaur", result);
+        Assertions.assertInstanceOf(String.class, result);
+    }
+
+    @Test
+    void shouldThrowWhenResolvingNullObject() {
+        Assertions.assertThrows(
+                IllegalArgumentException.class,
+                () -> placeholderResolver.resolve(List.of(), (Object) null)
+        );
+    }
 }
