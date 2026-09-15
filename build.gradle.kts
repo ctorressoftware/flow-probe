@@ -145,6 +145,11 @@ graalvmNative {
 
     agent {
         defaultMode.set("standard")
+        modes {
+            direct {
+                options.add("config-merge-dir={output_dir}")
+            }
+        }
         builtinCallerFilter.set(true)
         builtinHeuristicFilter.set(true)
         callerFilterFiles.from(
