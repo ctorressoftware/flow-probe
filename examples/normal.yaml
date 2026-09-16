@@ -1,0 +1,113 @@
+name: "normal-flow"
+
+steps:
+  - name: "1. get-pokemon-list"
+    request:
+      url: "https://pokeapi.co/api/v2/pokemon?limit=1"
+      method: "GET"
+      headers:
+        accept: "application/json"
+    expect:
+      status: 200
+      body:
+        - path: "/results/0/name"
+          operator: "equals"
+          value: "bulbasaur"
+    exports:
+      name: "/results/0/name"
+
+  - name: "2. get-bulbasaur-info"
+    request:
+      url: "https://pokeapi.co/api/v2/pokemon/${name}"
+      method: "GET"
+      headers:
+        accept: "application/json"
+    expect:
+      status: 200
+      body:
+        - path: "/name"
+          operator: "equals"
+          value: "bulbasaur"
+
+        - path: "/name"
+          operator: "notEquals"
+          value: "pikachu"
+    exports:
+      pokemonId: "/id"
+      speciesUrl: "/species/url"
+      primaryAbilityUrl: "/abilities/0/ability/url"
+
+  - name: "3. get-bulbasaur-species"
+    request:
+      url: "${speciesUrl}"
+      method: "GET"
+      headers:
+        accept: "application/json"
+        x-flowprobe-pokemon: "${name}"
+        x-flowprobe-description: "pokemon-${name}"
+    expect:
+      status: 200
+      body:
+        - path: "/id"
+          operator: "equals"
+          value: "${pokemonId}"
+
+        - path: "/name"
+          operator: "equals"
+          value: "${name}"
+    exports:
+      evolutionChainUrl: "/evolution_chain/url"
+
+  - name: "4. get-bulbasaur-evolution-chain"
+    request:
+      url: "${evolutionChainUrl}"
+      method: "GET"
+      headers:
+        accept: "application/json"
+    expect:
+      status: 200
+      body:
+        - path: "/chain/species/name"
+          operator: "equals"
+          value: "${name}"
+
+        - path: "/chain/species/name"
+          operator: "notEquals"
+          value: "pikachu"
+    exports:
+      nextEvolutionName: "/chain/evolves_to/0/species/name"
+
+  - name: "5. get-primary-ability"
+    request:
+      url: "${primaryAbilityUrl}"
+      method: "GET"
+      headers:
+        accept: "application/json"
+    expect:
+      status: 200
+      body:
+        - path: "/name"
+          operator: "equals"
+          value: "overgrow"
+
+        - path: "/name"
+          operator: "notEquals"
+          value: "static"
+
+  - name: "6. get-next-evolution"
+    request:
+      url: "https://pokeapi.co/api/v2/pokemon/${nextEvolutionName}"
+      method: "GET"
+      headers:
+        accept: "application/json"
+
+    expect:
+      status: 200
+      body:
+        - path: "/name"
+          operator: "equals"
+          value: "${nextEvolutionName}"
+
+        - path: "/name"
+          operator: "notEquals"
+          value: "${name}"
