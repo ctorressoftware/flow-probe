@@ -8,7 +8,7 @@
 
 A flow can call an endpoint, validate its response, export values from the returned JSON, reuse those values in later requests, and stop immediately when a step fails. When a failure occurs, FlowProbe can render reproducible cURL commands and optionally create an Azure DevOps work item with the failure context.
 
-> **Project status:** `v0.1.0-rc.1` is publicly available as the first release candidate. Core behavior is feature-frozen for the first stable release; current work is focused on fixing release-blocking issues, strengthening native-runtime validation, and preparing the next release candidate.
+> **Project status:** `v0.1.0-rc.2` is the current release candidate. Core behavior remains feature-frozen for the first stable release; current work is focused on release validation, native-runtime stability, and preparing the first stable release.
 
 ---
 
@@ -39,8 +39,8 @@ FlowProbe keeps that workflow in a portable YAML file that can be executed local
 - Default to accepting any `2xx` response when no explicit status is configured.
 - Export values from JSON responses using JSON Pointer paths.
 - Preserve exported JSON scalar types such as strings, numbers, booleans, and `null`.
-- Resolve placeholders in URLs, headers, request bodies, and nested body structures.
-- Preserve the original type when a body value is exactly a placeholder.
+- Resolve placeholders in URLs, HTTP methods, headers, nested request bodies, and response expectation values.
+- Preserve the original type when an exact placeholder is used in structured values such as request bodies and response expectations.
 - Stop execution after the first failed step.
 - Return non-zero exit codes for failed flows and invalid CLI arguments.
 - Render executed requests as reproducible cURL commands.
@@ -86,14 +86,8 @@ flowprobe --version
 Current release candidate:
 
 ```text
-flowprobe 0.1.0-rc.1
+flowprobe 0.1.0-rc.2
 ```
-
-### Known issue in v0.1.0-rc.1
-
-The native `configure azure` command currently fails while serializing the Azure DevOps configuration because required Native Image reflection metadata is missing.
-
-This issue affects the `v0.1.0-rc.1` native binaries and will be addressed in the next release candidate.
 
 ### Requirements
 
@@ -396,7 +390,19 @@ With `userId = 25` and `enabled = true`, the serialized JSON is:
 }
 ```
 
-This distinction allows exported JSON values to remain correctly typed across multiple HTTP steps.
+Exact placeholders used in response expectations preserve their original type as well:
+
+```yaml
+expect:
+  body:
+    - path: "/id"
+      operator: "equals"
+      value: "${userId}"
+```
+
+If `userId` is the number `25`, the expectation compares against the numeric value `25`, not the string `"25"`.
+
+This distinction allows exported JSON values to remain correctly typed across multiple HTTP steps and response validations.
 
 ---
 
@@ -515,13 +521,19 @@ The repository includes:
 ```text
 examples/
 ├── basic.yaml
+├── controlled-failure.yaml
 ├── expectations.yaml
-└── exports.yaml
+├── exports.yaml
+├── normal-flow.yaml
+└── request-body-flow.yaml
 ```
 
 - `basic.yaml` — one request with status validation.
 - `expectations.yaml` — status and JSON body expectations.
 - `exports.yaml` — multi-step execution with an exported placeholder.
+- `normal-flow.yaml` — representative multi-step flow covering typed exports, nested placeholders, and response expectations.
+- `request-body-flow.yaml` — request-body serialization with nested structured values and typed placeholders.
+- `controlled-failure.yaml` — intentional validation failure used to verify fail-fast behavior and failure reporting.
 
 ---
 
@@ -658,10 +670,9 @@ It requires an environment with a supported operating-system credential store. T
 
 The immediate release path is:
 
-- fix release-blocking issues discovered in `v0.1.0-rc.1`;
-- strengthen Native Image metadata coverage using representative real application flows;
-- publish `v0.1.0-rc.2`;
-- continue validating installation and real-world usage;
+- validate `v0.1.0-rc.2` installation and native behavior across the supported macOS architectures;
+- address any release-blocking issues discovered during release-candidate usage;
+- continue validating real-world flows and native-runtime behavior;
 - publish the first stable `v0.1.0` release.
 
 Possible later improvements include:
