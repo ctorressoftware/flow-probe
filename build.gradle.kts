@@ -147,7 +147,7 @@ graalvmNative {
         defaultMode.set("standard")
         modes {
             direct {
-                options.add("config-merge-dir={output_dir}")
+                options.add("config-merge-dir=build/native/agent-merged")
             }
         }
         builtinCallerFilter.set(true)
