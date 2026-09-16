@@ -4,6 +4,31 @@ All notable changes to FlowProbe are documented in this file.
 
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), and the project follows semantic versioning conventions for its release identifiers.
 
+## [Unreleased]
+
+## [0.1.0-rc.2] - 2026-09-16
+
+### Added
+
+- Added detailed response validation results to flow execution summaries.
+- Added richer CLI output for flow execution results, including per-step validation status and reproducible requests for failed steps.
+- Added broader example flows covering typed exports, nested placeholders, request bodies, controlled failures, and fail-fast execution.
+
+### Changed
+
+- Regenerated GraalVM Native Image metadata from representative real FlowProbe executions instead of relying primarily on test-driven tracing.
+- Native Image tracing now accumulates metadata across representative application flows.
+- Improved Native Image tracing filters to exclude irrelevant JDK JLine internals and test framework metadata.
+- Generalized placeholder resolution so exact placeholders preserve their original value type outside request bodies as well.
+
+### Fixed
+
+- Fixed native `configure azure` failure caused by missing reflection metadata for `AzureDevOpsConfig`.
+- Fixed native Azure DevOps configuration serialization and deserialization paths.
+- Fixed placeholders in response expectations not being resolved before validation.
+- Fixed Native Image linking failures caused by traced internal JLine JNI metadata.
+- Preserved typed values such as integers and booleans when exact placeholders are used in response expectations.
+
 ## [0.1.0-rc.1] - 2026-09-10
 
 First public release candidate.
