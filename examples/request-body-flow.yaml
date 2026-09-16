@@ -1,0 +1,73 @@
+name: "request-body-flow"
+
+steps:
+  - name: "1. get-pokemon-data"
+    request:
+      url: "https://pokeapi.co/api/v2/pokemon/bulbasaur"
+      method: "GET"
+      headers:
+        accept: "application/json"
+
+    expect:
+      status: 200
+
+    exports:
+      pokemonId: "/id"
+      pokemonName: "/name"
+      hiddenAbility: "/abilities/0/is_hidden"
+
+  - name: "2. post-typed-json-body"
+    request:
+      url: "https://httpbin.org/post"
+      method: "POST"
+      headers:
+        accept: "application/json"
+        content-type: "application/json"
+        x-flowprobe-pokemon: "${pokemonName}"
+      body:
+        pokemon:
+          id: "${pokemonId}"
+          name: "${pokemonName}"
+          hiddenAbility: "${hiddenAbility}"
+
+        description: "pokemon-${pokemonName}"
+
+        tags:
+          - "${pokemonName}"
+          - "flowprobe"
+
+        metadata:
+          source: "pokeapi"
+          enabled: true
+          attempts: 3
+
+    expect:
+      status: 200
+      body:
+        - path: "/json/pokemon/id"
+          operator: "equals"
+          value: "${pokemonId}"
+
+        - path: "/json/pokemon/name"
+          operator: "equals"
+          value: "${pokemonName}"
+
+        - path: "/json/pokemon/hiddenAbility"
+          operator: "equals"
+          value: "${hiddenAbility}"
+
+        - path: "/json/description"
+          operator: "equals"
+          value: "pokemon-${pokemonName}"
+
+        - path: "/json/tags/0"
+          operator: "equals"
+          value: "${pokemonName}"
+
+        - path: "/json/metadata/enabled"
+          operator: "equals"
+          value: true
+
+        - path: "/json/metadata/attempts"
+          operator: "equals"
+          value: 3
