@@ -23,6 +23,9 @@
     },
     {
       "excludeClasses": "net.bytebuddy.**"
+    },
+    {
+      "excludeClasses": "jdk.internal.org.jline.**"
     }
   ]
 }
