@@ -1,0 +1,38 @@
+name: "controlled-failure"
+
+steps:
+  - name: "1. get-bulbasaur"
+    request:
+      url: "https://pokeapi.co/api/v2/pokemon/bulbasaur"
+      method: "GET"
+      headers:
+        accept: "application/json"
+
+    expect:
+      status: 200
+      body:
+        - path: "/name"
+          operator: "equals"
+          value: "bulbasaur"
+
+  - name: "2. fail-on-purpose"
+    request:
+      url: "https://pokeapi.co/api/v2/pokemon/pikachu"
+      method: "GET"
+      headers:
+        accept: "application/json"
+
+    expect:
+      status: 200
+      body:
+        - path: "/name"
+          operator: "equals"
+          value: "bulbasaur"
+
+  - name: "3. should-never-run"
+    request:
+      url: "https://pokeapi.co/api/v2/pokemon/charizard"
+      method: "GET"
+
+    expect:
+      status: 200
