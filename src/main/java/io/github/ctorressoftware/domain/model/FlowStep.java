@@ -22,7 +22,7 @@ public record FlowStep(
                 Objects.requireNonNull(flowName),
                 Objects.requireNonNull(stepName),
                 Objects.requireNonNull(serviceCall),
-                expectedResponse, // TODO: Can be null yet. Have to think later it should be mandatory or not
+                expectedResponse,
                 exports == null ? null : Map.copyOf(exports)
         );
     }
