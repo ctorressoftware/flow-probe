@@ -1,4 +1,4 @@
-name: macOS Native Verification
+name: macOS Native Release
 
 on:
   push:
