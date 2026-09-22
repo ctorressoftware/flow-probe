@@ -12,7 +12,7 @@ java {
 }
 
 group = "io.github.ctorressoftware"
-version = "0.1.0-rc.2"
+version = "0.1.0-rc.3-SNAPSHOT"
 
 repositories {
     mavenCentral()
@@ -131,6 +131,11 @@ application {
     mainClass.set("io.github.ctorressoftware.Main")
 }
 
+val nativeMetadataDir: String = layout.projectDirectory
+    .dir("src/main/resources/META-INF/native-image/io.github.ctorressoftware/flow-probe")
+    .asFile
+    .absolutePath
+
 graalvmNative {
     metadataRepository {
         enabled.set(false)
@@ -147,7 +152,7 @@ graalvmNative {
         defaultMode.set("standard")
         modes {
             direct {
-                options.add("config-merge-dir=build/native/agent-merged")
+                options.add("config-merge-dir=$nativeMetadataDir")
             }
         }
         builtinCallerFilter.set(true)
@@ -165,5 +170,9 @@ graalvmNative {
         enableExperimentalPredefinedClasses.set(false)
         enableExperimentalUnsafeAllocationTracing.set(false)
         trackReflectionMetadata.set(true)
+
+        tasksToInstrumentPredicate.set { task ->
+            task.name == "run"
+        }
     }
 }
