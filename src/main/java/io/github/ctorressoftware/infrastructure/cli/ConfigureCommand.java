@@ -4,6 +4,7 @@ import io.github.ctorressoftware.application.port.in.provider.configure.Configur
 import io.github.ctorressoftware.application.port.in.provider.configure.ConfigureProviderResult;
 import io.github.ctorressoftware.application.port.in.provider.configure.ConfigureProviderUseCase;
 import io.github.ctorressoftware.application.port.in.provider.configure.Provider;
+import io.github.ctorressoftware.infrastructure.cli.converter.ProviderConverter;
 import picocli.CommandLine;
 
 import java.io.PrintStream;
@@ -14,8 +15,12 @@ public class ConfigureCommand implements Runnable {
     private final PrintStream out;
     private final ConfigureProviderUseCase configureProviderUseCase;
 
-    @CommandLine.Parameters(index = "0")
-    private String provider;
+    @CommandLine.Parameters(
+            index = "0",
+            paramLabel = "<provider>",
+            converter = ProviderConverter.class
+    )
+    private Provider provider;
 
     public ConfigureCommand(PrintStream out, ConfigureProviderUseCase configureProviderUseCase) {
         this.out = out;
@@ -24,9 +29,8 @@ public class ConfigureCommand implements Runnable {
 
     @Override
     public void run() {
-        Provider providerValue = Provider.valueOf(provider.toUpperCase());
         ConfigureProviderResult result = configureProviderUseCase
-                .configure(new ConfigureProviderCommand(providerValue));
+                .configure(new ConfigureProviderCommand(provider));
         out.println(result.configured());
     }
 }
