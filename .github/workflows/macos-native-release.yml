@@ -259,17 +259,12 @@ jobs:
           echo "Release notes:"
           cat release-notes.md
 
-      - name: Download published release assets
-        shell: bash
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        run: |
-          mkdir -p dist
-
-          gh release download "$GITHUB_REF_NAME" \
-            --repo "$GITHUB_REPOSITORY" \
-            --pattern "flowprobe-${RELEASE_VERSION}-macos-*.tar.gz" \
-            --dir dist
+      - name: Download native artifacts
+        uses: actions/download-artifact@v8
+        with:
+          pattern: flowprobe-macos-*
+          path: dist
+          merge-multiple: true
 
       - name: Verify release artifacts
         shell: bash
