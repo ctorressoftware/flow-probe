@@ -49,7 +49,7 @@ public final class AppConfig {
     private static final Duration HTTP_CONNECT_TIMEOUT = Duration.ofSeconds(10);
     private static final Duration HTTP_REQUEST_TIMEOUT = Duration.ofSeconds(30);
     private final PrintStream out = System.out;
-    private final Context context = new Context(); // TODO: check if could be a bug
+    private final Context context = new Context();
     private final Scanner scanner = new Scanner(System.in);
     private final ObjectMapper objectMapper = new ObjectMapper()
             .registerModule(new JavaTimeModule())
