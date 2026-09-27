@@ -1,12 +1,13 @@
 package io.github.ctorressoftware.infrastructure.cli;
 
+import io.github.ctorressoftware.infrastructure.cli.provider.VersionProvider;
 import picocli.CommandLine;
 
 @CommandLine.Command(
         name = "flowprobe",
         mixinStandardHelpOptions = true,
         description = "CLI tool to execute and verify HTTP flows",
-        version = "flowprobe 0.1.0-rc.4-SNAPSHOT"
+        versionProvider = VersionProvider.class
 )
 public class FlowProbeCommand implements Runnable {
 

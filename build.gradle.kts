@@ -5,14 +5,29 @@ plugins {
     id("jacoco")
 }
 
+group = "io.github.ctorressoftware"
+version = "0.1.0-rc.4-SNAPSHOT"
+
 val mockitoAgent = configurations.create("mockitoAgent")
+val appVersion = version.toString()
+val generatedVersionResources = layout.buildDirectory.dir("generated/resources/version")
+val generateVersionProperties by tasks.registering(WriteProperties::class) {
+    destinationFile.set(
+        generatedVersionResources.map { it.file("version.properties") }
+    )
+
+    property("version", appVersion)
+}
 
 java {
     toolchain { languageVersion.set(JavaLanguageVersion.of(21)) }
 }
 
-group = "io.github.ctorressoftware"
-version = "0.1.0-rc.4-SNAPSHOT"
+sourceSets {
+    main {
+        resources.srcDir(generatedVersionResources)
+    }
+}
 
 repositories {
     mavenCentral()
@@ -42,8 +57,12 @@ jacoco {
     toolVersion = "0.8.15"
 }
 
+tasks.processResources {
+    dependsOn(generateVersionProperties)
+}
+
 tasks.test {
-    useJUnitPlatform{
+    useJUnitPlatform {
         excludeTags("os-keystore")
     }
 
@@ -145,6 +164,10 @@ graalvmNative {
         named("main") {
             imageName.set("flowprobe")
             mainClass.set("io.github.ctorressoftware.Main")
+
+            resources {
+                includedPatterns.add("^version\\.properties$")
+            }
         }
     }
 
