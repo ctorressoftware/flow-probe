@@ -39,7 +39,7 @@ public class YamlReader implements FlowFileReader {
             return yaml.load(inputStream);
         } catch (IOException e) {
             throw new UnreadableFileException(filePath.value(), e);
-        } catch (YAMLException exception) { // TODO: check if capture other SnakeYAML exceptions
+        } catch (YAMLException exception) {
             throw new InvalidYamlFileException("Could not parse YAML file: " + filePath.value(), exception);
         }
     }
