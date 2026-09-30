@@ -30,4 +30,8 @@ steps:
         accept: "application/json"
     expect:
       status: 200
+      body:
+        - path: "/name"
+          operator: "equals"
+          value: "pikachu"
     exports: null
