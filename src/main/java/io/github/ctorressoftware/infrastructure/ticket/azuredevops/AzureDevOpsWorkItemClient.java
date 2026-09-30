@@ -41,7 +41,6 @@ public class AzureDevOpsWorkItemClient {
             AzureDevOpsCreateWorkItemRequest request,
             AzureDevOpsConfig config
     ) {
-        // TODO: Previous API version: 7.2-preview.3. Remove this note after testing impediment creation with 7.1.
         String endpoint = "%s/%s/_apis/wit/workitems/$%s?api-version=%s"
                 .formatted(
                         encodePathSegment(config.organization()),
