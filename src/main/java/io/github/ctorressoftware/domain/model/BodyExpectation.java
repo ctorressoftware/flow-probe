@@ -2,11 +2,6 @@ package io.github.ctorressoftware.domain.model;
 
 import io.github.ctorressoftware.domain.exception.InvalidExpectationException;
 
-/* TODO: Support explicit null expectation values.
-   Distinguish between an omitted 'value' property and 'value: null' in YAML,
-   so EQUALS/NOT_EQUALS can validate explicit null values without conflicting
-   with operators such as EXISTS/NOT_EXISTS. */
-
 public record BodyExpectation(
         String path,
         ExpectationOperator operator,
