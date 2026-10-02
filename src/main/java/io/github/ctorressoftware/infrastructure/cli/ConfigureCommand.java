@@ -22,7 +22,7 @@ public class ConfigureCommand implements Runnable {
     @CommandLine.Parameters(
             index = "0",
             paramLabel = "<provider>",
-            description = "Provider to configure, e.g. azure.",
+            description = "Provider to configure. Supported: ${COMPLETION-CANDIDATES}.",
             converter = ProviderConverter.class
     )
     private Provider provider;
