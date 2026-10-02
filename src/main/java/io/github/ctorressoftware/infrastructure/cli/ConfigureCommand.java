@@ -9,7 +9,11 @@ import picocli.CommandLine;
 
 import java.io.PrintStream;
 
-@CommandLine.Command(name = "configure")
+@CommandLine.Command(
+        name = "configure",
+        description = "Configure an external provider.",
+        mixinStandardHelpOptions = true
+)
 public class ConfigureCommand implements Runnable {
 
     private final PrintStream out;
@@ -18,6 +22,7 @@ public class ConfigureCommand implements Runnable {
     @CommandLine.Parameters(
             index = "0",
             paramLabel = "<provider>",
+            description = "Provider to configure, e.g. azure.",
             converter = ProviderConverter.class
     )
     private Provider provider;
