@@ -18,8 +18,10 @@ import picocli.CommandLine;
                 "",
                 "@|bold Examples:|@",
                 "  @|yellow flowprobe run --file flow.yaml|@",
-                "  @|yellow flowprobe configure azure-devops|@",
-                "  @|yellow flowprobe run --file flow.yaml --create-impediment|@"
+                "  @|yellow flowprobe run --file flow.yaml --create-impediment|@",
+                "  @|yellow flowprobe configure azure|@",
+                "  @|yellow flowprobe --help|@",
+                "  @|yellow flowprobe --version|@",
         }
 )
 public class FlowProbeCommand implements Runnable {
