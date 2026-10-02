@@ -21,7 +21,11 @@ import java.util.Scanner;
 import java.util.concurrent.Callable;
 import java.util.stream.Collectors;
 
-@CommandLine.Command(name = "run")
+@CommandLine.Command(
+        name = "run",
+        description = "Execute an HTTP flow.",
+        mixinStandardHelpOptions = true
+)
 public class RunCommand implements Callable<Integer> {
     private final PrintStream out;
     private final RequestRenderer requestRenderer;
@@ -30,8 +34,8 @@ public class RunCommand implements Callable<Integer> {
     private final CreateImpedimentTicketUseCase createImpedimentTicketUseCase;
 
     @CommandLine.Option(
-            names = {"--file"},
-            paramLabel = "FILEPATH",
+            names = {"--file", "-f"},
+            paramLabel = "<filepath>",
             description = "Required YAML file path to read it",
             required = true
     )
