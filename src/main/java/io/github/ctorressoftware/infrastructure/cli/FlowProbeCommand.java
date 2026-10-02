@@ -7,7 +7,20 @@ import picocli.CommandLine;
         name = "flowprobe",
         mixinStandardHelpOptions = true,
         description = "CLI tool to execute and verify HTTP flows",
-        versionProvider = VersionProvider.class
+        versionProvider = VersionProvider.class,
+        usageHelpAutoWidth = true,
+        sortOptions = false,
+        synopsisHeading = "%nUsage:%n  ",
+        descriptionHeading = "%nDescription:%n  ",
+        optionListHeading = "%nOptions:%n",
+        commandListHeading = "%nCommands:%n",
+        footer = {
+                "",
+                "@|bold Examples:|@",
+                "  @|yellow flowprobe run --file flow.yaml|@",
+                "  @|yellow flowprobe configure azure-devops|@",
+                "  @|yellow flowprobe run --file flow.yaml --create-impediment|@"
+        }
 )
 public class FlowProbeCommand implements Runnable {
 
