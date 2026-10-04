@@ -215,8 +215,10 @@ The working tree should be clean.
 Create and push the annotated tag:
 
 ```bash
-git tag -a v0.1.0-rc.4 -m "FlowProbe v0.1.0-rc.4"
-git push origin v0.1.0-rc.4
+git tag -a v<version> -m "FlowProbe v<version>"
+git push origin v<version>
+
+Example: v0.1.0-rc.4
 ```
 
 For a stable release, use the corresponding stable version/tag instead.

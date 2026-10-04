@@ -309,11 +309,11 @@ Before submitting a pull request:
 
 ---
 
-## Latest release
+## Current version
 
-**Current version:** [`v0.1.0-rc.4`](https://github.com/ctorressoftware/flow-probe/releases/tag/v0.1.0-rc.4)
+**Release candidate:** `v0.1.0-rc.4`
 
-See [CHANGELOG.md](CHANGELOG.md) for release notes and version history.
+See [GitHub Releases](https://github.com/ctorressoftware/flow-probe/releases) for published releases and [CHANGELOG.md](CHANGELOG.md) for version history.
 
 ---
 
