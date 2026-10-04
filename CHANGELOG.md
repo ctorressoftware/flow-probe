@@ -4,6 +4,23 @@ All notable changes to FlowProbe are documented in this file.
 
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), and the project follows semantic versioning conventions for its release identifiers.
 
+## [0.1.0-rc.4] - 2026-10-03
+
+### Added
+
+- Added dedicated help output for the `run` and `configure` commands.
+- Added `-f` as a shorthand for the `run --file` option.
+- Added practical command examples to the root FlowProbe help output.
+- Added a Picocli version provider backed by generated build metadata.
+
+### Changed
+
+- Improved the root CLI help layout with clearer usage, description, options, commands, and examples sections.
+- Improved help text and parameter descriptions for the `run` and `configure` commands.
+- Provider help now derives supported configuration providers from the available provider values.
+- Centralized the FlowProbe version in Gradle so `--version` no longer requires a separate hardcoded CLI version.
+- Native Image builds now explicitly include the generated `version.properties` resource.
+
 ## [0.1.0-rc.3] - 2026-09-23
 
 ### Fixed
