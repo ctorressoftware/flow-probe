@@ -102,8 +102,15 @@ jobs:
       - name: Smoke test native executable
         shell: bash
         run: |
-          ./build/native/nativeCompile/flowprobe --version
+          VERSION_OUTPUT="$(./build/native/nativeCompile/flowprobe --version)"
+
+          echo "$VERSION_OUTPUT"
+
+          test "$VERSION_OUTPUT" = "flowprobe ${RELEASE_VERSION}"
+
           ./build/native/nativeCompile/flowprobe --help
+          ./build/native/nativeCompile/flowprobe run --help
+          ./build/native/nativeCompile/flowprobe configure --help
 
       - name: Run native flow smoke test
         shell: bash
