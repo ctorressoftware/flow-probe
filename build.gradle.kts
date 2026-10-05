@@ -6,7 +6,7 @@ plugins {
 }
 
 group = "io.github.ctorressoftware"
-version = "0.1.0-rc.4"
+version = "0.1.0-SNAPSHOT"
 
 val mockitoAgent = configurations.create("mockitoAgent")
 val appVersion = version.toString()

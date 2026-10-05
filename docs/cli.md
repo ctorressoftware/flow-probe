@@ -84,11 +84,11 @@ FlowProbe returns exit code `2` for invalid command arguments.
 
 ## Exit codes
 
-| Code | Meaning |
-| ---: | --- |
-| `0` | Command or flow completed successfully. |
-| `1` | Flow execution or runtime error. |
-| `2` | Invalid CLI arguments. |
+| Code | Meaning                                 |
+|-----:|-----------------------------------------|
+|  `0` | Command or flow completed successfully. |
+|  `1` | Flow execution or runtime error.        |
+|  `2` | Invalid CLI arguments.                  |
 
 ## Output behavior
 
