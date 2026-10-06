@@ -4,9 +4,11 @@
 [![GraalVM Native Image](https://img.shields.io/badge/GraalVM-Native%20Image-blue.svg)](https://www.graalvm.org/latest/reference-manual/native-image/)
 [![License](https://img.shields.io/badge/license-Apache--2.0-blue.svg)](LICENSE)
 
-**FlowProbe** is a Java command-line tool for defining, executing, and validating multi-step HTTP flows from YAML.
+**FlowProbe** is a Java command-line tool for defining, executing, and validating multistep HTTP flows from YAML.
 
-A flow can call an endpoint, validate its response, export values from returned JSON, reuse those values in later requests and expectations, stop on the first failed step, render a reproducible cURL command, and optionally create an Azure DevOps work item with the failure context.
+A flow can call an endpoint, validate its response, export values from the JSON response, and reuse them in later requests and expectations.
+
+It stops on the first failed step, renders a reproducible cURL command, and can optionally create an Azure DevOps work item with the failure context.
 
 > **Project status:** `v0.1.0-rc.4` is the current release candidate and is intended as the final validation candidate before `v0.1.0`.
 
@@ -29,7 +31,7 @@ A FlowProbe flow can:
 3. Export values and reuse them in later steps and expectations.
 4. Stop immediately at the first failure.
 5. Produce a reproducible request for investigation.
-6. Optionally create an Azure DevOps work item as the first step in reporting the failure.
+6. Optionally create an Azure DevOps work item with the failure context.
 
 The goal is not to replace test frameworks or API clients, but to provide a lightweight, declarative, and repeatable way to describe operational verification flows across Dev and QA environments.
 
@@ -161,7 +163,7 @@ FlowProbe · pokemon-check
 Flow passed · 1/1 steps
 ```
 
-For a multi-step example with exports and placeholders, see [`examples/normal-flow.yaml`](examples/normal-flow.yaml).
+For a multistep example with exports and placeholders, see [`examples/normal-flow.yaml`](examples/normal-flow.yaml).
 
 ---
 

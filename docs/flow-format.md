@@ -21,32 +21,32 @@ steps:
 
 ## Flow
 
-| Field | Required | Description |
-| --- | ---: | --- |
-| `name` | Yes | Human-readable flow name. |
-| `steps` | Yes | Ordered, non-empty list of flow steps. |
+| Field   | Required | Description                            |
+|---------|---------:|----------------------------------------|
+| `name`  |      Yes | Human-readable flow name.              |
+| `steps` |      Yes | Ordered, non-empty list of flow steps. |
 
 A missing or blank flow name is rejected. A missing or empty `steps` list is also rejected.
 
 ## Step
 
-| Field | Required | Description |
-| --- | ---: | --- |
-| `name` | Yes | Step name. |
-| `request` | Yes | HTTP request definition. |
-| `expect` | No | Response expectations. |
-| `exports` | No | JSON values exported into the flow context. |
+| Field     | Required | Description                                 |
+|-----------|---------:|---------------------------------------------|
+| `name`    |      Yes | Step name.                                  |
+| `request` |      Yes | HTTP request definition.                    |
+| `expect`  |       No | Response expectations.                      |
+| `exports` |       No | JSON values exported into the flow context. |
 
 A step must have a non-blank name and a request.
 
 ## Request
 
-| Field | Required | Description |
-| --- | ---: | --- |
-| `url` | Yes | Target URL. Placeholders are supported. |
-| `method` | Yes | HTTP method string. Placeholders are supported. |
-| `headers` | No | HTTP headers. Placeholder interpolation is supported in names and values. |
-| `body` | No | Structured request body. Maps, lists, scalar values, and placeholders are supported. |
+| Field     | Required | Description                                                                          |
+|-----------|---------:|--------------------------------------------------------------------------------------|
+| `url`     |      Yes | Target URL. Placeholders are supported.                                              |
+| `method`  |      Yes | HTTP method string. Placeholders are supported.                                      |
+| `headers` |       No | HTTP headers. Placeholder interpolation is supported in names and values.            |
+| `body`    |       No | Structured request body. Maps, lists, scalar values, and placeholders are supported. |
 
 Example:
 
