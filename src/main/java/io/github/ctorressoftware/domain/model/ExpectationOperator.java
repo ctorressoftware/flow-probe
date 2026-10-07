@@ -6,7 +6,8 @@ import java.util.Arrays;
 
 public enum ExpectationOperator {
     EQUALS("equals", true),
-    NOT_EQUALS("notEquals", true);
+    NOT_EQUALS("notEquals", true),
+    CONTAINS("contains", true);
 
     private final String yamlValue;
     private final boolean requiresValue;
