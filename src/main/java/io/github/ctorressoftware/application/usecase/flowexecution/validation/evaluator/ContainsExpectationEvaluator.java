@@ -3,8 +3,6 @@ package io.github.ctorressoftware.application.usecase.flowexecution.validation.e
 import io.github.ctorressoftware.domain.model.ExpectationOperator;
 import io.github.ctorressoftware.domain.model.ExpectationResult;
 
-import java.util.Objects;
-
 public class ContainsExpectationEvaluator implements ExpectationEvaluator {
 
     @Override
