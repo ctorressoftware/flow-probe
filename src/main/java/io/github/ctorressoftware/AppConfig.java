@@ -18,10 +18,7 @@ import io.github.ctorressoftware.application.usecase.flowexecution.validation.Bo
 import io.github.ctorressoftware.application.usecase.flowexecution.validation.DefaultResponseValidator;
 import io.github.ctorressoftware.application.usecase.flowexecution.validation.ResponseValidator;
 import io.github.ctorressoftware.application.usecase.flowexecution.validation.StatusValidator;
-import io.github.ctorressoftware.application.usecase.flowexecution.validation.evaluator.EqualsExpectationEvaluator;
-import io.github.ctorressoftware.application.usecase.flowexecution.validation.evaluator.ExpectationEvaluator;
-import io.github.ctorressoftware.application.usecase.flowexecution.validation.evaluator.ExpectationEvaluatorRegistry;
-import io.github.ctorressoftware.application.usecase.flowexecution.validation.evaluator.NotEqualsExpectationEvaluator;
+import io.github.ctorressoftware.application.usecase.flowexecution.validation.evaluator.*;
 import io.github.ctorressoftware.application.usecase.provider.configure.ConfigureProviderHandler;
 import io.github.ctorressoftware.domain.model.Context;
 import io.github.ctorressoftware.infrastructure.callservice.RequestMapper;
@@ -61,12 +58,14 @@ public final class AppConfig {
     private final PlaceholderResolver placeholderResolver = new PlaceholderResolver();
     private final ReadFileUseCase readFileUseCase = new ReadFileHandler(flowFileReader);
     private final ContextManager contextManager = new ContextManager(context, jsonProcessor);
-    private final ExpectationEvaluator equalsExpectationEvaluator = new EqualsExpectationEvaluator();
     private final RequestMapper requestMapper = new RequestMapper(jsonProcessor, HTTP_REQUEST_TIMEOUT);
+    private final ExpectationEvaluator equalsExpectationEvaluator = new EqualsExpectationEvaluator();
     private final ExpectationEvaluator notEqualsExpectationEvaluator = new NotEqualsExpectationEvaluator();
+    private final ExpectationEvaluator containsExpectationEvaluator = new ContainsExpectationEvaluator();
     private final ExpectationEvaluatorRegistry registry = new ExpectationEvaluatorRegistry(List.of(
             equalsExpectationEvaluator,
-            notEqualsExpectationEvaluator
+            notEqualsExpectationEvaluator,
+            containsExpectationEvaluator
     ));
     private final HttpClient httpClient = HttpClient.newBuilder()
             .connectTimeout(HTTP_CONNECT_TIMEOUT)
