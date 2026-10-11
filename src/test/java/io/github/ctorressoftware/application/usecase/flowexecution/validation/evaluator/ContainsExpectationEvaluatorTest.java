@@ -25,7 +25,7 @@ class ContainsExpectationEvaluatorTest {
     }
 
     @Test
-    void shouldReturnSuccessfulResultWhenStringContainsSubString() {
+    void shouldReturnSuccessfulResultWhenSentenceContainsSubString() {
 
         ExpectationResult result = evaluator.evaluate(
                 "mega-bulbasaur",
