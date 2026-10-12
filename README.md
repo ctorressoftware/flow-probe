@@ -282,6 +282,7 @@ The examples cover basic status validation, body expectations, exports, typed pl
 - [Native Image](docs/native-image.md)
 - [Architecture](docs/architecture.md)
 - [Development guide](docs/development.md)
+- [Roadmap](docs/roadmap.md)
 
 ---
 
@@ -308,6 +309,8 @@ Before submitting a pull request:
 ```bash
 ./gradlew clean check
 ```
+
+For planned improvements and future features, see the [Roadmap](docs/roadmap.md).
 
 ---
 
