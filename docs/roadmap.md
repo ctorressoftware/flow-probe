@@ -180,42 +180,6 @@ This would allow FlowProbe to validate response shape without requiring an exact
 
 ---
 
-## `contains` semantics
-
-The current `contains` operator should eventually have clearly defined behavior for different JSON value types.
-
-Potential semantics:
-
-```text
-String  contains String
-Array   contains value
-Object  contains key
-```
-
-Example:
-
-```yaml
-expect:
-  body:
-    - path: "/roles"
-      operator: "contains"
-      value: "ADMIN"
-```
-
-Given:
-
-```json
-{
-  "roles": ["USER", "ADMIN"]
-}
-```
-
-the expectation could evaluate successfully.
-
-This behavior should be explicitly defined and tested before expanding `contains` beyond its current implementation.
-
----
-
 ## Suggested implementation order
 
 ### Phase 1
