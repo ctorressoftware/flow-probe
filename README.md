@@ -97,8 +97,8 @@ Requirements:
 Clone and verify:
 
 ```bash
-git clone https://github.com/ctorressoftware/flow-probe.git
-cd flow-probe
+git clone https://github.com/ctorressoftware/flowprobe.git
+cd flowprobe
 ./gradlew clean check
 ```
 
@@ -318,7 +318,7 @@ For planned improvements and future features, see the [Roadmap](docs/roadmap.md)
 
 **Release candidate:** `v0.1.0-rc.4`
 
-See [GitHub Releases](https://github.com/ctorressoftware/flow-probe/releases) for published releases and [CHANGELOG.md](CHANGELOG.md) for version history.
+See [GitHub Releases](https://github.com/ctorressoftware/flowprobe/releases) for published releases and [CHANGELOG.md](CHANGELOG.md) for version history.
 
 ---
 

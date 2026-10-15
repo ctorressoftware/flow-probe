@@ -1,1 +1,1 @@
-rootProject.name = "flow-probe"
+rootProject.name = "flowprobe"

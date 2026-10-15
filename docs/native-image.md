@@ -31,7 +31,7 @@ Basic verification:
 FlowProbe keeps its Native Image reachability metadata under:
 
 ```text
-src/main/resources/META-INF/native-image/io.github.ctorressoftware/flow-probe/
+src/main/resources/META-INF/native-image/io.github.ctorressoftware/flowprobe/
 ```
 
 The directory currently contains metadata for reflection, resources, serialization, proxies, JNI, and predefined classes.

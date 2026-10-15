@@ -373,18 +373,18 @@ jobs:
           cat > homebrew-tap/Formula/flowprobe.rb <<EOF
           class Flowprobe < Formula
             desc "CLI tool to execute and verify HTTP flows"
-            homepage "https://github.com/ctorressoftware/flow-probe"
+            homepage "https://github.com/ctorressoftware/flowprobe"
             version "${RELEASE_VERSION}"
             license "Apache-2.0"
 
             on_macos do
               on_arm do
-                url "https://github.com/ctorressoftware/flow-probe/releases/download/v${RELEASE_VERSION}/flowprobe-${RELEASE_VERSION}-macos-arm64.tar.gz"
+                url "https://github.com/ctorressoftware/flowprobe/releases/download/v${RELEASE_VERSION}/flowprobe-${RELEASE_VERSION}-macos-arm64.tar.gz"
                 sha256 "${ARM64_SHA}"
               end
 
               on_intel do
-                url "https://github.com/ctorressoftware/flow-probe/releases/download/v${RELEASE_VERSION}/flowprobe-${RELEASE_VERSION}-macos-x64.tar.gz"
+                url "https://github.com/ctorressoftware/flowprobe/releases/download/v${RELEASE_VERSION}/flowprobe-${RELEASE_VERSION}-macos-x64.tar.gz"
                 sha256 "${X64_SHA}"
               end
             end

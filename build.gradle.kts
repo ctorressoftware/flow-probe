@@ -125,7 +125,7 @@ tasks.named<JavaExec>("run") {
 }
 
 tasks.withType<JavaCompile>().configureEach {
-    options.compilerArgs.add("-Aproject=io.github.ctorressoftware/flow-probe")
+    options.compilerArgs.add("-Aproject=io.github.ctorressoftware/flowprobe")
 }
 
 tasks.jar {
@@ -151,7 +151,7 @@ application {
 }
 
 val nativeMetadataDir: String = layout.projectDirectory
-    .dir("src/main/resources/META-INF/native-image/io.github.ctorressoftware/flow-probe")
+    .dir("src/main/resources/META-INF/native-image/io.github.ctorressoftware/flowprobe")
     .asFile
     .absolutePath
 

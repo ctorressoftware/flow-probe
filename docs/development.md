@@ -137,7 +137,7 @@ See [Native Image](native-image.md) for the detailed tracing workflow.
 Metadata is committed under:
 
 ```text
-src/main/resources/META-INF/native-image/io.github.ctorressoftware/flow-probe
+src/main/resources/META-INF/native-image/io.github.ctorressoftware/flowprobe
 ```
 
 The tracing agent merges new observations directly into that directory.
