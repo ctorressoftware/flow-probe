@@ -3,7 +3,7 @@
     <option name="ALTERNATIVE_JRE_PATH" value="$USER_HOME$/Library/Java/JavaVirtualMachines/ms-21.0.10/Contents/Home" />
     <option name="ALTERNATIVE_JRE_PATH_ENABLED" value="true" />
     <option name="MAIN_CLASS_NAME" value="io.github.ctorressoftware.Main" />
-    <module name="flow-probe.main" />
+    <module name="flowprobe.main" />
     <option name="PROGRAM_PARAMETERS" value="run --file $PROJECT_DIR$/src/main/resources/flow-failure.yaml --create-impediment" />
     <method v="2">
       <option name="Make" enabled="true" />
